@@ -1,0 +1,82 @@
+
+
+[
+  {
+    "name": "Admin",
+    "type": "Admin",
+    "email": "erparthas@gmail.com",
+    "password": "1234"
+  },
+  {
+    "name": "Arnel",
+    "type": "Employee",
+    "email": "erparthas@gmail.com",
+    "password": "1234",
+    "role": ["drafter", "civil"]
+  },
+  {
+    "name": "Civil Engineer",
+    "type": "Employee",
+    "email": "erparthas@gmail.com",
+    "password": "1234",
+    "role": ["civil"]
+  },
+  {
+    "name": "Luan",
+    "type": "Employee",
+    "email": "erparthas@gmail.com",
+    "password": "1234",
+    "role": ["engineer"]
+  },
+  {
+    "name": "Nicko",
+    "type": "Employee",
+    "email": "erparthas@gmail.com",
+    "password": "1234"
+  },
+  {
+    "name": "Ramiro",
+    "type": "Employee",
+    "email": "erparthas@gmail.com",
+    "password": "1234",
+    "role": ["mep"]
+  },
+  {
+    "name": "Anojan",
+    "type": "Employee",
+    "email": "erparthas@gmail.com",
+    "password": "1234"
+  },
+  {
+    "name": "Marco",
+    "type": "Employee",
+    "email": "erparthas@gmail.com",
+    "password": "1234"
+  },
+  {
+    "name": "Prateeksha",
+    "type": "Employee",
+    "email": "erparthas@gmail.com",
+    "password": "1234"
+  },
+  {
+    "name": "Inoshan",
+    "type": "Employee",
+    "email": "erparthas@gmail.com",
+    "password": "1234"
+  },
+  {
+    "name": "E-Struc - Eng",
+    "type": "Employee",
+    "email": "erparthas@gmail.com",
+    "password": "1234",
+    "role": ["engineer"]
+  },
+  {
+    "name": "FE",
+    "type": "Employee",
+    "email": "erparthas@gmail.com",
+    "password": "1234",
+    "role": ["drafter"]
+  }
+]

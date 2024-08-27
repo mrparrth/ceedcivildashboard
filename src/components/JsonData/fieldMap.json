@@ -1,0 +1,10 @@
+{
+  "admin": {
+    "hidden": [],
+    "readonly": ["invoiceNumber", "projectNumber"]
+  },
+  "employee": {
+    "hidden": ["price"],
+    "readonly": ["invoiceNumber", "projectNumber"]
+  }
+}
