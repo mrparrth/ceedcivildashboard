@@ -98,6 +98,7 @@
     "Yes",
     "No"
   ],
+ 
   "innitialStatus":[
     "Submitted for Permit",
     "Pending S&S",
@@ -105,6 +106,25 @@
     "In Work"
 
   ],
+  "Need":[
+    "Yes",
+    "No"
+  ],
+  "TaskTo":[
+    "Arnel",
+    "Arneld",
+    "Fe"
+  ],
+  "Status":[
+    "In work",
+    "For Ryan Review",
+    "Ready To send Client",
+    "Rework/Update",
+    "completed",
+    "final",
+    "Not Need"
+  ],
+
   "projects": [
     {
       "projectNumber": "10000",
@@ -165,7 +185,7 @@
       "actualCost": "7655.59",
       "initialProjectStatus": "Pending S&S",
       "drafterNeeded": "Yes",
-      "drafterTaskedTo": "Arnel",
+      "drafterTaskedTo": "Arneld",
       "draftingStatus": "Rework/Updates",
       "draftingDropboxLink": "http://www.example.com/drafting",
       "draftingEstimatedDeliveryTime": "2024-08-17",

@@ -39,7 +39,7 @@ const ProjectDetails = ({ project, handleCloseModal }) => {
     }, 5000); // Simulate a 5-second loading time
   };
 
- 
+
 
   // Toggle expand/collapse
   const toggleExpand = () => {
@@ -110,11 +110,11 @@ const ProjectDetails = ({ project, handleCloseModal }) => {
                   isDropdown: true,
                   options: data.priority,
                 },
-               
+
                 { label: 'Project Files Folder', key: 'projectFilesFolder' },
                 { label: 'Project Notes', key: 'projectNotes', isTextarea: true, },
                 { label: 'Contract Link', key: 'contractLink' },
-                
+
                 {
                   label: 'depositPaid',
                   key: 'depositPaid',
@@ -122,7 +122,7 @@ const ProjectDetails = ({ project, handleCloseModal }) => {
                   options: data.depositPaid,
                 },
                 { label: 'Estimated Budget', key: 'estimatedBudget' },
-                { label: 'Initial Status', key: 'initialProjectStatus' },
+                { label: 'Initial Status', key: 'initialProjectStatus',isDropdown: true, options: data.innitialStatus  },
                 {
                   id: 'CurrentlyAssigned',
                   label: 'CurrentlyAssigned',
@@ -283,7 +283,8 @@ const ProjectDetails = ({ project, handleCloseModal }) => {
               </button>
               {nestedAccordion['DRAFTER'] && (
                 <div className="p-4 bg-green-200 rounded-lg">
-                  <DrafterDetails /> {/* Include DrafterDetails component */}
+                <DrafterDetails drafter={editableProject.drafter} handleInputChange={handleInputChange} />
+                {/* Include DrafterDetails component */}
                 </div>
               )}
 
@@ -383,7 +384,7 @@ const ProjectDetails = ({ project, handleCloseModal }) => {
         </div>
 
         {/* Success Alert */}
-       {loading && (
+        {loading && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
             <div className="text-white text-2xl">Saving Project...</div>
           </div>
