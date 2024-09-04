@@ -5,9 +5,9 @@ const Civil = () => {
   const [project, setProject] = useState(data.projects[0]);
 
   // Accessing dropdown options from data.json
-  const civilEngineeringNeedOptions = data.Need;
-  const civilEngineeringTaskedToOptions = data.TaskTo;
-  const civilEngineeringStatusOptions = data.Status;
+  const civilEngineeringNeedOptions = data.need;
+  const civilEngineeringTaskedToOptions = data.taskTo;
+  const civilEngineeringStatusOptions = data.status;
 
   const fields = [
     { label: "Civil Engineering Needed", name: "civilEngineering", type: "select", options: civilEngineeringNeedOptions },

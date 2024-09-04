@@ -1,103 +1,81 @@
-// import React from "react";
+import { useState } from "react";
 import { Link, Outlet } from "react-router-dom";
 import "bootstrap-icons/font/bootstrap-icons.css";
-// import "./";
+import { RiMenu2Line, RiCloseLine } from "react-icons/ri";
 import axios from "axios";
 
+axios.defaults.withCredentials = true;
+
 const Dashboard = () => {
-  // const anvigate = useNavigate()
-  axios.defaults.withCredentials = true;
-  // const handleLogout = () => {
-  //   axios.get('http://localhost:3000/auth/logout')
-  //   .then(result => {
-  //     if(result.data.Status) { 
-  //       localStorage.removeItem("valid")
-  //       anvigate('/adminlogin')
-  //     }
-  //   })
-  // }
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+
+  const menuItems = [
+    { to: "/dashboard/project-tracker", icon: "bi-speedometer2", label: "Dashboard" },
+    { to: "/dashboard/finance", icon: "bi-people", label: "Finance" },
+    { to: "/dashboard/archieve", icon: "bi-columns", label: "Archive project" },
+    { to: "#", icon: "bi-power", label: "Logout" },
+  ];
 
   return (
-    <div className="dashboard-container min-h-[700px] h-100"> {/* New root div with class name */}
-      <div className="container mx-auto">
-        <div className="flex flex-nowrap">
-          <div className="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-dark">
-            <div className="fixed top-0 left-0 bottom-0 flex flex-col w-3/4 lg:w-80 sm:w[20px] pt-6 pb-8 bg-gray-800 overflow-y-auto">
-              <Link
-                to="/dashboard/project-tracker"
-                className="flex items-center pb-3 mb-4 md:mb-1 md:mt-3 md:mr-auto text-white no-underline justify-center" // added justify-center to center the image
-              >
-                <span className="text-[20px] font-extrabold hidden sm:inline flex flex-col items-center"> {/* Centering the text and image */}
-                  <div className="ml-10 mt-5 relative w-[120px] h-[120px] rounded-full bg-white flex items-center justify-center"> {/* Outer circle with white background */}
-                    <img
-                      src="https://ceedcivil.com/wp-content/uploads/thegem-logos/logo_4d56f686668bce5695ed72f5ec338800_1x.png"
-                      alt="CeedCivil Logo"
-                      className="  w-[100px] h-[100px] p-2" // logo size
-                    />
-                  </div>
-                </span>
+    <div className="flex">
+      <aside
+        id="logo-sidebar"
+        className={`fixed top-0 left-0 z-40 w-68 sm:w-65 h-screen transition-transform ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+          } sm:translate-x-0 bg-gray-800 dark:bg-gray-800`}>
+        <div className="flex justify-between items-center p-4">
+          <img
+            src="https://ceedcivil.com/wp-content/uploads/thegem-logos/logo_4d56f686668bce5695ed72f5ec338800_1x.png"
+            alt="CeedCivil Logo"
+            className="ml-10 mt-5 w-[100px] h-[100px] p-2 bg-white rounded-full"
+          />
+          <RiCloseLine
+            className="w-20 h-20 sm:hidden text-white  ml-5 p-2 hover:text-gray-300 rounded-full  border-2 border-gray-500 absolute top-1 right-0"
+            onClick={toggleSidebar}
+          />
+        </div>
+
+        <ul className="flex flex-col items-center sm:items-start">
+          {menuItems.map(({ to, icon, label }) => (
+            <li key={label} className="w-full p-4">
+              <Link to={to} className="text-white px-0 align-middle flex items-center" onClick={toggleSidebar}>
+                <i className={`text-4xl ${icon} ml-2`}></i>
+                <span className="ml-2 text-[20px]">{label}</span>
               </Link>
-              <ul className="flex flex-col mb-0 sm:mb-auto items-center sm:items-start" id="menu">
-                {/* <li className="w-full p-4">
-                  <Link to="/dashboard" className="text-white px-0 align-middle">
-                    <i className="text-4xl bi-speedometer2 ml-2"></i>
-                    <span className="ml-2 hidden sm:inline text-[20px]">Dashboard</span>
-                  </Link>
-                </li> */}
+            </li>
+          ))}
+        </ul>
+      </aside>
 
-                <li className="w-full p-4">
-                  <Link to="/dashboard/project-tracker" className="text-white px-0 align-middle">
-                    <i className="text-4xl bi-speedometer2 ml-2"></i>
-                    <span className="ml-2 hidden sm:inline text-[20px]">Dashboard</span>
-                  </Link>
-                </li>
+      <div className="p-0 sm:ml-[180px] flex-1 relative">
+        <button
+          aria-controls="logo-sidebar"
+          className="absolute top-7 left-4 h-[40px] w-[40px] text-white sm:hidden focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-600"
+          onClick={toggleSidebar}>
+          <RiMenu2Line className="w-10 h-10" />
+        </button>
 
-                <li className="w-full p-4">
-                  <Link to="/dashboard/finance" className="text-white px-0 align-middle">
-                    <i className="text-4xl bi-people ml-2"></i>
-                    <span className="ml-2 hidden sm:inline text-[20px]">Finance</span>
-                  </Link>
-                </li>
+        <div className="p-2 border-2  border-gray-200 border-dashed rounded-lg dark:border-gray-700">
+          <div className="flex items-center justify-center h-24 mb-4 rounded bg-gray-800 dark:bg-gray-800">
+            <h4 className="text-[18px] sm:text-[18px] md:text-[30px] font-semibold text-center text-white flex-grow">
+              Welcome to CeedCivil
+            </h4>
 
-                <li className="w-full p-4">
-                  <Link to="/dashboard/archieve" className="text-white px-0 align-middle">
-                    <i className="text-4xl bi-columns ml-2"></i>
-                    <span className="ml-2 hidden sm:inline text-[20px]">Archive project</span>
-                  </Link>
-                </li>
+            
+              <Link to="/dashboard/newproject" className="text-white">
+              <button className="h-[40px] bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-3 mr-5 rounded">
+                New Project
+                </button>
+              </Link>
+            
+          </div>
 
-                <li className="w-full p-4">
-                  <Link className="text-white px-0 align-middle">
-                    <i className="text-4xl bi-power ml-2"></i>
-                    <span className="ml-2 hidden sm:inline text-[20px]">Logout</span>
-                  </Link>
-                </li>
-              </ul>
-            </div>
+          <div className="flex items-center justify-center h-[600px] dark:bg-gray-800  rounded">
+            <Outlet />
           </div>
         </div>
       </div>
-
-      <div className="col p-0 m-0 w-full h-80px">
-        <div className="flex items-center justify-between p-2 bg-gray-800 text-white shadow-lg w-full h-20"> {/* Height updated to 80px */}
-          <h4 className="text-[30px] font-semibold text-center flex-grow">Welcome to CeedCivil</h4>
-
-          <button className="h-full bg-green-500 hover:bg-green-600 text-white font-semibold py-1 px-2 mr-5 rounded">
-            <Link to="/dashboard/newproject" className="text-white">
-              New Project
-            </Link>
-          </button>
-
-        </div>
-
-
-        <div className="p-4"> {/* New wrapper div for content alignment */}
-          <Outlet />
-        </div>
-      </div>
     </div>
-    // </div>
-    // </div>
   );
 };
 

@@ -33,9 +33,14 @@ const ProjectDetails = ({ project, handleCloseModal }) => {
     setLoading(true);
     setTimeout(() => {
       console.log('Submitted Project Details:', editableProject);
+      // Let’s say we are trying to save newDataRow
+      let foundIndex = data.projects.findIndex(project => project.projectNumber == editableProject.projectNumber);
+      if (foundIndex !== -1) data.projects[foundIndex] = editableProject;
+      console.log(data);
       setLoading(false);
       setShowAlert(true);
       setTimeout(() => setShowAlert(false), 2000); // Hide alert after 2 seconds
+
     }, 5000); // Simulate a 5-second loading time
   };
 
@@ -58,14 +63,14 @@ const ProjectDetails = ({ project, handleCloseModal }) => {
   if (!project) {
     return (
       <div className="container mt-4">
-        <h2>Project not found!</h2>
+        <h2>Please wait some time... </h2>
       </div>
     );
   }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white rounded-lg p-6 w-1/3 h-[600px] overflow-y-auto relative shadow-[inset_-12px_-8px_40px_#473e3e]">
+      <div className="bg-white rounded-lg p-4 sm:p-6 md:p-8 lg:p-10 w-full sm:w-3/4 md:w-2/3 lg:w-1/3 h-[450px] sm:h-[550px] md:h-[600px] lg:h-[650px] overflow-y-auto relative">
         <button
           onClick={handleCloseModal}
           className="bg-red-400 p-2 absolute top-5 right-2 rounded-[8px] hover:bg-red-600 hover:shadow-lg transition-all duration-200"
@@ -74,8 +79,8 @@ const ProjectDetails = ({ project, handleCloseModal }) => {
         </button>
 
         <h1 className="font-bold mb-5 text-[25px]">Project Details</h1>
-        <div className="relative overflow-x-none shadow-lg p-4 border-2 border-gray-200 rounded-[8px]">
-          <table className="w-full text-sm text-left border-2 border-gray-200 text-gray-500 dark:text-gray-400 rounded-[8px]">
+        <div className="relative overflow-x-none shadow-lg ">
+          <table className="w-full text-sm text-left border-1 border-gray-200 text-gray-500 dark:text-gray-400 rounded-[8px]">
             <tbody>
               {[
                 { label: 'Project Name', key: 'projectName' },
@@ -122,7 +127,7 @@ const ProjectDetails = ({ project, handleCloseModal }) => {
                   options: data.depositPaid,
                 },
                 { label: 'Estimated Budget', key: 'estimatedBudget' },
-                { label: 'Initial Status', key: 'initialProjectStatus',isDropdown: true, options: data.innitialStatus  },
+                { label: 'Initial Status', key: 'initialProjectStatus', isDropdown: true, options: data.innitialStatus },
                 {
                   id: 'CurrentlyAssigned',
                   label: 'CurrentlyAssigned',
@@ -139,7 +144,7 @@ const ProjectDetails = ({ project, handleCloseModal }) => {
               ].map((item, index) => (
                 <tr
                   key={index}
-                  className={`odd:bg-[#EEEDEB] odd:dark:bg-gray-700 even:bg-[#FFFFFF] even:dark:bg-gray-400 border-b dark:border-gray-700 hover:bg-[#758694] odd:hover:bg-[#758694] even:hover:bg-[#758694] cursor-pointer`}
+                  className={`odd:bg-[#f7f5f5] odd:dark:bg-white-700 even:bg-[#FFFFFF] even:dark:bg-white-400 border-2 dark:border-gray-100 hover:bg-[#e0e8ee] odd:hover:bg-[#ccd7df] even:hover:bg-[#d1d9df] cursor-pointer`}
                 >
                   <th
                     scope="row"
@@ -283,8 +288,8 @@ const ProjectDetails = ({ project, handleCloseModal }) => {
               </button>
               {nestedAccordion['DRAFTER'] && (
                 <div className="p-4 bg-green-200 rounded-lg">
-                <DrafterDetails drafter={editableProject.drafter} handleInputChange={handleInputChange} />
-                {/* Include DrafterDetails component */}
+                  <DrafterDetails drafter={editableProject.drafter} handleInputChange={handleInputChange} />
+                  {/* Include DrafterDetails component */}
                 </div>
               )}
 
@@ -378,17 +383,41 @@ const ProjectDetails = ({ project, handleCloseModal }) => {
             onClick={handleSubmit}
             className="w-[100px] h-[50px] text-[18px] bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all duration-200 flex items-center justify-center"
           >
-            Submit
+            
+
+
+            {loading && (
+            <svg
+              aria-hidden="true"
+              role="status"
+              className="inline w-4 h-4 mr-2 text-white animate-spin"
+              viewBox="0 0 100 101"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M100 50.59c0 27.61-22.39 50-50 50S0 78.2 0 50.59C0 22.98 22.39.59 50 .59s50 22.39 50 50z"
+                fill="currentColor"
+              />
+              <path
+                d="M93.97 39.04c-2.51-8.72-7.52-16.55-14.15-22.1C73.78 7.39 65.09 3.68 55.68 3.08c-9.41-.6-18.53 1.68-26.22 6.58l4.66 6.47c6.29-4.06 13.57-6.14 21.05-5.57 7.48.56 14.47 3.76 20.05 8.9 5.58 5.13 9.54 11.89 11.44 19.38l7.31-2.41z"
+                fill="#E5E7EB"
+              />
+            </svg>
+          )}
+          {loading ? 'Saving...' : 'Save'}
           </button>
 
         </div>
 
         {/* Success Alert */}
-        {loading && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="text-white text-2xl">Saving Project...</div>
+        
+        {/* {loading && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center  bg-opacity-50">
+            <div className="text-black  text-2xl">Saving Project...</div>
           </div>
-        )}
+        )} */}
+
 
 
         {showAlert && (

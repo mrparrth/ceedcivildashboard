@@ -155,9 +155,9 @@ const NewProject = ({ project = {} }) => {
   };
 
   return (
-    <div className="bg-white rounded-lg p-6 w-[650px] h-[650px] overflow-y-auto relative shadow-[inset_-12px_-8px_40px_#473e3e] mx-auto mt-10">
+    <div className="bg-red-300 rounded-lg w-full  h-[600px] overflow-y-none relative shadow-[inset_-12px_-8px_40px_#473e3e] m-0 ">
       <h1 className="font-bold mb-5 text-[25px] text-center">Create New Project</h1>
-      <div className="relative overflow-x-none shadow-lg p-4 border-2 border-gray-200 rounded-[8px]">
+      <div className="relative overflow-x-none shadow-lg p-5 border-2 border-gray-200 rounded-[8px]">
         <table className="w-full text-sm text-left border-2 border-gray-200 text-gray-500 dark:text-gray-400 rounded-[8px]">
           <tbody>
             {[
@@ -276,7 +276,7 @@ const NewProject = ({ project = {} }) => {
 
       {showAlert && (
         <div className="fixed top-4 right-4 bg-green-500 text-white p-3 rounded-lg shadow-lg w-[250px] h-[50px] text-[18px] flex items-center justify-center">
-          <i className="bi-check2 text-[25px] mr-2"></i>
+          <i className="bi-check2 text-[20px] mr-2"></i>
           Project Saved Successfully!
         </div>
       )}

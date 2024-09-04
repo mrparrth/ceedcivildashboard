@@ -106,24 +106,16 @@
     "In Work"
 
   ],
-  "Need":[
+  "need":[
     "Yes",
     "No"
   ],
-  "TaskTo":[
+  "taskTo":[
     "Arnel",
     "Arneld",
     "Fe"
   ],
-  "Status":[
-    "In work",
-    "For Ryan Review",
-    "Ready To send Client",
-    "Rework/Update",
-    "completed",
-    "final",
-    "Not Need"
-  ],
+ 
 
   "projects": [
     {

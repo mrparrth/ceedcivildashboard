@@ -5,9 +5,9 @@ const Drafter = () => {
   const [project, setProject] = useState(data.projects[0]);
 
   // Accessing dropdown options from data.json
-  const drafterNeedOptions = data.Need;
-  const drafterTaskToOptions = data.TaskTo;
-  const draftingStatusOptions = data.Status;
+  const drafterNeedOptions = data.need;
+  const drafterTaskToOptions = data.taskTo;
+  const draftingStatusOptions = data.status;
 
   const fields = [
     { label: "Drafter Needed", name: "drafterNeeded", type: "select", options: drafterNeedOptions },

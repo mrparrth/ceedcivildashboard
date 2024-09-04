@@ -5,9 +5,9 @@ const Mep = () => {
   const [project, setProject] = useState(data.projects[0]);
 
   // Accessing dropdown options from data.json
-  const mepNeededOptions = data.Need;
-  const mepTaskedToOptions = data.TaskTo;
-  const mepStatusOptions = data.Status;
+  const mepNeededOptions = data.need;
+  const mepTaskedToOptions = data.taskTo;
+  const mepStatusOptions = data.status;
 
   const fields = [
     { label: "MEP Needed", name: "mepNeeded", type: "select", options: mepNeededOptions },

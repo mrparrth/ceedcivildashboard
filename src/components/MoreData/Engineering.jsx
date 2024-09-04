@@ -5,9 +5,9 @@ const Engineering = () => {
   const [project, setProject] = useState(data.projects[0]);
 
   // Accessing dropdown options from data.json
-  const engineeringNeededOptions = data.Need;
-  const engineerTaskedToOptions = data.TaskTo;
-  const engineeringStatusOptions = data.Status;
+  const engineeringNeededOptions = data.need;
+  const engineerTaskedToOptions = data.taskTo;
+  const engineeringStatusOptions = data.status;
 
   const fields = [
     { label: "Engineering Needed", name: "engineeringNeeded", type: "select", options: engineeringNeededOptions },
@@ -23,7 +23,7 @@ const Engineering = () => {
   };
 
   return (
-    <div className="relative overflow-x-auto shadow-md sm:rounded-lg backdrop-blur-md bg-opacity-30">
+    <div className="relative  shadow-md sm:rounded-lg backdrop-blur-md bg-opacity-30">
       <table className="w-full text-[13px] text-left text-gray-500 dark:text-gray-400">
         <tbody>
           {fields.map(({ label, name, type = "text", options }) => (
