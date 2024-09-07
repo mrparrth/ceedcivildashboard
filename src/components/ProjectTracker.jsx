@@ -18,11 +18,11 @@ const ProjectTracker = () => {
 
   return (
     <div className="flex flex-nowrap dashboard-container min-h-[700px] h-100">
-      <div className="flex-1 mt-20 w-full">
+      <div className="flex-1 mt-20 w-full ">
         {/* style={{ paddingLeft: '100px', marginLeft: '100px' }}> */}
         {/*------------------- Dashboard Table start------------------ */}
-        <div className="container">
-          <table className="min-w-full border border-gray-200">
+        {/* <div className="container"> */}
+          <table className="border border-gray-200">
             <thead className="bg-gray-800 text-white text-[15px] h-[50px]">
               <tr>
                 <th className="px-4 py-2 text-center">Project Name</th>
@@ -98,7 +98,7 @@ const ProjectTracker = () => {
               ))}
             </tbody>
           </table>
-        </div>
+        {/* </div> */}
       </div>
       {/*------------------- Dashboard Table End------------------ */}
 

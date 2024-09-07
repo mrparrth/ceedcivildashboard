@@ -29,9 +29,9 @@ const Finance = () => {
 
   return (
     <div className="flex flex-nowrap dashboard-container min-h-[700px] h-100">
-      <div className="flex-1 p-6 pl-10" style={{ paddingLeft: '100px', marginLeft: '100px' }}>
+      <div className="flex-1 mt-20 w-full">
         {/*------------------- Dashboard Table start------------------ */}
-        <div className="container mx-auto mt-4">
+        <div className="container mx-auto">
           <div className="flex justify-between mb-4">
             <div className="bg-gray-200 p-5 rounded h-[50px] flex items-center">
               <div className="text-lg font-bold" style={{ fontSize: '20px' }}>

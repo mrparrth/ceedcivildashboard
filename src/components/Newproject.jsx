@@ -155,10 +155,10 @@ const NewProject = ({ project = {} }) => {
   };
 
   return (
-    <div className="bg-red-300 rounded-lg w-full  h-[600px] overflow-y-none relative shadow-[inset_-12px_-8px_40px_#473e3e] m-0 ">
-      <h1 className="font-bold mb-5 text-[25px] text-center">Create New Project</h1>
+    <div className=" rounded-lg w-full  h-[600px] overflow-y-none relative  m-0 ">
+      <h1 className="font-bold mb-5 text-[25px] text-center ">Create New Project</h1>
       <div className="relative overflow-x-none shadow-lg p-5 border-2 border-gray-200 rounded-[8px]">
-        <table className="w-full text-sm text-left border-2 border-gray-200 text-gray-500 dark:text-gray-400 rounded-[8px]">
+        <table className="w-full text-sm text-left border-2 border-gray-200 text-green-500 dark:text-gray-400 rounded-[8px]">
           <tbody>
             {[
               { label: 'Project Name', key: 'projectName', isEditable: true },
@@ -180,11 +180,11 @@ const NewProject = ({ project = {} }) => {
             ].map((item, index) => (
               <tr
                 key={index}
-                className={`odd:bg-[#EEEDEB] odd:dark:bg-gray-700 even:bg-[#FFFFFF] even:dark:bg-gray-400 border-b dark:border-gray-700 hover:bg-[#758694] odd:hover:bg-[#758694] even:hover:bg-[#758694] cursor-pointer`}
+                className={`odd:bg-[#EEEDEB] odd:dark:bg-gray-200 even:bg-[#FFFFFF] even:dark:bg-gray-400 border-b dark:border-gray-200 hover:bg-[#eaedf0] odd:hover:bg-[#d2d8de] even:hover:bg-[#f4f5f7] cursor-pointer`}
               >
                 <th
                   scope="row"
-                  className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-[15px]"
+                  className="w-1/4 px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-[15px]"
                 >
                   {item.label}
                 </th>
@@ -208,7 +208,7 @@ const NewProject = ({ project = {} }) => {
 
       <button
         onClick={() => setIsExpanded((prev) => !prev)}
-        className="w-full mt-5 flex items-center justify-between text-[13px] rounded-lg p-2 hover:shadow-lg h-[50px] bg-blue-500"
+        className="w-full mt-5 flex items-center justify-between text-[20px] rounded-lg p-2 hover:shadow-lg h-[50px] bg-blue-500"
       >
         More Details
         <svg
