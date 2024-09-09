@@ -87,8 +87,8 @@ const NewProject = ({ project = {} }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [assignedOptions, setAssignedOptions] = useState([]);
   const [loading, setLoading] = useState(false);
-  // const [selectedFile, setSelectedFile] = useState(null);
   const [showAlert, setShowAlert] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const handleInputChange = (key, value) => {
     setEditableProject((prev) => ({ ...prev, [key]: value }));
@@ -102,14 +102,36 @@ const NewProject = ({ project = {} }) => {
     );
   };
 
-  // const handleFileChange = (event) => {
-  //   setSelectedFile(event.target.files[0]);
-  // };
+  const validateFields = () => {
+    const newErrors = {};
+    if (!editableProject.projectName) newErrors.projectName = 'Project Name is required.';
+    if (!editableProject.projectNumber) newErrors.projectNumber = 'Project Number is required.';
+    if (!editableProject.invoiceNumber) newErrors.invoiceNumber = 'Invoice Number is required.';
+    if (!editableProject.salesMan) newErrors.salesMan = 'SalesMan is required.';
+    if (!editableProject.overallProjectStatus) newErrors.overallProjectStatus = 'OverallProjectStatus is required.';
+    // Add more validation rules as needed
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = () => {
+    if (!validateFields()) return;
+
     setLoading(true);
+
     setTimeout(() => {
       console.log('Submitted Project Details:', editableProject);
+
+      let foundIndex = data.projects.findIndex(project => project.projectNumber === editableProject.projectNumber);
+      if (foundIndex !== -1) {
+        data.projects[foundIndex] = editableProject;
+      } else {
+        data.projects.push(editableProject);
+      }
+
+      console.log('Updated Data:', data);
+
       setLoading(false);
       setShowAlert(true);
       setTimeout(() => setShowAlert(false), 2000);
@@ -117,47 +139,47 @@ const NewProject = ({ project = {} }) => {
   };
 
   const renderInput = (item) => {
-    if (item.isDropdown) {
-      return item.isMultiple ? (
-        <CheckboxList
-          options={item.options}
-          selectedOptions={assignedOptions}
-          onChange={handleCheckboxChange}
-          label={item.label}
-        />
-      ) : (
-        <Dropdown
-          value={editableProject[item.key]}
-          onChange={(e) => handleInputChange(item.key, e.target.value)}
-          options={item.options}
-          label={item.label}
-        />
-      );
-    }
-
-    if (item.isTextarea) {
-      return (
-        <textarea
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-[13px] rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 h-[50px] dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-          value={editableProject[item.key] || ''}
-          onChange={(e) => handleInputChange(item.key, e.target.value)}
-        />
-      );
-    }
-
+    const error = errors[item.key];
     return (
-      <EditableField
-        value={editableProject[item.key] || ''}
-        onChange={(value) => handleInputChange(item.key, value)}
-        isEditable={item.isEditable}
-      />
+      <div>
+        {item.isDropdown ? (
+          item.isMultiple ? (
+            <CheckboxList
+              options={item.options}
+              selectedOptions={assignedOptions}
+              onChange={handleCheckboxChange}
+              label={item.label}
+            />
+          ) : (
+            <Dropdown
+              value={editableProject[item.key]}
+              onChange={(e) => handleInputChange(item.key, e.target.value)}
+              options={item.options}
+              label={item.label}
+            />
+          )
+        ) : item.isTextarea ? (
+          <textarea
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-[13px] rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 h-[50px] dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+            value={editableProject[item.key] || ''}
+            onChange={(e) => handleInputChange(item.key, e.target.value)}
+          />
+        ) : (
+          <EditableField
+            value={editableProject[item.key] || ''}
+            onChange={(value) => handleInputChange(item.key, value)}
+            isEditable={item.isEditable}
+          />
+        )}
+        {error && <p className="text-red-500 text-[12px] mt-1">{error}</p>}
+      </div>
     );
   };
 
   return (
-    <div className=" rounded-lg w-full  h-[600px] overflow-y-none relative  m-0 ">
-      <h1 className="font-bold mb-5 text-[25px] text-center ">Create New Project</h1>
-      <div className="relative overflow-x-none shadow-lg p-5 border-2 border-gray-200 rounded-[8px]">
+    <div className="rounded-lg w-full h-[600px] overflow-y-none relative m-0">
+      <h1 className="font-bold mb-5 text-[25px] text-center">Create New Project</h1>
+      <div className="relative overflow-x-none shadow-lg p-5 rounded-[8px]">
         <table className="w-full text-sm text-left border-2 border-gray-200 text-green-500 dark:text-gray-400 rounded-[8px]">
           <tbody>
             {[
@@ -180,7 +202,7 @@ const NewProject = ({ project = {} }) => {
             ].map((item, index) => (
               <tr
                 key={index}
-                className={`odd:bg-[#EEEDEB] odd:dark:bg-gray-200 even:bg-[#FFFFFF] even:dark:bg-gray-400 border-b dark:border-gray-200 hover:bg-[#eaedf0] odd:hover:bg-[#d2d8de] even:hover:bg-[#f4f5f7] cursor-pointer`}
+                className={`odd:bg-[#f9fafb] odd:dark:bg-gray-200 even:bg-[#f9fafb] even:dark:bg-gray-400 border-b dark:border-gray-200 hover:bg-[#eaedf0] odd:hover:bg-[#d2d8de] even:hover:bg-[#f4f5f7] cursor-pointer`}
               >
                 <th
                   scope="row"
@@ -194,7 +216,7 @@ const NewProject = ({ project = {} }) => {
                       type="text"
                       value={editableProject.projectFilesFolder || ''}
                       onChange={(e) => handleInputChange('projectFilesFolder', e.target.value)}
-                      className="w-full text-sm text-gray-500 border border-gray-300 rounded-lg p-2 mt-3"
+                      className="w-full font-[13px] text-sm text-gray-500 border border-gray-300 rounded-lg p-2 mt-3 "
                     />
                   ) : (
                     renderInput(item)
@@ -208,7 +230,7 @@ const NewProject = ({ project = {} }) => {
 
       <button
         onClick={() => setIsExpanded((prev) => !prev)}
-        className="w-full mt-5 flex items-center justify-between text-[20px] rounded-lg p-2 hover:shadow-lg h-[50px] bg-blue-500"
+        className="w-full mt-5 flex items-center justify-between text-[20px] rounded-lg p-5 hover:shadow-lg h-[50px] bg-gray-600 text-gray-50"
       >
         More Details
         <svg
@@ -229,17 +251,16 @@ const NewProject = ({ project = {} }) => {
       </button>
 
       {isExpanded && (
-        <div className="border-2 mt-2 rounded-lg border-gray-300 p-2 h-[100%] w-full overflow-auto">
-        <DrafterDetails drafter={editableProject.drafter} handleInputChange={handleInputChange} />
-        
-
+        <div className="border-2 mt-2 rounded-lg border-gray-300 p-2  w-full overflow-x-auto">
+          <DrafterDetails drafter={editableProject.drafter} handleInputChange={handleInputChange} />      
+          <EngineeringDetails engineering={editableProject.engineeringDetails} />
           <MEPDetails mep={editableProject.mepDetails} />
           <CivilDetails civil={editableProject.civilDetails} />
-          <EngineeringDetails engineering={editableProject.engineeringDetails} />
+          
         </div>
       )}
 
-      <div className="flex mt-6 space-x-2 items-center justify-center">
+      <div className="flex mt-6  space-x-2 items-center justify-center pb-10">
         <button
           onClick={handleSubmit}
           disabled={loading}
@@ -277,7 +298,7 @@ const NewProject = ({ project = {} }) => {
       {showAlert && (
         <div className="fixed top-4 right-4 bg-green-500 text-white p-3 rounded-lg shadow-lg w-[250px] h-[50px] text-[18px] flex items-center justify-center">
           <i className="bi-check2 text-[20px] mr-2"></i>
-          Project Saved Successfully!
+          Project Saved!
         </div>
       )}
     </div>

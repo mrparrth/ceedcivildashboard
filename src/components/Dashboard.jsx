@@ -30,7 +30,7 @@ const Dashboard = () => {
             className="ml-10 mt-5 w-[100px] h-[100px] p-2 bg-white rounded-full"
           />
           <RiCloseLine
-            className="w-20 h-20 sm:hidden text-white  ml-5 p-2 hover:text-gray-300 rounded-full  border-2 border-gray-500 absolute top-1 right-0"
+            className="w-20 h-20 sm:hidden text-white  ml-5 p-2 hover:text-gray-300 cursor-pointer absolute top-1 right-0"
             onClick={toggleSidebar}
           />
         </div>
@@ -47,7 +47,7 @@ const Dashboard = () => {
         </ul>
       </aside>
 
-      <div className="p-0 sm:ml-[180px] flex-1 relative">
+      <div className=" sm:ml-[180px] flex-1 relative">
         <button
           aria-controls="logo-sidebar"
           className="absolute top-7 left-4 h-[40px] w-[40px] text-white sm:hidden focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-600"
@@ -55,14 +55,14 @@ const Dashboard = () => {
           <RiMenu2Line className="w-10 h-10" />
         </button>
 
-        <div className="p-2 border-2  border-gray-200 border-dashed rounded-lg dark:border-gray-700">
+        <div className="  rounded-lg dark:border-gray-700">
           <div className="flex items-center justify-center h-24 mb-4 rounded bg-gray-800 dark:bg-gray-800">
             <h4 className="text-[18px] sm:text-[18px] md:text-[30px] font-semibold text-center text-white flex-grow">
-              Welcome to CeedCivil
+              {/* Welcome to CeedCivil */}
             </h4>
 
             
-              <Link to="/dashboard/newproject" className="text-white">
+              <Link to="/dashboard/newproject" className="text-white cursor-pointer">
               <button className="h-[40px] bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-3 mr-5 rounded">
                 New Project
                 </button>
@@ -70,7 +70,7 @@ const Dashboard = () => {
             
           </div>
 
-          <div className="flex items-center justify-center h-[600px] dark:bg-gray-800  rounded">
+          <div className="flex items-center justify-center h-[600px] dark:bg-gray-800  rounded ">
             <Outlet />
           </div>
         </div>

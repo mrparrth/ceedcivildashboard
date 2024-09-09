@@ -28,8 +28,8 @@ const Engineering = () => {
         <tbody>
           {fields.map(({ label, name, type = "text", options }) => (
             <tr key={name} className="bg-transparent border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-green-100 dark:hover:bg-green-700">
-              <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">{label}</td>
-              <td className="px-6 py-4">
+              <td className="px-6 py-4 w-1/3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{label}</td>
+              <td className="px-6 py-4 w-2/3">
                 {type === "select" ? (
                   <select
                     name={name}

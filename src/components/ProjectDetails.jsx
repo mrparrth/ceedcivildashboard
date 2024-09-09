@@ -8,7 +8,7 @@ import data from './JsonData/Data.json';
 
 const ProjectDetails = ({ project, handleCloseModal }) => {
   const [editableProject, setEditableProject] = useState(project);
-  const [isExpanded, setIsExpanded] = useState(false);
+  // const [isExpanded, setIsExpanded] = useState(false);
   const [nestedAccordion, setNestedAccordion] = useState({});
   const [showAlert, setShowAlert] = useState(false);
   const [assignedOptions, setAssignedOptions] = useState([]);
@@ -47,9 +47,9 @@ const ProjectDetails = ({ project, handleCloseModal }) => {
 
 
   // Toggle expand/collapse
-  const toggleExpand = () => {
-    setIsExpanded(!isExpanded);
-  };
+  // const toggleExpand = () => {
+  //   setIsExpanded(!isExpanded);
+  // };
 
   // Toggle nested accordion
   const toggleNestedAccordion = (key) => {
@@ -70,7 +70,7 @@ const ProjectDetails = ({ project, handleCloseModal }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white rounded-lg p-4 sm:p-6 md:p-8 lg:p-10 w-full sm:w-3/4 md:w-2/3 lg:w-1/3 h-[450px] sm:h-[550px] md:h-[600px] lg:h-[650px] overflow-y-auto relative">
+      <div className="bg-white rounded-lg p-4 sm:p-6 md:p-8 lg:p-10 w-full sm:w-3/4 md:w-2/3 lg:w-3/4 h-[450px] sm:h-[550px] md:h-[600px] lg:h-[650px] overflow-y-auto relative">
         <button
           onClick={handleCloseModal}
           className="bg-red-400 p-2 absolute top-5 right-2 rounded-[8px] hover:bg-red-600 hover:shadow-lg transition-all duration-200"
@@ -144,15 +144,15 @@ const ProjectDetails = ({ project, handleCloseModal }) => {
               ].map((item, index) => (
                 <tr
                   key={index}
-                  className={`odd:bg-[#f7f5f5] odd:dark:bg-white-700 even:bg-[#FFFFFF] even:dark:bg-white-400 border-2 dark:border-gray-100 hover:bg-[#e0e8ee] odd:hover:bg-[#ccd7df] even:hover:bg-[#d1d9df] cursor-pointer`}
+                  className={`odd:bg-[#f3f4f6] odd:dark:bg-white-700 even:bg-[#f9fafb] even:dark:bg-white-400 border-2 dark:border-gray-100 hover:bg-[#e0e8ee] odd:hover:bg-[#ccd7df] even:hover:bg-[#d1d9df] cursor-pointer`}
                 >
                   <th
                     scope="row"
-                    className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-[15px]"
+                    className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-[15px] w-1/3"
                   >
                     {item.label}
                   </th>
-                  <td className="px-4 py-2">
+                  <td className="w-2/3 px-4 py-2">
                     {item.isDropdown ? (
                       item.isMultiple ? (
                         <div className="relative">
@@ -241,14 +241,15 @@ const ProjectDetails = ({ project, handleCloseModal }) => {
         </div>
 
         {/* SeeMore expand/collapse button */}
-        <div className="w-full mt-4">
+        <div className="mt-4 space-y-2 text-[15px]">
+          {/* Drafter Details */}
           <button
-            onClick={toggleExpand}
-            className="w-full h-[50px] bg-sky-300 text-gray-800 rounded-lg flex justify-between items-center px-4"
+            onClick={() => toggleNestedAccordion('DRAFTER')}
+            className="w-full h-[40px] bg-green-500 text-white rounded-lg flex items-center justify-between px-4"
           >
-            <span className="text-[18px]">See More</span>
+            Drafter Details
             <svg
-              className={`w-4 h-4 transform ${isExpanded ? 'rotate-180' : ''}`}
+              className={`w-4 h-4 transform ${nestedAccordion['DRAFTER'] ? 'rotate-180' : ''}`}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -262,117 +263,90 @@ const ProjectDetails = ({ project, handleCloseModal }) => {
               ></path>
             </svg>
           </button>
+          {nestedAccordion['DRAFTER'] && (
+            <div className="p-4 bg-green-200 rounded-lg">
+              <DrafterDetails drafter={editableProject.drafter} handleInputChange={handleInputChange} />
+            </div>
+          )}
 
-          {isExpanded && (
-            <div className="mt-2 space-y-2 text-[15px]">
-              {/* Drafter Details */}
-              <button
-                onClick={() => toggleNestedAccordion('DRAFTER')}
-                className="w-full h-[40px] bg-green-500 text-white rounded-lg flex items-center justify-between px-4"
-              >
-                Drafter Details
-                <svg
-                  className={`w-4 h-4 transform ${nestedAccordion['DRAFTER'] ? 'rotate-180' : ''}`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M19 9l-7 7-7-7"
-                  ></path>
-                </svg>
-              </button>
-              {nestedAccordion['DRAFTER'] && (
-                <div className="p-4 bg-green-200 rounded-lg">
-                  <DrafterDetails drafter={editableProject.drafter} handleInputChange={handleInputChange} />
-                  {/* Include DrafterDetails component */}
-                </div>
-              )}
+          {/* Engineering Details */}
+          <button
+            onClick={() => toggleNestedAccordion('ENGINEERING')}
+            className="w-full h-[40px] bg-yellow-500 text-white rounded-lg flex items-center justify-between px-4"
+          >
+            Engineering Details
+            <svg
+              className={`w-4 h-4 transform ${nestedAccordion['ENGINEERING'] ? 'rotate-180' : ''}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M19 9l-7 7-7-7"
+              ></path>
+            </svg>
+          </button>
+          {nestedAccordion['ENGINEERING'] && (
+            <div className="p-4 bg-yellow-200 rounded-lg">
+              <EngineeringDetails />
+            </div>
+          )}
 
-              {/* Engineering Details */}
-              <button
-                onClick={() => toggleNestedAccordion('ENGINEERING')}
-                className="w-full h-[40px] bg-yellow-500 text-white rounded-lg flex items-center justify-between px-4"
-              >
-                Engineering Details
-                <svg
-                  className={`w-4 h-4 transform ${nestedAccordion['ENGINEERING'] ? 'rotate-180' : ''}`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M19 9l-7 7-7-7"
-                  ></path>
-                </svg>
-              </button>
-              {nestedAccordion['ENGINEERING'] && (
-                <div className="p-4 bg-yellow-200 rounded-lg">
-                  <EngineeringDetails /> {/* Include EngineeringDetails component */}
-                </div>
-              )}
+          {/* MEP Details */}
+          <button
+            onClick={() => toggleNestedAccordion('MEP')}
+            className="w-full h-[40px] bg-blue-500 text-white rounded-lg flex items-center justify-between px-4"
+          >
+            MEP Details
+            <svg
+              className={`w-4 h-4 transform ${nestedAccordion['MEP'] ? 'rotate-180' : ''}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M19 9l-7 7-7-7"
+              ></path>
+            </svg>
+          </button>
+          {nestedAccordion['MEP'] && (
+            <div className="p-4 bg-blue-200 rounded-lg">
+              <MEPDetails />
+            </div>
+          )}
 
-              {/* MEP Details */}
-              <button
-                onClick={() => toggleNestedAccordion('MEP')}
-                className="w-full h-[40px] bg-blue-500 text-white rounded-lg flex items-center justify-between px-4"
-              >
-                MEP Details
-                <svg
-                  className={`w-4 h-4 transform ${nestedAccordion['MEP'] ? 'rotate-180' : ''}`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M19 9l-7 7-7-7"
-                  ></path>
-                </svg>
-              </button>
-              {nestedAccordion['MEP'] && (
-                <div className="p-4 bg-blue-200 rounded-lg">
-                  <MEPDetails /> {/* Include MEPDetails component */}
-                </div>
-              )}
-
-              {/* Civil Details */}
-              <button
-                onClick={() => toggleNestedAccordion('CIVIL')}
-                className="w-full h-[40px] bg-red-500 text-white rounded-lg flex items-center justify-between px-4"
-              >
-                Civil Details
-                <svg
-                  className={`w-4 h-4 transform ${nestedAccordion['CIVIL'] ? 'rotate-180' : ''}`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M19 9l-7 7-7-7"
-                  ></path>
-                </svg>
-              </button>
-              {nestedAccordion['CIVIL'] && (
-                <div className="p-4 bg-red-200 rounded-lg">
-                  <CivilDetails /> {/* Include CivilDetails component */}
-                </div>
-              )}
+          {/* Civil Details */}
+          <button
+            onClick={() => toggleNestedAccordion('CIVIL')}
+            className="w-full h-[40px] bg-red-500 text-white rounded-lg flex items-center justify-between px-4"
+          >
+            Civil Details
+            <svg
+              className={`w-4 h-4 transform ${nestedAccordion['CIVIL'] ? 'rotate-180' : ''}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M19 9l-7 7-7-7"
+              ></path>
+            </svg>
+          </button>
+          {nestedAccordion['CIVIL'] && (
+            <div className="p-4 bg-red-200 rounded-lg">
+              <CivilDetails />
             </div>
           )}
         </div>
