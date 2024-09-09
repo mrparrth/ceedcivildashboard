@@ -27,6 +27,7 @@ function App() {
         <Route path='/adminregister' element={<Register />} />
         <Route path='/login' element={<Login />} />
         <Route path='/dashboard' element={<Dashboard />}>
+          <Route path='login' element={<Login />} />
           <Route path='user' element={<UserData />} />
           <Route path='project-tracker' element={<ProjectTracker />} />
           <Route path='project-details/:id' element={<ProjectDetails />} />

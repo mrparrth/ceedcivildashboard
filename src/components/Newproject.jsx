@@ -107,8 +107,11 @@ const NewProject = ({ project = {} }) => {
     if (!editableProject.projectName) newErrors.projectName = 'Project Name is required.';
     if (!editableProject.projectNumber) newErrors.projectNumber = 'Project Number is required.';
     if (!editableProject.invoiceNumber) newErrors.invoiceNumber = 'Invoice Number is required.';
-    if (!editableProject.salesMan) newErrors.salesMan = 'SalesMan is required.';
-    if (!editableProject.overallProjectStatus) newErrors.overallProjectStatus = 'OverallProjectStatus is required.';
+    if (!editableProject.salesMan) newErrors.salesMan = 'SalesMan Name is required.';
+    if (!editableProject.overallProjectStatus) newErrors.overallProjectStatus = 'Select OverallProjectStatus.';
+    if (!editableProject.state) newErrors.state = 'State is required.';
+    if (!editableProject.estimatedBudget) newErrors.estimatedBudget = 'EstimatedBudget is required.';
+    if (!editableProject.currentlyAssignedTo) newErrors.currentlyAssignedTo = 'Select CurrentlyAssignedTo.';
     // Add more validation rules as needed
 
     setErrors(newErrors);
