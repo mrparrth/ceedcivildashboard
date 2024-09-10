@@ -398,7 +398,7 @@ const ProjectDetails = ({ project, handleCloseModal }) => {
           <div className="fixed top-4 right-4 bg-green-500 text-white p-3 rounded-lg shadow-lg w-[250px] h-[50px] text-[18px] flex items-center justify-center">
             <i className="bi-check2 text-[25px] mr-2"></i>
 
-            Project Save successfully!
+            Project Update successfully!
           </div>
 
         )}

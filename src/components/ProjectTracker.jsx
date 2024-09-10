@@ -45,8 +45,8 @@ const ProjectTracker = () => {
   const totalPages = Math.ceil(data.projects.length / rowsPerPage);
 
   return (
-    <div className="flex flex-nowrap dashboard-container min-h-[700px] ">
-      <div className="flex-1 mt-20 w-full">
+    <div className="rounded-lg w-full h-[600px] overflow-y-none relative m-0">
+      <div className="flex-1 mt-0 w-full ">
         <table className="border border-gray-200 w-full">
           <thead className="bg-gray-800 text-white text-[15px] h-[50px]">
             <tr>
@@ -121,7 +121,7 @@ const ProjectTracker = () => {
         </table>
 
         {/* Pagination */}
-        <div className="flex justify-center mt-0">
+        <div className="flex justify-center mt-10">
           <button
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}

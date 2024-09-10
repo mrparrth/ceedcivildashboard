@@ -84,11 +84,18 @@ const NewProject = ({ project = {} }) => {
     civilDetails: {},
     engineeringDetails: {},
   });
-  const [isExpanded, setIsExpanded] = useState(false);
   const [assignedOptions, setAssignedOptions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertType, setAlertType] = useState('');
   const [errors, setErrors] = useState({});
+  const [expandedSections, setExpandedSections] = useState({
+    drafter: false,
+    engineering: false,
+    mep: false,
+    civil: false,
+  });
 
   const handleInputChange = (key, value) => {
     setEditableProject((prev) => ({ ...prev, [key]: value }));
@@ -104,17 +111,25 @@ const NewProject = ({ project = {} }) => {
 
   const validateFields = () => {
     const newErrors = {};
-    if (!editableProject.projectName) newErrors.projectName = 'Project Name is required.';
-    if (!editableProject.projectNumber) newErrors.projectNumber = 'Project Number is required.';
-    if (!editableProject.invoiceNumber) newErrors.invoiceNumber = 'Invoice Number is required.';
-    if (!editableProject.salesMan) newErrors.salesMan = 'SalesMan Name is required.';
+    if (!editableProject.projectName) newErrors.projectName = 'Please Enter Project Name.';
+    if (!editableProject.projectNumber) newErrors.projectNumber = 'Please Enter Project Number.';
+    if (!editableProject.invoiceNumber) newErrors.invoiceNumber = 'Please Enter Invoice Number.';
+    if (!editableProject.salesMan) newErrors.salesMan = 'Select SalesMan Name.';
     if (!editableProject.overallProjectStatus) newErrors.overallProjectStatus = 'Select OverallProjectStatus.';
-    if (!editableProject.state) newErrors.state = 'State is required.';
-    if (!editableProject.estimatedBudget) newErrors.estimatedBudget = 'EstimatedBudget is required.';
-    if (!editableProject.currentlyAssignedTo) newErrors.currentlyAssignedTo = 'Select CurrentlyAssignedTo.';
+    if (!editableProject.state) newErrors.state = 'Select State.';
+    if (!editableProject.estimatedBudget) newErrors.estimatedBudget = 'Enter your EstimatedBudget.';
+   
     // Add more validation rules as needed
 
     setErrors(newErrors);
+
+    if (Object.keys(newErrors).length > 0) {
+      setAlertMessage(Object.values(newErrors)[0]);
+      setAlertType('error');
+      setShowAlert(true);
+      setTimeout(() => setShowAlert(false), 3000);
+    }
+
     return Object.keys(newErrors).length === 0;
   };
 
@@ -136,9 +151,15 @@ const NewProject = ({ project = {} }) => {
       console.log('Updated Data:', data);
 
       setLoading(false);
+      setAlertMessage('Project Saved Successfully!');
+      setAlertType('success');
       setShowAlert(true);
       setTimeout(() => setShowAlert(false), 2000);
     }, 5000);
+  };
+
+  const toggleSection = (section) => {
+    setExpandedSections((prev) => ({ ...prev, [section]: !prev[section] }));
   };
 
   const renderInput = (item) => {
@@ -183,7 +204,7 @@ const NewProject = ({ project = {} }) => {
     <div className="rounded-lg w-full h-[600px] overflow-y-none relative m-0">
       <h1 className="font-bold mb-5 text-[25px] text-center">Create New Project</h1>
       <div className="relative overflow-x-none shadow-lg p-5 rounded-[8px]">
-        <table className="w-full text-sm text-left border-2 border-gray-200 text-green-500 dark:text-gray-400 rounded-[8px]">
+        <table className="w-full text-sm text-left border-2 border-gray-200 text-green-700 dark:text-gray-400 rounded-[8px]">
           <tbody>
             {[
               { label: 'Project Name', key: 'projectName', isEditable: true },
@@ -231,43 +252,58 @@ const NewProject = ({ project = {} }) => {
         </table>
       </div>
 
-      <button
-        onClick={() => setIsExpanded((prev) => !prev)}
-        className="w-full mt-5 flex items-center justify-between text-[20px] rounded-lg p-5 hover:shadow-lg h-[50px] bg-gray-600 text-gray-50"
-      >
-        More Details
-        <svg
-          className="w-4 h-4 ms-2 text-white"
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 10 6"
-        >
-          <path
-            stroke="currentColor"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="m1 1 4 4 4-4"
-          />
-        </svg>
-      </button>
-
-      {isExpanded && (
-        <div className="border-2 mt-2 rounded-lg border-gray-300 p-2  w-full overflow-x-auto">
-          <DrafterDetails drafter={editableProject.drafter} handleInputChange={handleInputChange} />      
-          <EngineeringDetails engineering={editableProject.engineeringDetails} />
-          <MEPDetails mep={editableProject.mepDetails} />
-          <CivilDetails civil={editableProject.civilDetails} />
-          
+       {/* Toggleable Sections */}
+       <div className="mt-6 space-y-4">
+        <div>
+          <button
+             className="w-full h-[40px] bg-green-500 text-white rounded-lg flex items-center justify-between px-4 text-[18px]"
+            onClick={() => toggleSection('drafter')}
+          >
+            Drafter Details
+            <span>{expandedSections.drafter ? '-' : '+'}</span>
+          </button>
+          {expandedSections.drafter && <DrafterDetails details={editableProject.drafterDetails} />}
         </div>
-      )}
+
+        <div>
+          <button
+            className="w-full h-[40px] bg-yellow-500 text-white rounded-lg flex items-center justify-between px-4 text-[18px]"
+            onClick={() => toggleSection('engineering')}
+          >
+            Engineering Details
+            <span>{expandedSections.engineering ? '-' : '+'}</span>
+          </button>
+          {expandedSections.engineering && <EngineeringDetails details={editableProject.engineeringDetails} />}
+        </div>
+
+        <div>
+          <button
+             className="w-full h-[40px] bg-blue-500 text-white rounded-lg flex items-center justify-between px-4 text-[18px]"
+            onClick={() => toggleSection('mep')}
+          >
+            MEP Details
+            <span>{expandedSections.mep ? '-' : '+'}</span>
+          </button>
+          {expandedSections.mep && <MEPDetails details={editableProject.mepDetails} />}
+        </div>
+
+        <div>
+          <button
+            className="w-full h-[40px] bg-red-500 text-white rounded-lg flex items-center justify-between px-4 text-[18px]"
+            onClick={() => toggleSection('civil')}
+          >
+            Civil Details
+            <span>{expandedSections.civil ? '-' : '+'}</span>
+          </button>
+          {expandedSections.civil && <CivilDetails details={editableProject.civilDetails} />}
+        </div>
+      </div>
 
       <div className="flex mt-6  space-x-2 items-center justify-center pb-10">
         <button
           onClick={handleSubmit}
           disabled={loading}
-          className="bg-[#0b5508] text-white p-2 rounded-[8px] hover:bg-[#0a3369] hover:shadow-lg transition-all duration-200 text-[14px] flex items-center justify-center w-[100px] h-[40px]"
+          className="bg-green-700 text-white p-2 rounded-[8px] hover:bg-green-600 hover:shadow-lg transition-all duration-200 text-[14px] flex items-center justify-center w-[100px] h-[40px]"
         >
           {loading && (
             <svg
@@ -292,18 +328,22 @@ const NewProject = ({ project = {} }) => {
         </button>
         <button
           onClick={() => window.location.reload()}
-          className="bg-[#e4290c] text-[14px] text-[#f1f2f4] p-2 rounded-[8px] hover:bg-[#26468B] hover:text-white hover:shadow-lg transition-all duration-200 w-[100px] h-[40px]"
+          className="bg-red-700 text-[14px] text-[#f1f2f4] p-2 rounded-[8px] hover:bg-red-500 hover:text-white hover:shadow-lg transition-all duration-200 w-[100px] h-[40px]"
         >
           Cancel
         </button>
       </div>
 
       {showAlert && (
-        <div className="fixed top-4 right-4 bg-green-500 text-white p-3 rounded-lg shadow-lg w-[250px] h-[50px] text-[18px] flex items-center justify-center">
-          <i className="bi-check2 text-[20px] mr-2"></i>
-          Project Saved!
-        </div>
-      )}
+  <div
+    className={`fixed top-4 right-4 p-5 h-16 text-[18px]  ${
+      alertType === 'error' ? 'bg-red-600' : 'bg-green-700'
+    } text-white px-4 py-2 rounded-lg shadow-lg`}
+  >
+    {alertMessage}
+  </div>
+)}
+
     </div>
   );
 };

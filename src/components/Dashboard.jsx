@@ -50,15 +50,15 @@ const Dashboard = () => {
       <div className=" sm:ml-[180px] flex-1 relative">
         <button
           aria-controls="logo-sidebar"
-          className="absolute top-7 left-4 h-[40px] w-[40px] text-white sm:hidden focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-600"
+          className="absolute top-7 left-4 h-[40px] w-[40px]  text-white sm:hidden focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-600"
           onClick={toggleSidebar}>
           <RiMenu2Line className="w-10 h-10" />
         </button>
 
-        <div className="  rounded-lg dark:border-gray-700">
+        <div className="  rounded-lg dark:border-gray-700 w-full">
           <div className="flex items-center justify-center h-24 mb-4 rounded bg-gray-800 dark:bg-gray-800">
             <h4 className="text-[18px] sm:text-[18px] md:text-[30px] font-semibold text-center text-white flex-grow">
-              {/* Welcome to CeedCivil */}
+              
             </h4>
 
             
@@ -70,7 +70,7 @@ const Dashboard = () => {
             
           </div>
 
-          <div className="flex items-center justify-center h-[600px] dark:bg-gray-800  rounded ">
+          <div className="flex items-center justify-center h-[600px] dark:bg-gray-800  rounded  max-w-full ">
             <Outlet />
           </div>
         </div>
