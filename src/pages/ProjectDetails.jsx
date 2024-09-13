@@ -1,10 +1,10 @@
-import { useState } from 'react';
-import EditableField from './EditableField';
-import DrafterDetails from './MoreData/Drafter';
-import EngineeringDetails from './MoreData/Engineering';
-import MEPDetails from './MoreData/Mep';
-import CivilDetails from './MoreData/Civil';
-import data from './JsonData/Data.json';
+import { useState } from "react";
+import EditableField from "./EditableField";
+import DrafterDetails from "../data/MoreData/Drafter";
+import EngineeringDetails from "../data/MoreData/Engineering";
+import MEPDetails from "../data/MoreData/Mep";
+import CivilDetails from "../data/MoreData/Civil";
+import data from "../data/JsonData/Data.json";
 
 const ProjectDetails = ({ project, handleCloseModal }) => {
   const [editableProject, setEditableProject] = useState(project);
@@ -27,24 +27,22 @@ const ProjectDetails = ({ project, handleCloseModal }) => {
     );
   };
 
-
   // Handle submit button click
   const handleSubmit = () => {
     setLoading(true);
     setTimeout(() => {
-      console.log('Submitted Project Details:', editableProject);
+      console.log("Submitted Project Details:", editableProject);
       // Let’s say we are trying to save newDataRow
-      let foundIndex = data.projects.findIndex(project => project.projectNumber == editableProject.projectNumber);
+      let foundIndex = data.projects.findIndex(
+        (project) => project.projectNumber == editableProject.projectNumber
+      );
       if (foundIndex !== -1) data.projects[foundIndex] = editableProject;
       console.log(data);
       setLoading(false);
       setShowAlert(true);
       setTimeout(() => setShowAlert(false), 2000); // Hide alert after 2 seconds
-
     }, 5000); // Simulate a 5-second loading time
   };
-
-
 
   // Toggle expand/collapse
   // const toggleExpand = () => {
@@ -83,62 +81,71 @@ const ProjectDetails = ({ project, handleCloseModal }) => {
           <table className="w-full text-sm text-left border-1 border-gray-200 text-gray-500 dark:text-gray-400 rounded-[8px]">
             <tbody>
               {[
-                { label: 'Project Name', key: 'projectName' },
-                { label: 'Project #', key: 'projectNumber', isEditable: false },
-                { label: 'Invoice #', key: 'invoiceNumber', isEditable: false },
+                { label: "Project Name", key: "projectName" },
+                { label: "Project #", key: "projectNumber", isEditable: false },
+                { label: "Invoice #", key: "invoiceNumber", isEditable: false },
                 {
-                  label: 'Salesman',
-                  key: 'salesMan',
+                  label: "Salesman",
+                  key: "salesMan",
                   isDropdown: true,
                   options: data.salesmen,
                 },
                 {
-                  label: 'Description',
-                  key: 'description',
+                  label: "Description",
+                  key: "description",
                   isTextarea: true,
                 },
                 {
-                  label: 'Overall Status',
-                  key: 'overallProjectStatus',
+                  label: "Overall Status",
+                  key: "overallProjectStatus",
                   isDropdown: true,
                   options: data.status,
                 },
                 {
-                  label: 'State',
-                  key: 'state',
+                  label: "State",
+                  key: "state",
                   isDropdown: true,
                   options: data.states,
                 },
                 {
-                  label: 'Priority',
-                  key: 'priority',
+                  label: "Priority",
+                  key: "priority",
                   isDropdown: true,
                   options: data.priority,
                 },
 
-                { label: 'Project Files Folder', key: 'projectFilesFolder' },
-                { label: 'Project Notes', key: 'projectNotes', isTextarea: true, },
-                { label: 'Contract Link', key: 'contractLink' },
+                { label: "Project Files Folder", key: "projectFilesFolder" },
+                {
+                  label: "Project Notes",
+                  key: "projectNotes",
+                  isTextarea: true,
+                },
+                { label: "Contract Link", key: "contractLink" },
 
                 {
-                  label: 'depositPaid',
-                  key: 'depositPaid',
+                  label: "depositPaid",
+                  key: "depositPaid",
                   isDropdown: true,
                   options: data.depositPaid,
                 },
-                { label: 'Estimated Budget', key: 'estimatedBudget' },
-                { label: 'Initial Status', key: 'initialProjectStatus', isDropdown: true, options: data.innitialStatus },
+                { label: "Estimated Budget", key: "estimatedBudget" },
                 {
-                  id: 'CurrentlyAssigned',
-                  label: 'CurrentlyAssigned',
-                  key: 'currentlyAssignedTo',
+                  label: "Initial Status",
+                  key: "initialProjectStatus",
+                  isDropdown: true,
+                  options: data.innitialStatus,
+                },
+                {
+                  id: "CurrentlyAssigned",
+                  label: "CurrentlyAssigned",
+                  key: "currentlyAssignedTo",
                   isDropdown: true,
                   options: data.currentlyAssigned,
                   isMultiple: true,
                 },
                 {
-                  label: 'Client Project Name/Address',
-                  key: 'clientProjectNameAddress',
+                  label: "Client Project Name/Address",
+                  key: "clientProjectNameAddress",
                   isTextarea: true,
                 },
               ].map((item, index) => (
@@ -186,11 +193,13 @@ const ProjectDetails = ({ project, handleCloseModal }) => {
                                       <input
                                         id={`checkbox-${option}`}
                                         type="checkbox"
-                                        checked={assignedOptions.includes(option)}
-                                        onChange={() => handleCheckboxChange(option)}
-
+                                        checked={assignedOptions.includes(
+                                          option
+                                        )}
+                                        onChange={() =>
+                                          handleCheckboxChange(option)
+                                        }
                                         className="position-fix text-blue-600 bg-white border-gray-300 rounded focus:ring-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:focus:ring-blue-600"
-
                                       />
                                       <label
                                         htmlFor={`checkbox-${option}`}
@@ -209,9 +218,13 @@ const ProjectDetails = ({ project, handleCloseModal }) => {
                         <select
                           className="form-select border border-gray-300 rounded-md p-2 text-gray-700 text-[13px] w-full h-[36px] dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:focus:ring-blue-600"
                           value={editableProject[item.key]}
-                          onChange={(e) => handleInputChange(item.key, e.target.value)}
+                          onChange={(e) =>
+                            handleInputChange(item.key, e.target.value)
+                          }
                         >
-                          <option value="{value}" disabled>Select...</option>
+                          <option value="{value}" disabled>
+                            Select...
+                          </option>
                           {item.options.map((option) => (
                             <option key={option} value={option}>
                               {option}
@@ -222,7 +235,9 @@ const ProjectDetails = ({ project, handleCloseModal }) => {
                     ) : item.isTextarea ? (
                       <textarea
                         value={editableProject[item.key]}
-                        onChange={(e) => handleInputChange(item.key, e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange(item.key, e.target.value)
+                        }
                         className="border border-gray-300 rounded-md p-2 text-gray-700 text-[13px] w-full h-[50px] dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
                       />
                     ) : (
@@ -233,7 +248,6 @@ const ProjectDetails = ({ project, handleCloseModal }) => {
                       />
                     )}
                   </td>
-
                 </tr>
               ))}
             </tbody>
@@ -244,12 +258,14 @@ const ProjectDetails = ({ project, handleCloseModal }) => {
         <div className="mt-4 space-y-2 text-[15px]">
           {/* Drafter Details */}
           <button
-            onClick={() => toggleNestedAccordion('DRAFTER')}
+            onClick={() => toggleNestedAccordion("DRAFTER")}
             className="w-full h-[40px] bg-green-500 text-white rounded-lg flex items-center justify-between px-4"
           >
             Drafter Details
             <svg
-              className={`w-4 h-4 transform ${nestedAccordion['DRAFTER'] ? 'rotate-180' : ''}`}
+              className={`w-4 h-4 transform ${
+                nestedAccordion["DRAFTER"] ? "rotate-180" : ""
+              }`}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -263,20 +279,25 @@ const ProjectDetails = ({ project, handleCloseModal }) => {
               ></path>
             </svg>
           </button>
-          {nestedAccordion['DRAFTER'] && (
+          {nestedAccordion["DRAFTER"] && (
             <div className="p-4 bg-green-200 rounded-lg">
-              <DrafterDetails drafter={editableProject.drafter} handleInputChange={handleInputChange} />
+              <DrafterDetails
+                drafter={editableProject.drafter}
+                handleInputChange={handleInputChange}
+              />
             </div>
           )}
 
           {/* Engineering Details */}
           <button
-            onClick={() => toggleNestedAccordion('ENGINEERING')}
+            onClick={() => toggleNestedAccordion("ENGINEERING")}
             className="w-full h-[40px] bg-yellow-500 text-white rounded-lg flex items-center justify-between px-4"
           >
             Engineering Details
             <svg
-              className={`w-4 h-4 transform ${nestedAccordion['ENGINEERING'] ? 'rotate-180' : ''}`}
+              className={`w-4 h-4 transform ${
+                nestedAccordion["ENGINEERING"] ? "rotate-180" : ""
+              }`}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -290,7 +311,7 @@ const ProjectDetails = ({ project, handleCloseModal }) => {
               ></path>
             </svg>
           </button>
-          {nestedAccordion['ENGINEERING'] && (
+          {nestedAccordion["ENGINEERING"] && (
             <div className="p-4 bg-yellow-200 rounded-lg">
               <EngineeringDetails />
             </div>
@@ -298,12 +319,14 @@ const ProjectDetails = ({ project, handleCloseModal }) => {
 
           {/* MEP Details */}
           <button
-            onClick={() => toggleNestedAccordion('MEP')}
+            onClick={() => toggleNestedAccordion("MEP")}
             className="w-full h-[40px] bg-blue-500 text-white rounded-lg flex items-center justify-between px-4"
           >
             MEP Details
             <svg
-              className={`w-4 h-4 transform ${nestedAccordion['MEP'] ? 'rotate-180' : ''}`}
+              className={`w-4 h-4 transform ${
+                nestedAccordion["MEP"] ? "rotate-180" : ""
+              }`}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -317,7 +340,7 @@ const ProjectDetails = ({ project, handleCloseModal }) => {
               ></path>
             </svg>
           </button>
-          {nestedAccordion['MEP'] && (
+          {nestedAccordion["MEP"] && (
             <div className="p-4 bg-blue-200 rounded-lg">
               <MEPDetails />
             </div>
@@ -325,12 +348,14 @@ const ProjectDetails = ({ project, handleCloseModal }) => {
 
           {/* Civil Details */}
           <button
-            onClick={() => toggleNestedAccordion('CIVIL')}
+            onClick={() => toggleNestedAccordion("CIVIL")}
             className="w-full h-[40px] bg-red-500 text-white rounded-lg flex items-center justify-between px-4"
           >
             Civil Details
             <svg
-              className={`w-4 h-4 transform ${nestedAccordion['CIVIL'] ? 'rotate-180' : ''}`}
+              className={`w-4 h-4 transform ${
+                nestedAccordion["CIVIL"] ? "rotate-180" : ""
+              }`}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -344,7 +369,7 @@ const ProjectDetails = ({ project, handleCloseModal }) => {
               ></path>
             </svg>
           </button>
-          {nestedAccordion['CIVIL'] && (
+          {nestedAccordion["CIVIL"] && (
             <div className="p-4 bg-red-200 rounded-lg">
               <CivilDetails />
             </div>
@@ -357,50 +382,42 @@ const ProjectDetails = ({ project, handleCloseModal }) => {
             onClick={handleSubmit}
             className="w-[100px] h-[50px] text-[18px] bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all duration-200 flex items-center justify-center"
           >
-            
-
-
             {loading && (
-            <svg
-              aria-hidden="true"
-              role="status"
-              className="inline w-4 h-4 mr-2 text-white animate-spin"
-              viewBox="0 0 100 101"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M100 50.59c0 27.61-22.39 50-50 50S0 78.2 0 50.59C0 22.98 22.39.59 50 .59s50 22.39 50 50z"
-                fill="currentColor"
-              />
-              <path
-                d="M93.97 39.04c-2.51-8.72-7.52-16.55-14.15-22.1C73.78 7.39 65.09 3.68 55.68 3.08c-9.41-.6-18.53 1.68-26.22 6.58l4.66 6.47c6.29-4.06 13.57-6.14 21.05-5.57 7.48.56 14.47 3.76 20.05 8.9 5.58 5.13 9.54 11.89 11.44 19.38l7.31-2.41z"
-                fill="#E5E7EB"
-              />
-            </svg>
-          )}
-          {loading ? 'Saving...' : 'Save'}
+              <svg
+                aria-hidden="true"
+                role="status"
+                className="inline w-4 h-4 mr-2 text-white animate-spin"
+                viewBox="0 0 100 101"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M100 50.59c0 27.61-22.39 50-50 50S0 78.2 0 50.59C0 22.98 22.39.59 50 .59s50 22.39 50 50z"
+                  fill="currentColor"
+                />
+                <path
+                  d="M93.97 39.04c-2.51-8.72-7.52-16.55-14.15-22.1C73.78 7.39 65.09 3.68 55.68 3.08c-9.41-.6-18.53 1.68-26.22 6.58l4.66 6.47c6.29-4.06 13.57-6.14 21.05-5.57 7.48.56 14.47 3.76 20.05 8.9 5.58 5.13 9.54 11.89 11.44 19.38l7.31-2.41z"
+                  fill="#E5E7EB"
+                />
+              </svg>
+            )}
+            {loading ? "Saving..." : "Save"}
           </button>
-
         </div>
 
         {/* Success Alert */}
-        
+
         {/* {loading && (
           <div className="fixed inset-0 z-50 flex items-center justify-center  bg-opacity-50">
             <div className="text-black  text-2xl">Saving Project...</div>
           </div>
         )} */}
 
-
-
         {showAlert && (
           <div className="fixed top-4 right-4 bg-green-500 text-white p-3 rounded-lg shadow-lg w-[250px] h-[50px] text-[18px] flex items-center justify-center">
             <i className="bi-check2 text-[25px] mr-2"></i>
-
             Project Save successfully!
           </div>
-
         )}
       </div>
     </div>

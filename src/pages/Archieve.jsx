@@ -1,90 +1,90 @@
-import { useState } from 'react';
-import data from './JsonData/Data.json';
+import { useState } from "react";
+import data from "../components/JsonData/Data.json";
 const Archieve = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [isExpandedDrafter, setIsExpandedDrafter] = useState(false);
+  const [isExpandedEngineering, setIsExpandedEngineering] = useState(false);
+  const [isExpandedMEP, setIsExpandedMEP] = useState(false); // State for MEP expansion
+  const [isExpandedCivil, setIsExpandedCivil] = useState(false); // State for Civil expansion
+  const [showAlert, setShowAlert] = useState(false);
+  const handleSubmit = () => {
+    setShowAlert(true);
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 3000); // Hide alert after 3 seconds
+  };
+  const handleOpenModal = (project) => {
+    setSelectedProject(project);
+    setIsModalOpen(true);
+  };
 
-        const [isModalOpen, setIsModalOpen] = useState(false);
-        const [selectedProject, setSelectedProject] = useState(null);
-        const [isExpandedDrafter, setIsExpandedDrafter] = useState(false);
-        const [isExpandedEngineering, setIsExpandedEngineering] = useState(false);
-        const [isExpandedMEP, setIsExpandedMEP] = useState(false); // State for MEP expansion
-        const [isExpandedCivil, setIsExpandedCivil] = useState(false); // State for Civil expansion
-        const [showAlert, setShowAlert] = useState(false);
-        const handleSubmit = () => {
-          setShowAlert(true);
-          setTimeout(() => {
-            setShowAlert(false);
-          }, 3000); // Hide alert after 3 seconds
-        };
-        const handleOpenModal = (project) => {
-          setSelectedProject(project);
-          setIsModalOpen(true);
-        };
-      
-        const handleCloseModal = () => {
-          setIsModalOpen(false);
-          setSelectedProject(null);
-        };
-      
-        const toggleExpandDrafter = () => {
-          setIsExpandedDrafter(!isExpandedDrafter);
-          if (isExpandedEngineering) {
-            setIsExpandedEngineering(false);
-          }
-          if (isExpandedMEP) {
-            setIsExpandedMEP(false);
-          }
-          if (isExpandedCivil) {
-            setIsExpandedCivil(false);
-          }
-        };
-      
-        const toggleExpandEngineering = () => {
-          setIsExpandedEngineering(!isExpandedEngineering);
-          if (isExpandedDrafter) {
-            setIsExpandedDrafter(false);
-          }
-          if (isExpandedMEP) {
-            setIsExpandedMEP(false);
-          }
-          if (isExpandedCivil) {
-            setIsExpandedCivil(false);
-          }
-        };
-      
-        const toggleExpandMEP = () => {
-          setIsExpandedMEP(!isExpandedMEP);
-          if (isExpandedDrafter) {
-            setIsExpandedDrafter(false);
-          }
-          if (isExpandedEngineering) {
-            setIsExpandedEngineering(false);
-          }
-          if (isExpandedCivil) {
-            setIsExpandedCivil(false);
-          }
-        };
-      
-        const toggleExpandCivil = () => {
-          setIsExpandedCivil(!isExpandedCivil);
-          if (isExpandedDrafter) {
-            setIsExpandedDrafter(false);
-          }
-          if (isExpandedEngineering) {
-            setIsExpandedEngineering(false);
-          }
-          if (isExpandedMEP) {
-            setIsExpandedMEP(false);
-          }
-        };
-      
-        return (
-          <div className="flex flex-nowrap dashboard-container min-h-[700px] h-100">
-            <div className="flex-1 p-6 pl-10" style={{ paddingLeft: '100px', marginLeft: '100px' }}>
-      
-      
-      {/*------------------- Dashboard Table start------------------ */}
-      
-      <div className="container mx-auto mt-4">
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedProject(null);
+  };
+
+  const toggleExpandDrafter = () => {
+    setIsExpandedDrafter(!isExpandedDrafter);
+    if (isExpandedEngineering) {
+      setIsExpandedEngineering(false);
+    }
+    if (isExpandedMEP) {
+      setIsExpandedMEP(false);
+    }
+    if (isExpandedCivil) {
+      setIsExpandedCivil(false);
+    }
+  };
+
+  const toggleExpandEngineering = () => {
+    setIsExpandedEngineering(!isExpandedEngineering);
+    if (isExpandedDrafter) {
+      setIsExpandedDrafter(false);
+    }
+    if (isExpandedMEP) {
+      setIsExpandedMEP(false);
+    }
+    if (isExpandedCivil) {
+      setIsExpandedCivil(false);
+    }
+  };
+
+  const toggleExpandMEP = () => {
+    setIsExpandedMEP(!isExpandedMEP);
+    if (isExpandedDrafter) {
+      setIsExpandedDrafter(false);
+    }
+    if (isExpandedEngineering) {
+      setIsExpandedEngineering(false);
+    }
+    if (isExpandedCivil) {
+      setIsExpandedCivil(false);
+    }
+  };
+
+  const toggleExpandCivil = () => {
+    setIsExpandedCivil(!isExpandedCivil);
+    if (isExpandedDrafter) {
+      setIsExpandedDrafter(false);
+    }
+    if (isExpandedEngineering) {
+      setIsExpandedEngineering(false);
+    }
+    if (isExpandedMEP) {
+      setIsExpandedMEP(false);
+    }
+  };
+
+  return (
+    <div className="flex flex-nowrap dashboard-container min-h-[700px] h-100">
+      <div
+        className="flex-1 p-6 pl-10"
+        style={{ paddingLeft: "100px", marginLeft: "100px" }}
+      >
+        {/*------------------- Dashboard Table start------------------ */}
+
+        <div className="container mx-auto mt-4">
           <table className="min-w-full border border-gray-200">
             <thead className="bg-gray-800 text-white text-[15px] h-[50px]">
               <tr>
@@ -92,7 +92,9 @@ const Archieve = () => {
                 <th className="px-4 py-2 text-center">Project #</th>
                 <th className="px-4 py-2 text-center">Invoice #</th>
                 <th className="px-4 py-2 text-center">Sales Man</th>
-                <th className="px-4 py-2 text-center">Overall Project Status</th>
+                <th className="px-4 py-2 text-center">
+                  Overall Project Status
+                </th>
                 <th className="px-4 py-2 text-center">State</th>
                 <th className="px-4 py-2 text-center">Project Files Folder</th>
                 <th className="px-4 py-2 text-center">See More</th>
@@ -102,8 +104,9 @@ const Archieve = () => {
               {data.projects.map((project, i) => (
                 <tr
                   key={i}
-                  className={`border-b ${i % 2 === 0 ? "bg-white" : "bg-gray-100"
-                    } hover:bg-gray-200`}
+                  className={`border-b ${
+                    i % 2 === 0 ? "bg-white" : "bg-gray-100"
+                  } hover:bg-gray-200`}
                   style={{ height: "50px" }}
                 >
                   <td className="px-4 py-2 text-[14px] text-left">
@@ -137,7 +140,8 @@ const Archieve = () => {
                         <option
                           key={status}
                           value={status}
-                          selected={project.overallProjectStatus === status} >
+                          selected={project.overallProjectStatus === status}
+                        >
                           {status}
                         </option>
                       ))}
@@ -182,15 +186,13 @@ const Archieve = () => {
               ))}
             </tbody>
           </table>
-
         </div>
-            </div>
+      </div>
       {/*------------------- Dashboard Table End------------------ */}
-      
-      
+
       {/*------------------- Popup Table start------------------ */}
-            {/* Modal for Project Details start*/}
-            {isModalOpen && (
+      {/* Modal for Project Details start*/}
+      {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white rounded-lg p-6 w-1/3 h-[600px] overflow-y-auto relative">
             <button
@@ -311,7 +313,7 @@ const Archieve = () => {
                             defaultValue={selectedProject[item.key]}
                             className="border border-gray-300 rounded px-2 py-1 w-full"
                           >
-                            {item.options.map((option,) => (
+                            {item.options.map((option) => (
                               <option
                                 key={option}
                                 value={option}
@@ -561,8 +563,8 @@ const Archieve = () => {
           </div>
         </div>
       )}
-          </div>
-        );
-      };
+    </div>
+  );
+};
 
-export default Archieve
+export default Archieve;

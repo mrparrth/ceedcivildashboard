@@ -1,49 +1,113 @@
-import './App.css'; // Ensure custom styles are correctly applied
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import "./App.css";
+import "./responsive.css";
+// import "./responsive.css";
+// import Dashboard from "./pages/Dashboard_Old";
+import ProjectTracker from "./pages/ProjectTracker";
+import Header from "./components/Navbar";
+import Sidebar from "./components/Sidebar";
+import { createContext, useEffect, useState } from "react";
+import Login from "./pages/Login";
 
-// import Home from './components/Home';
-import Register from './components/Register';
-import Login from './components/Login';
-import Dashboard from './components/Dashboard';
-import UserData from './components/UserData';
-import ProjectTracker from './components/ProjectTracker';
-import ProjectDetails from './components/ProjectDetails';
-import ArchiveProject from './components/Archieve'; // Corrected name
-import Finance from './components/Finance';
-import NewProject from './components/Newproject'; // Corrected name
-import EditableField from './components/EditableField';
-
-import Drafter from './components/MoreData/Drafter'; // Corrected name
-import Engineering from './components/MoreData/Engineering'; // Corrected name
-import Mep from './components/MoreData/Mep'; // Corrected name
-import Civil from './components/MoreData/Civil'; // Corrected name
-
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+const MyContext = createContext();
 
 function App() {
+  const [isToggleSidebar, setIsToggleSidebar] = useState(false);
+  const [isLogin, setIsLogin] = useState(true);
+  const [isHideSidebarAndHeader, setisHideSidebarAndHeader] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [isOpenNav, setIsOpenNav] = useState(false);
+  const [theme, setTheme] = useState(
+    localStorage.getItem("theme") ? localStorage.getItem("theme") : "light"
+  );
+
+  useEffect(() => {
+    if (theme === "dark") {
+      document.body.classList.add("dark");
+      document.body.classList.remove("light");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.body.classList.add("light");
+      document.body.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  }, [theme]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  const openNav = () => {
+    setIsOpenNav(true);
+  };
+
+  const values = {
+    isToggleSidebar,
+    setIsToggleSidebar,
+    isLogin,
+    setIsLogin,
+    isHideSidebarAndHeader,
+    setisHideSidebarAndHeader,
+    theme,
+    setTheme,
+    windowWidth,
+    openNav,
+    isOpenNav,
+    setIsOpenNav,
+  };
+
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path='/' element={<Dashboard />} />
-        <Route path='/adminregister' element={<Register />} />
-        <Route path='/login' element={<Login />} />
-        <Route path='/dashboard' element={<Dashboard />}>
-          <Route path='login' element={<Login />} />
-          <Route path='user' element={<UserData />} />
-          <Route path='project-tracker' element={<ProjectTracker />} />
-          <Route path='project-details/:id' element={<ProjectDetails />} />
-          <Route path='archive' element={<ArchiveProject />} /> {/* Corrected 'archieve' to 'archive' */}
-          <Route path='finance' element={<Finance />} />
-          <Route path='newproject' element={<NewProject />} />
-          <Route path='editable' element={<EditableField />} />
+      <MyContext.Provider value={values}>
+        {isHideSidebarAndHeader !== true && <Header />}
 
-          <Route path='project-details/:id/drafter' element={<Drafter />} />
-          <Route path='project-details/:id/engineering' element={<Engineering />} />
-          <Route path='project-details/:id/mep' element={<Mep />} />
-          <Route path='project-details/:id/civil' element={<Civil />} />
-        </Route>
-      </Routes>
+        <div className="main d-flex">
+          {isHideSidebarAndHeader !== true && (
+            <>
+              <div
+                className={`sidebarOverlay d-none ${
+                  isOpenNav === true && "show"
+                }`}
+                onClick={() => setIsOpenNav(false)}
+              ></div>
+              <div
+                className={`sidebarWrapper ${
+                  isToggleSidebar === true ? "toggle" : ""
+                } ${isOpenNav === true ? "open" : ""}`}
+              >
+                <Sidebar />
+              </div>
+            </>
+          )}
+
+          <div
+            className={`content ${isHideSidebarAndHeader === true && "full"} ${
+              isToggleSidebar === true ? "toggle" : ""
+            }`}
+          >
+            <Routes>
+              <Route path="/" exact={true} element={<ProjectTracker />} />
+              <Route
+                path="/dashboard"
+                exact={true}
+                element={<ProjectTracker />}
+              />
+              <Route path="/login" exact={true} element={<Login />} />
+            </Routes>
+          </div>
+        </div>
+      </MyContext.Provider>
     </BrowserRouter>
   );
 }
 
 export default App;
+export { MyContext };
