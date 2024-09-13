@@ -1,8 +1,4 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import "./App.css";
-import "./responsive.css";
-// import "./responsive.css";
-// import Dashboard from "./pages/Dashboard_Old";
 import ProjectTracker from "./pages/ProjectTracker";
 import Header from "./components/Navbar";
 import Sidebar from "./components/Sidebar";

@@ -2,10 +2,6 @@ import { useState, useEffect, useContext } from "react";
 import data from "../data/JsonData/Data.json";
 import ProjectDetails from "./ProjectDetails";
 import { MyContext } from "../App";
-import { FaEye, FaPencilAlt } from "react-icons/fa";
-import { MdDelete } from "react-icons/md";
-import Button from "@mui/material/Button";
-import Pagination from "@mui/material/Pagination";
 
 const ProjectTracker = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -117,23 +113,12 @@ const ProjectTracker = () => {
                       </a>
                     </td>
                     <td>
-                      <td>
-                        <div className="actions d-flex align-items-center">
-                          <Button
-                            className="secondary"
-                            color="secondary"
-                            onClick={() => handleOpenModal(project)}
-                          >
-                            <FaEye />
-                          </Button>
-                          <Button className="success" color="success">
-                            <FaPencilAlt />
-                          </Button>
-                          <Button className="error" color="error">
-                            <MdDelete />
-                          </Button>
-                        </div>
-                      </td>
+                      <button
+                        onClick={() => handleOpenModal(project)}
+                        className="bg-blue-500 text-white text-[12px] p-5 rounded hover:bg-blue-600"
+                      >
+                        View Details
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -141,18 +126,6 @@ const ProjectTracker = () => {
             </table>
 
             {/* Pagination */}
-            <div className="d-flex tableFooter">
-              <p>
-                showing <b>12</b> of <b>60</b> results
-              </p>
-              <Pagination
-                count={10}
-                color="primary"
-                className="pagination"
-                showFirstButton
-                showLastButton
-              />
-            </div>
             <div className="flex justify-center mt-10">
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
