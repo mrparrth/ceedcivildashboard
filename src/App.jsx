@@ -2,10 +2,15 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ProjectTracker from "./pages/ProjectTracker";
 import Header from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useState, useMemo } from "react";
 import Login from "./pages/Login";
+import projectsData from "./data/JsonData/projects.json";
+import metadata from "./data/JsonData/metadata.json";
 
-const MyContext = createContext();
+const GlobalContext = createContext();
+const DataContext = createContext();
+
+window.MetaData = metadata;
 
 function App() {
   const [isToggleSidebar, setIsToggleSidebar] = useState(false);
@@ -16,6 +21,7 @@ function App() {
   const [theme, setTheme] = useState(
     localStorage.getItem("theme") ? localStorage.getItem("theme") : "light"
   );
+  const [projects, setProjects] = useState(projectsData);
 
   useEffect(() => {
     if (theme === "dark") {
@@ -45,65 +51,77 @@ function App() {
     setIsOpenNav(true);
   };
 
-  const values = {
-    isToggleSidebar,
-    setIsToggleSidebar,
-    isLogin,
-    setIsLogin,
-    isHideSidebarAndHeader,
-    setisHideSidebarAndHeader,
-    theme,
-    setTheme,
-    windowWidth,
-    openNav,
-    isOpenNav,
-    setIsOpenNav,
-  };
+  const values = useMemo(
+    () => ({
+      isToggleSidebar,
+      setIsToggleSidebar,
+      isLogin,
+      setIsLogin,
+      isHideSidebarAndHeader,
+      setisHideSidebarAndHeader,
+      theme,
+      setTheme,
+      windowWidth,
+      openNav,
+      isOpenNav,
+      setIsOpenNav,
+    }),
+    [
+      isToggleSidebar,
+      isLogin,
+      isHideSidebarAndHeader,
+      theme,
+      windowWidth,
+      isOpenNav,
+    ]
+  );
 
   return (
     <BrowserRouter>
-      <MyContext.Provider value={values}>
-        {isHideSidebarAndHeader !== true && <Header />}
+      <GlobalContext.Provider value={values}>
+        <DataContext.Provider value={{ projects, setProjects }}>
+          {isHideSidebarAndHeader !== true && <Header />}
 
-        <div className="main d-flex">
-          {isHideSidebarAndHeader !== true && (
-            <>
-              <div
-                className={`sidebarOverlay d-none ${
-                  isOpenNav === true && "show"
-                }`}
-                onClick={() => setIsOpenNav(false)}
-              ></div>
-              <div
-                className={`sidebarWrapper ${
-                  isToggleSidebar === true ? "toggle" : ""
-                } ${isOpenNav === true ? "open" : ""}`}
-              >
-                <Sidebar />
-              </div>
-            </>
-          )}
+          <div className="main d-flex">
+            {isHideSidebarAndHeader !== true && (
+              <>
+                <div
+                  className={`sidebarOverlay d-none ${
+                    isOpenNav === true && "show"
+                  }`}
+                  onClick={() => setIsOpenNav(false)}
+                ></div>
+                <div
+                  className={`sidebarWrapper ${
+                    isToggleSidebar === true ? "toggle" : ""
+                  } ${isOpenNav === true ? "open" : ""}`}
+                >
+                  <Sidebar />
+                </div>
+              </>
+            )}
 
-          <div
-            className={`content ${isHideSidebarAndHeader === true && "full"} ${
-              isToggleSidebar === true ? "toggle" : ""
-            }`}
-          >
-            <Routes>
-              <Route path="/" exact={true} element={<ProjectTracker />} />
-              <Route
-                path="/dashboard"
-                exact={true}
-                element={<ProjectTracker />}
-              />
-              <Route path="/login" exact={true} element={<Login />} />
-            </Routes>
+            <div
+              className={`content ${
+                isHideSidebarAndHeader === true && "full"
+              } ${isToggleSidebar === true ? "toggle" : ""}`}
+            >
+              <Routes>
+                <Route path="/" exact={true} element={<ProjectTracker />} />
+                {/* <Route
+                  path="/dashboard"
+                  exact={true}
+                  element={<ProjectTracker />}
+                /> */}
+                <Route path="/login" exact={true} element={<Login />} />
+              </Routes>
+            </div>
           </div>
-        </div>
-      </MyContext.Provider>
+        </DataContext.Provider>
+      </GlobalContext.Provider>
     </BrowserRouter>
   );
 }
 
 export default App;
-export { MyContext };
+export { GlobalContext, DataContext };

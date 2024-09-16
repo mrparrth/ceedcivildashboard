@@ -17,7 +17,7 @@ import PersonAdd from "@mui/icons-material/PersonAdd";
 import Logout from "@mui/icons-material/Logout";
 import { IoShieldHalfSharp } from "react-icons/io5";
 import Divider from "@mui/material/Divider";
-import { MyContext } from "../App";
+import { GlobalContext } from "../App";
 import UserAvatarImgComponent from "./userAvatarImg";
 
 const Header = () => {
@@ -26,7 +26,7 @@ const Header = () => {
   const openMyAcc = Boolean(anchorEl);
   const openNotifications = Boolean(isOpennotificationDrop);
 
-  const context = useContext(MyContext);
+  const context = useContext(GlobalContext);
 
   const handleOpenMyAccDrop = (event) => setAnchorEl(event.currentTarget);
 
@@ -45,31 +45,30 @@ const Header = () => {
         <div className="container-fluid w-100">
           <div className="row d-flex align-items-center w-100">
             {/* Logo Wraooer */}
-            <div className="col-sm-2 part1">
-              <Link to={"/"} className="d-flex align-items-center logo">
+            <div className="col-sm-2 part1 d-flex justify-content-between">
+              <Link to={"/"} className="d-flex align-items-center logo me-3">
                 <img src={logo} />
-                <span className="ml-2">HOTASH</span>
+                <span className="ml-2">CEEDCIVIL</span>
               </Link>
+              {context.windowWidth > 992 && (
+                <div className="d-flex align-items-center res-hide">
+                  <Button
+                    className="rounded-circle mr-3"
+                    onClick={() =>
+                      context.setIsToggleSidebar(!context.isToggleSidebar)
+                    }
+                  >
+                    {context.isToggleSidebar === false ? (
+                      <MdMenuOpen />
+                    ) : (
+                      <MdOutlineMenu />
+                    )}
+                  </Button>
+                </div>
+              )}
             </div>
 
-            {context.windowWidth > 992 && (
-              <div className="col-sm-3 d-flex align-items-center part2 res-hide">
-                <Button
-                  className="rounded-circle mr-3"
-                  onClick={() =>
-                    context.setIsToggleSidebar(!context.isToggleSidebar)
-                  }
-                >
-                  {context.isToggleSidebar === false ? (
-                    <MdMenuOpen />
-                  ) : (
-                    <MdOutlineMenu />
-                  )}
-                </Button>
-              </div>
-            )}
-
-            <div className="col-sm-7 d-flex align-items-center justify-content-end part3">
+            <div className="col-sm-10 d-flex align-items-center justify-content-end part3">
               {/* <div className="dropdownWrapper position-relative">
                 <Button
                   className="rounded-circle mr-3"

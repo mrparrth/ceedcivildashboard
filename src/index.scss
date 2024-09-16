@@ -373,8 +373,8 @@ body.dark .dropdown_list li.MuiButtonBase-root {
 }
 
 .main .sidebarWrapper {
-  width: 20%;
-  flex: 0 0 20%;
+  width: 15%;
+  flex: 0 0 15%;
   transition: all 0.3s;
 }
 .main .sidebarWrapper.toggle {
@@ -383,7 +383,7 @@ body.dark .dropdown_list li.MuiButtonBase-root {
 }
 
 .main .sidebarWrapper .sidebar {
-  width: 20%;
+  width: 15%;
   height: 100vh;
   max-height: calc(100% - 70px);
   position: fixed;
@@ -606,8 +606,8 @@ body.dark .logoutWrapper .logoutBox {
 }
 
 .main .content {
-  width: 80%;
-  flex: 0 0 80%;
+  width: 85%;
+  flex: 0 0 85%;
   transition: all 0.3s;
 }
 .main .content.toggle {
@@ -1514,4 +1514,78 @@ body.dark .imgUploadBox .uploadBox {
 
 .MuiRating-root * {
   color: #faaf00 !important;
+}
+
+.table-wrapper {
+  width: 100%;
+}
+
+.table {
+  display: block;
+  overflow: hidden;
+  table-layout: fixed;
+  border-collapse: collapse;
+  box-shadow: 0px 10px 10px #ccc;
+  border-radius: 10px;
+  white-space: nowrap;
+  width: 100em;
+  max-width: 100%;
+  margin: auto;
+  table-layout: auto;
+  overflow-x: auto;
+}
+
+.table thead {
+  background-color: #ccc;
+  color: #222;
+}
+
+.table th,
+.table td {
+  padding: 0.8rem;
+}
+
+.table td {
+  border-top: 0.5px solid #ddd;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.table tbody tr:hover {
+  background-color: #eee;
+}
+
+.expand {
+  width: 100%;
+}
+
+.label {
+  border-radius: 3px;
+  padding: 0.3rem;
+  color: white;
+}
+
+.label-draft {
+  background-color: #777;
+}
+
+.label-live {
+  background-color: #42a942;
+}
+
+.label-error {
+  background-color: #d9534f;
+}
+
+.actions {
+  display: flex;
+  justify-content: space-around;
+}
+
+.actions svg {
+  cursor: pointer;
+}
+
+.delete-btn {
+  color: #e10d05;
 }

@@ -1,12 +1,12 @@
 import { useState } from "react";
-import EditableField from "./EditableField";
-import DrafterDetails from "../data/MoreData/Drafter";
-import EngineeringDetails from "../data/MoreData/Engineering";
-import MEPDetails from "../data/MoreData/Mep";
-import CivilDetails from "../data/MoreData/Civil";
-import data from "../data/JsonData/Data.json";
+import EditableField from "../components/EditableField";
+import DrafterDetails from "../components/Drafter";
+import EngineeringDetails from "../components/Engineering";
+import MEPDetails from "../components/Mep";
+import CivilDetails from "../components/Civil";
 
 const ProjectDetails = ({ project, handleCloseModal }) => {
+  data = {};
   const [editableProject, setEditableProject] = useState(project);
   // const [isExpanded, setIsExpanded] = useState(false);
   const [nestedAccordion, setNestedAccordion] = useState({});

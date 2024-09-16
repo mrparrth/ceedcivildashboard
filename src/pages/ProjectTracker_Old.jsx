@@ -1,14 +1,14 @@
 import { useState, useEffect, useContext } from "react";
 import data from "../data/JsonData/Data.json";
-import ProjectDetails from "./ProjectDetails";
-import { MyContext } from "../App";
+import ProjectDetails from "./Modal";
+import { GlobalContext } from "../App";
 
 const ProjectTracker = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
 
-  const context = useContext(MyContext);
+  const context = useContext(GlobalContext);
 
   useEffect(() => {
     context.setisHideSidebarAndHeader(false);
