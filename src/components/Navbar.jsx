@@ -4,154 +4,95 @@ import logo from "../assets/images/logo.png";
 import Button from "@mui/material/Button";
 import { MdMenuOpen } from "react-icons/md";
 import { MdOutlineMenu } from "react-icons/md";
-import SearchBox from "./SearchBox";
-import { MdOutlineLightMode } from "react-icons/md";
-
-import { FaRegBell } from "react-icons/fa6";
-import { IoMenu } from "react-icons/io5";
 
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
-import PersonAdd from "@mui/icons-material/PersonAdd";
 import Logout from "@mui/icons-material/Logout";
 import { IoShieldHalfSharp } from "react-icons/io5";
 import Divider from "@mui/material/Divider";
-import { GlobalContext } from "../App";
 import UserAvatarImgComponent from "./userAvatarImg";
+import { useSettings } from "../contexts/SettingsContext";
+import { useAuth } from "../contexts/auth/AuthContext";
 
 const Header = () => {
   const [anchorEl, setAnchorEl] = useState(null);
-  const [isOpennotificationDrop, setisOpennotificationDrop] = useState(false);
   const openMyAcc = Boolean(anchorEl);
-  const openNotifications = Boolean(isOpennotificationDrop);
-
-  const context = useContext(GlobalContext);
-
   const handleOpenMyAccDrop = (event) => setAnchorEl(event.currentTarget);
-
   const handleCloseMyAccDrop = () => setAnchorEl(null);
+  const { logout } = useAuth();
+  const { settings, updateSettings } = useSettings();
 
-  const handleOpenotificationsDrop = () => setisOpennotificationDrop(true);
-
-  const handleClosenotificationsDrop = () => setisOpennotificationDrop(false);
-
-  const changeTheme = () =>
-    context.setTheme(context.theme === "dark" ? "dark" : "light");
+  const handleLogout = () => {
+    handleCloseMyAccDrop();
+    logout();
+  };
 
   return (
     <>
       <header className="d-flex align-items-center">
         <div className="container-fluid w-100">
           <div className="row d-flex align-items-center w-100">
-            {/* Logo Wraooer */}
-            <div className="col-sm-2 part1 d-flex justify-content-between">
+            <div className="col-sm-1 part1 d-flex justify-content-between">
               <Link to={"/"} className="d-flex align-items-center logo me-3">
                 <img src={logo} />
                 <span className="ml-2">CEEDCIVIL</span>
               </Link>
-              {context.windowWidth > 992 && (
+              {settings.windowWidth > 992 && (
                 <div className="d-flex align-items-center res-hide">
                   <Button
                     className="rounded-circle mr-3"
-                    onClick={() =>
-                      context.setIsToggleSidebar(!context.isToggleSidebar)
-                    }
+                    onClick={() => {
+                      updateSettings({ showSidebar: !settings.showSidebar });
+                    }}
                   >
-                    {context.isToggleSidebar === false ? (
-                      <MdMenuOpen />
-                    ) : (
-                      <MdOutlineMenu />
-                    )}
+                    {settings.showSidebar ? <MdMenuOpen /> : <MdOutlineMenu />}
                   </Button>
                 </div>
               )}
             </div>
 
-            <div className="col-sm-10 d-flex align-items-center justify-content-end part3">
-              {/* <div className="dropdownWrapper position-relative">
+            <div className="col-sm-11 d-flex align-items-center justify-content-end part3">
+              <div className="myAccWrapper">
                 <Button
-                  className="rounded-circle mr-3"
-                  onClick={handleOpenotificationsDrop}
+                  className="myAcc d-flex align-items-center"
+                  onClick={handleOpenMyAccDrop}
                 >
-                  <FaRegBell />
-                </Button>
-
-                {context.windowWidth < 992 && (
-                  <Button
-                    className="rounded-circle mr-3"
-                    onClick={() => context.openNav()}
-                  >
-                    <IoMenu />
-                  </Button>
-                )}
-
-                <Menu
-                  anchorEl={isOpennotificationDrop}
-                  className="notifications dropdown_list"
-                  id="notifications"
-                  open={openNotifications}
-                  onClose={handleClosenotificationsDrop}
-                  onClick={handleClosenotificationsDrop}
-                  transformOrigin={{ horizontal: "right", vertical: "top" }}
-                  anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-                >
-                  <div className="scroll"></div>
-
-                  <div className="pl-3 pr-3 w-100 pt-2 pb-1">
-                    <Button className="btn-blue w-100">
-                      View all notifications
-                    </Button>
-                  </div>
-                </Menu>
-              </div> */}
-
-              {context.isLogin !== true ? (
-                <Link to={"/login"}>
-                  <Button className="btn-blue btn-lg btn-round">Sign In</Button>
-                </Link>
-              ) : (
-                <div className="myAccWrapper">
-                  <Button
-                    className="myAcc d-flex align-items-center"
-                    onClick={handleOpenMyAccDrop}
-                  >
-                    {/* <div className="userImg">
+                  {/* <div className="userImg">
                       <span className="rounded-circle">
                         <img src="https://mironcoder-hotash.netlify.app/images/avatar/01.webp" />
                       </span>
                     </div> */}
 
-                    <div className="userInfo res-hide">
-                      <h4>Parth Sahoo</h4>
-                      {/* <p className="mb-0">@ps</p> */}
-                    </div>
-                  </Button>
+                  <div className="userInfo res-hide">
+                    <h4>Parth Sahoo</h4>
+                    {/* <p className="mb-0">@ps</p> */}
+                  </div>
+                </Button>
 
-                  <Menu
-                    anchorEl={anchorEl}
-                    id="account-menu"
-                    open={openMyAcc}
-                    onClose={handleCloseMyAccDrop}
-                    onClick={handleCloseMyAccDrop}
-                    transformOrigin={{ horizontal: "right", vertical: "top" }}
-                    anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-                  >
-                    <MenuItem onClick={handleCloseMyAccDrop}>
-                      <ListItemIcon>
-                        <IoShieldHalfSharp />
-                      </ListItemIcon>
-                      Reset Password
-                    </MenuItem>
-                    <MenuItem onClick={handleCloseMyAccDrop}>
-                      <ListItemIcon>
-                        <Logout fontSize="small" />
-                      </ListItemIcon>
-                      Logout
-                    </MenuItem>
-                  </Menu>
-                </div>
-              )}
+                <Menu
+                  anchorEl={anchorEl}
+                  id="account-menu"
+                  open={openMyAcc}
+                  onClose={handleCloseMyAccDrop}
+                  onClick={handleCloseMyAccDrop}
+                  transformOrigin={{ horizontal: "right", vertical: "top" }}
+                  anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+                >
+                  <MenuItem onClick={handleCloseMyAccDrop}>
+                    <ListItemIcon>
+                      <IoShieldHalfSharp />
+                    </ListItemIcon>
+                    Reset Password
+                  </MenuItem>
+                  <MenuItem onClick={handleLogout}>
+                    <ListItemIcon>
+                      <Logout fontSize="small" />
+                    </ListItemIcon>
+                    Logout
+                  </MenuItem>
+                </Menu>
+              </div>
             </div>
           </div>
         </div>
