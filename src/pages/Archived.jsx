@@ -3,14 +3,14 @@ import ProjectModal from "../components/ProjectModal";
 import Button from "@mui/material/Button";
 import { BiSolidArchiveIn } from "react-icons/bi";
 import ProjectTable from "../components/ProjectTable";
-import { useData } from "../contexts/DataContext";
+import { useData } from "../contexts/data/DataContext";
 
 const Archived = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalReadOnly, setModalReadOnly] = useState(null);
   const [currentPage, setCurrentPage] = useState(1); // Pagination state
   const [modalProjectKey, setModalProjectKey] = useState(null);
-  const { projects, unarchiveProject } = useData();
+  const { projects, unarchiveProjects } = useData();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -39,8 +39,10 @@ const Archived = () => {
   };
 
   const handleUnarchiveProject = () => {
-    let selectedProjects = projects.filter((project) => project.isSelected);
-    selectedProjects.forEach((project) => unarchiveProject(project.id));
+    let selectedProjects = projects
+      .filter((project) => project.isSelected)
+      .map((project) => project.id);
+    unarchiveProjects(selectedProjects);
   };
 
   return (

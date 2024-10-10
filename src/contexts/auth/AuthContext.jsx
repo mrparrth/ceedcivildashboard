@@ -4,6 +4,7 @@ import {
   useReducer,
   useCallback,
   useEffect,
+  useState,
 } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -11,15 +12,16 @@ import {
   saveTokenInLocalStorage,
   getTokenFromLocalStorage,
   trashToken,
+  runScriptFunction,
 } from "../../db";
 
 const checkForToken = () => getTokenFromLocalStorage() || null;
 
 const initialState = {
   user: null,
-  isAuthenticated: null,
+  isAuthenticated: false,
   token: null,
-  msg: null,
+  error: null,
 };
 
 const AuthContext = createContext(initialState);
@@ -37,7 +39,6 @@ const reducer = (state, action) => {
     }
 
     case "LOGIN_SUCCESS": {
-      console.log(action.payload);
       saveTokenInLocalStorage(action.payload.token);
       return {
         ...state,
@@ -67,12 +68,16 @@ const reducer = (state, action) => {
 const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
   const [state, dispatch] = useReducer(reducer, initialState);
+  const [isAuthInProgress, setAuthInProgress] = useState(false);
+
   const initializeAuth = useCallback(async () => {
     const existingtoken = checkForToken();
-    if (existingtoken) {
-      try {
-        const { user, token } = await validateLogin({ token: existingtoken });
+    if (!existingtoken) return;
 
+    if (existingtoken) {
+      setAuthInProgress(true);
+      try {
+        const { user, token } = await runScriptFunction("login");
         if (!user) return;
 
         dispatch({
@@ -80,7 +85,12 @@ const AuthProvider = ({ children }) => {
           payload: { token, user },
         });
       } catch (error) {
-        console.error(error);
+        dispatch({
+          type: "LOGIN_FAILURE",
+          payload: { error: error.message },
+        });
+      } finally {
+        setAuthInProgress(false);
       }
     }
   }, []);
@@ -89,9 +99,12 @@ const AuthProvider = ({ children }) => {
     initializeAuth();
   }, [initializeAuth]);
 
-  const login = useCallback(async (email, password) => {
+  const login = async (email, password) => {
+    setAuthInProgress(true);
     try {
-      const result = await validateLogin({ email, password });
+      let result = await runScriptFunction("login", { email, password });
+      if (!result.user) throw new Error("Some problem occured");
+
       dispatch({
         type: "LOGIN_SUCCESS",
         payload: result,
@@ -99,10 +112,12 @@ const AuthProvider = ({ children }) => {
     } catch (error) {
       dispatch({
         type: "LOGIN_FAILURE",
-        payload: { msg: error.message },
+        payload: { error: error.message },
       });
+    } finally {
+      setAuthInProgress(false);
     }
-  }, []);
+  };
 
   const logout = useCallback(() => {
     dispatch({ type: "LOGOUT" });
@@ -113,6 +128,7 @@ const AuthProvider = ({ children }) => {
     <AuthContext.Provider
       value={{
         ...state,
+        isAuthInProgress,
         login,
         logout,
       }}

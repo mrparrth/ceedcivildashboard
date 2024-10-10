@@ -52,7 +52,7 @@ const DateRangePicker = ({
     <div className="dropdown" ref={dropdownRef}>
       <input
         type="text"
-        className="form-control form-control-lg"
+        className="form-control"
         value={displayValue}
         readOnly
         onClick={() => setIsOpen(!isOpen)}

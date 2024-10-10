@@ -1,34 +1,38 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../contexts/auth/AuthContext";
-import { NavLink, useNavigate } from "react-router-dom";
-import { Email } from "@mui/icons-material";
+import { useNavigate, useLocation } from "react-router-dom";
+import { getTokenFromLocalStorage } from "../db";
 
 function Login() {
   const [userId, setUserId] = useState("admin@ceedcivil.com");
   const [password, setPassword] = useState("password");
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [borderColor, setBorderColor] = useState(null);
-  const { user, login, isAuthenticated, msg, token } = useAuth();
+  const { user, login, isAuthenticated, isAuthInProgress, error } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
-    setLoading(false);
-    if (!user) setError(msg);
+    if (isAuthInProgress) {
+      setLoading(true);
+      return;
+    } else {
+      setLoading(false);
+    }
 
-    if (isAuthenticated === true) {
+    if (isAuthenticated) {
       setBorderColor("success");
-      navigate("/dashboard");
-    } else if (isAuthenticated === true) {
+      const origin = location.state?.from || "/dashboard";
+      navigate(origin, { replace: true });
+    } else if (isAuthenticated === false && !!error) {
       setBorderColor("danger");
     } else {
       setBorderColor(null);
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, isAuthInProgress]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setError("");
     setLoading(true);
     setBorderColor(null);
 

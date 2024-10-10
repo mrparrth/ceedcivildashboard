@@ -44,7 +44,7 @@ const MultiSelectDropdown = ({
         {selectedOptions.length > 0 ? (
           <div>{(selectedOptions || []).join(", ")}</div>
         ) : (
-          <div>Select One or More</div>
+          <div>-</div>
         )}
         <RiArrowDropDownLine size={24} className="ms-auto" />
       </div>

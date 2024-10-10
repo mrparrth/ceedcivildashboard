@@ -1,19 +1,13 @@
-import { lazy } from "react";
 import { Navigate } from "react-router-dom";
-import Loadable from "./components/Loadable";
 import AuthGuard from "./contexts/auth/AuthGuard";
 import { authRoles } from "./contexts/auth/authRoles";
-import Layout1 from "./layouts/layout1";
+import Layout1 from "./Layouts/Layout1";
 import CEEDCivilForm from "./pages/ContractCreationTool";
 import Login from "./pages/Login";
 import ProjectTracker from "./pages/ProjectTracker";
 import Archived from "./pages/Archived";
 import FinanceTracker from "./pages/FinanceTracker";
-
-// const Login = Loadable(lazy(() => import("./pages/Login")));
-// const Dashboard = Loadable(lazy(() => import("./pages/ProjectTracker")));
-// const Archived = Loadable(lazy(() => import("./pages/Archived")));
-// const Finance = Loadable(lazy(() => import("./pages/FinanceTracker")));
+// import NotFound from "./pages/NotFound";
 
 const routes = [
   {

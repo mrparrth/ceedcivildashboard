@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
 
 import ProjectTableRow from "../components/ProjectRow";
-import { useData } from "../contexts/DataContext";
+import { useData } from "../contexts/data/DataContext";
 import PaginationCustom from "./PaginationCustom";
 import Loader from "./LoaderCustom";
 

@@ -1,25 +1,33 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import FinanceTable from "../components/FinanceTable";
-import { useData } from "../contexts/DataContext";
+import { useData } from "../contexts/data/DataContext";
 import { FinanceTrackerFilters } from "../components/FinanceTrackerFilters";
+
+const initialFilters = {
+  startDate: null,
+  endDate: null,
+  assignee: "",
+  salesman: "",
+  projectNumber: "",
+  paid: "",
+};
 
 const FinanceTracker = () => {
   const [currentPage, setCurrentPage] = useState(1); // Pagination state
   const { payments } = useData();
 
-  const initialFilters = {
-    startDate: null,
-    endDate: null,
-    assignee: "",
-    salesman: "",
-    projectNumber: "",
-    paid: "",
-  };
-  const [filters, setFilters] = useState(initialFilters);
+  const [filters, setFilters] = useState(() => {
+    const savedFilters = localStorage.getItem("financeTrackerFilters");
+    return savedFilters ? JSON.parse(savedFilters) : initialFilters;
+  });
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem("financeTrackerFilters", JSON.stringify(filters));
+  }, [filters]);
 
   const filteredPayments = useMemo(() => {
     return payments.filter((payment) => {
@@ -30,15 +38,15 @@ const FinanceTracker = () => {
           : true;
 
       const assigneeFilter = filters.assignee
-        ? payment.assignee.toLowerCase() == filters.assignee.toLowerCase()
+        ? payment.assignee?.toLowerCase() == filters.assignee.toLowerCase()
         : true;
 
       const salesmanFilter = filters.salesman
-        ? payment.salesMan.toLowerCase() == filters.salesman.toLowerCase()
+        ? payment.salesMan?.toLowerCase() == filters.salesman.toLowerCase()
         : true;
 
       const projectNumberFilter = filters.projectNumber
-        ? payment.projectNumber.toString().includes(filters.projectNumber)
+        ? payment.projectNumber?.toString().includes(filters.projectNumber)
         : true;
 
       const paidFilter = filters.paid
@@ -61,7 +69,11 @@ const FinanceTracker = () => {
     setFilters((prev) => ({ ...prev, [name]: value }));
   };
 
-  const resetFilters = () => setFilters(initialFilters);
+  const resetFilters = () => {
+    setFilters(initialFilters);
+    localStorage.removeItem("financeTrackerFilters");
+  };
+
   return (
     <>
       <div className="right-content w-100">

@@ -1,5 +1,5 @@
 import DateRangePicker from "../components/DatePicker";
-import { useData } from "../contexts/DataContext";
+import { useData } from "../contexts/data/DataContext";
 
 const FinanceTrackerFilters = ({ filters, onFilterChange, onResetFilters }) => {
   let { metadata } = useData();
@@ -45,7 +45,7 @@ const FinanceTrackerFilters = ({ filters, onFilterChange, onResetFilters }) => {
       <div className="col-md flex-grow-1">
         <input
           type="text"
-          className="form-control form-control-lg"
+          className="form-control"
           placeholder="Project Number"
           value={filters.projectNumber}
           onChange={(e) => onFilterChange("projectNumber", e.target.value)}

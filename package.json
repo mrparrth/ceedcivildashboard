@@ -20,22 +20,27 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@emotion/react": "^11.11.4",
-    "@emotion/styled": "^11.11.0",
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
     "@mui/icons-material": "^5.15.14",
     "@mui/material": "^5.15.14",
+    "@mui/x-date-pickers": "^7.19.0",
     "@parcel/resolver-glob": "^2.12.0",
     "axios": "^1.7.2",
     "bootstrap-icons": "^1.11.3",
+    "date-fns": "^4.1.0",
     "lodash": "^4.17.21",
     "prop-types": "^15.8.1",
     "react": "^18.3.1",
     "react-datepicker": "^7.4.0",
     "react-dom": "^18.3.1",
     "react-icons": "^5.3.0",
-    "react-router-dom": "^6.25.1"
+    "react-perfect-scrollbar": "^1.5.8",
+    "react-router-dom": "^6.25.1",
+    "shortid": "^2.2.16"
   },
   "devDependencies": {
+    "@fullhuman/postcss-purgecss": "^6.0.0",
     "@google/clasp": "^2.4.2",
     "@parcel/transformer-sass": "^2.12.0",
     "@types/google-apps-script": "^1.0.83",

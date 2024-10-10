@@ -443,7 +443,7 @@ function _openDialog_(html, title, width = 540, height = 460) {
 }
 
 /** */
-function _openLink_(link, title = "Open Link") {
+function _openLink_(link, customMessage = '', title = "Open Link") {
   const divStyle = {
     "font-family": "Roboto,RobotoDraft,Helvetica,Arial,sans-serif",
   };
@@ -472,12 +472,16 @@ function _openLink_(link, title = "Open Link") {
 				onclick="google.script.host.close();"
 			>Close</button>
 			</div>
+      ${customMessage ? `<p>${customMessage}</p>` : ''}
 			</div>
 			<script>window.open("${link}", "_blank");</script>
 		`;
+
+
   const dialog = HtmlService.createHtmlOutput(html)
     .setTitle(title)
-    .setHeight(120);
+    .setHeight(240)
+    .setWidth(700);
   SpreadsheetApp.getActive().show(dialog);
 }
 

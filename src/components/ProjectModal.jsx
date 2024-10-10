@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Drafter, Engineering, MEP, Civil } from "./ExpandableSections";
 import { SingleSelectDropdown, MultiSelectDropdown, CheckBox } from "./Fields";
-import { useData } from "../contexts/DataContext";
+import { useData } from "../contexts/data/DataContext";
 
 const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
   let { metadata, updateProject, createProject, projects } = useData();
@@ -60,6 +60,7 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
   const [mepToggle, setMepToggle] = useState(false);
   const [enggToggle, setEnggToggle] = useState(false);
   const [civilToggle, setCivilToggle] = useState(false);
+  const isNewProject = !projectKey;
 
   const handleInputChange = (key, value) => {
     setProject((prev) => ({ ...prev, [key]: value }));
@@ -68,18 +69,19 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
 
   const validateForm = () => {
     const newErrors = {};
-    if (!project.projectName)
-      newErrors.projectName = "Project Name is required";
-    if (!project.salesMan) newErrors.salesMan = "Salesman is required";
-    if (!project.description) newErrors.description = "Description is required";
-    if (!project.overallProjectStatus)
-      newErrors.overallProjectStatus = "Overall Status is required";
-    if (!project.state) newErrors.state = "State is required";
-    if (!project.priority) newErrors.priority = "Priority is required";
-    if (!project.estimatedBudget)
-      newErrors.estimatedBudget = "Estimated Budget is required";
+    //change
+    // if (!project.projectName)
+    //   newErrors.projectName = "Project Name is required";
+    // if (!project.salesMan) newErrors.salesMan = "Salesman is required";
+    // if (!project.description) newErrors.description = "Description is required";
+    // if (!project.overallProjectStatus)
+    //   newErrors.overallProjectStatus = "Overall Status is required";
+    // if (!project.state) newErrors.state = "State is required";
+    // if (!project.priority) newErrors.priority = "Priority is required";
+    // if (!project.estimatedBudget)
+    //   newErrors.estimatedBudget = "Estimated Budget is required";
 
-    setErrors(newErrors);
+    // setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
@@ -87,12 +89,18 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
     if (validateForm()) {
       setLoading(true);
       try {
-        projectKey === null ? createProject(project) : updateProject(project);
-        closeModal(false);
-        setShowAlert(true);
-        setTimeout(() => setShowAlert(false), 3000);
+        if (isNewProject) {
+          await createProject(project);
+          closeModal();
+        } else {
+          updateProject(project);
+          closeModal();
+        }
       } catch (error) {
         console.error("Error submitting form:", error);
+        setErrors(
+          "An error occurred while saving the project. Please try again."
+        );
       } finally {
         setLoading(false);
       }
@@ -101,8 +109,13 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
 
   const formFields = [
     { label: "Project Name", key: "projectName" },
-    { label: "Project #", key: "projectNumber", isEditable: false },
-    { label: "Invoice #", key: "invoiceNumber", isEditable: false },
+    {
+      label: "Project Number",
+      key: "projectNumber",
+      isEditable: isNewProject,
+      placeholder: isNewProject ? "Leave empty to generate new number" : "",
+    },
+    { label: "Invoice Number", key: "invoiceNumber" },
     {
       label: "Salesman",
       key: "salesMan",
@@ -162,7 +175,9 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
         <button onClick={closeModal} className="close-button">
           ×
         </button>
-        <h2 className="modal-title">Project Details</h2>
+        <h2 className="modal-title">
+          {isNewProject ? "Create New Project" : "Project Details"}
+        </h2>
         <form className="project-form">
           {formFields.map((item) => (
             <div key={item.key} className="form-row">
@@ -214,12 +229,12 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
                     onChange={(e) =>
                       handleInputChange(item.key, e.target.value)
                     }
-                    readOnly={item.isEditable === false}
+                    readOnly={item.isEditable === false || viewOnly}
                     className="form-input text-wrap"
                     style={{
                       minWidth: item.key == "projectName" ? "25em" : "",
                     }}
-                    disabled={viewOnly}
+                    placeholder={item.placeholder}
                   />
                 )}
                 {errors[item.key] && (
@@ -309,11 +324,24 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
             disabled={loading || viewOnly}
             className="submit-button"
           >
-            {loading ? "Saving..." : "Save"}
+            {loading ? (
+              <>
+                <span className="spinner"></span>
+                {isNewProject ? "Creating..." : "Saving..."}
+              </>
+            ) : isNewProject ? (
+              "Create Project"
+            ) : (
+              "Save Changes"
+            )}
           </button>
         </div>
         {showAlert && (
-          <div className="alert-success">Project saved successfully!</div>
+          <div className="alert-success">
+            {isNewProject
+              ? "Project created successfully!"
+              : "Project updated successfully!"}
+          </div>
         )}
       </div>
     </div>

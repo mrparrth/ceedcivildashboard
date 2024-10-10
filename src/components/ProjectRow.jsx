@@ -1,112 +1,150 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState } from "react";
 import { MultiSelectDropdown } from "./Fields";
-import { useData } from "../contexts/DataContext";
+import { useData } from "../contexts/data/DataContext";
 import { FaEye, FaPencilAlt } from "react-icons/fa";
 import Button from "@mui/material/Button";
 import { MdDelete } from "react-icons/md";
-import { useData } from "../contexts/DataContext";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 
 const ProjectTableRow = ({ project, viewRow, editRow }) => {
-  const { updateProject } = useData();
-  const { metadata, deleteProject } = useData();
+  const { updateProject, metadata, deleteProject, toggleProjectSelection } =
+    useData();
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+
+  const handleDeleteClick = () => {
+    setOpenDeleteDialog(true);
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setOpenDeleteDialog(false);
+  };
+
+  const handleConfirmDelete = () => {
+    deleteProject(project.id);
+    setOpenDeleteDialog(false);
+  };
+
   return (
-    <tr key={project.id}>
-      <td>
-        <input
-          type="checkbox"
-          checked={project.isSelected || false}
-          onChange={(e) =>
-            updateProject({ id: project.id, isSelected: e.target.checked })
-          }
-        />
-      </td>
-      <td className="text-start w-25 text-wrap" style={{ minWidth: "25em" }}>
-        {project.projectName}
-      </td>
-      <td>{project.projectNumber}</td>
-      <td>{project.invoiceNumber}</td>
-      <td>
-        <MultiSelectDropdown
-          options={metadata.assignTo}
-          selectedOptions={project.assignedTo}
-          setSelectedOptions={(newSelectedOptions) =>
-            updateProject({ id: project.id, assignedTo: newSelectedOptions })
-          }
-          positionRelative={true}
-        />
-      </td>
-      <td>
-        <select
-          className="form-select w-auto"
-          value={project.overallProjectStatus}
-          onChange={(e) =>
-            updateProject({
-              id: project.id,
-              overallProjectStatus: e.target.value,
-            })
-          }
-        >
-          {metadata.status.map((status) => (
-            <option key={status} value={status}>
-              {status}
-            </option>
-          ))}
-        </select>
-      </td>
-      <td>
-        <select
-          className="form-select w-auto"
-          value={project.state}
-          onChange={(e) =>
-            updateProject({
-              id: project.id,
-              state: e.target.value,
-            })
-          }
-        >
-          {metadata.states.map((stateName) => (
-            <option key={stateName} value={stateName}>
-              {stateName}
-            </option>
-          ))}
-        </select>
-      </td>
-      <td>
-        <a
-          href={project.projectFilesFolder}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-blue-500 underline-none text-[15px] text-center pl-2.5"
-        >
-          View Files
-        </a>
-      </td>
-      <td>
-        <div className="actions d-flex align-items-center">
-          <Button
-            className="secondary"
-            color="secondary"
-            onClick={() => viewRow(project.id)} // Call the prop method for modal
+    <>
+      <tr key={project.id}>
+        <td>
+          <input
+            type="checkbox"
+            checked={project.isSelected || false}
+            onChange={(e) => toggleProjectSelection(project.id)}
+          />
+        </td>
+        <td className="text-start w-25 text-wrap" style={{ minWidth: "25em" }}>
+          {project.projectName}
+        </td>
+        <td>{project.projectNumber}</td>
+        <td>{project.invoiceNumber}</td>
+        <td>
+          <MultiSelectDropdown
+            options={metadata.assignTo}
+            selectedOptions={project.assignedTo}
+            setSelectedOptions={(newSelectedOptions) =>
+              updateProject({ id: project.id, assignedTo: newSelectedOptions })
+            }
+            positionRelative={true}
+          />
+        </td>
+        <td>
+          <select
+            className="form-select w-auto"
+            value={project.overallProjectStatus}
+            onChange={(e) =>
+              updateProject({
+                id: project.id,
+                overallProjectStatus: e.target.value,
+              })
+            }
           >
-            <FaEye />
-          </Button>
-          <Button
-            className="success"
-            color="success"
-            onClick={() => editRow(project.id)}
+            {metadata.status.map((status) => (
+              <option key={status} value={status}>
+                {status}
+              </option>
+            ))}
+          </select>
+        </td>
+        <td>
+          <select
+            className="form-select w-auto"
+            value={project.state}
+            onChange={(e) =>
+              updateProject({
+                id: project.id,
+                state: e.target.value,
+              })
+            }
           >
-            <FaPencilAlt />
-          </Button>
-          <Button
-            className="error"
-            color="error"
-            onClick={() => deleteProject(project.id)}
+            {metadata.states.map((stateName) => (
+              <option key={stateName} value={stateName}>
+                {stateName}
+              </option>
+            ))}
+          </select>
+        </td>
+        <td>
+          <a
+            href={project.projectFilesFolder}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 underline-none text-[15px] text-center pl-2.5"
           >
-            <MdDelete />
+            View Files
+          </a>
+        </td>
+        <td>
+          <div className="actions d-flex align-items-center">
+            <Button
+              className="secondary"
+              color="secondary"
+              onClick={() => viewRow(project.id)}
+            >
+              <FaEye />
+            </Button>
+            <Button
+              className="success"
+              color="success"
+              onClick={() => editRow(project.id)}
+            >
+              <FaPencilAlt />
+            </Button>
+            <Button className="error" color="error" onClick={handleDeleteClick}>
+              <MdDelete />
+            </Button>
+          </div>
+        </td>
+      </tr>
+
+      <Dialog
+        open={openDeleteDialog}
+        onClose={handleCloseDeleteDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{"Confirm Delete"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Are you sure you want to delete this project? This action cannot be
+            undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDeleteDialog} color="primary">
+            Cancel
           </Button>
-        </div>
-      </td>
-    </tr>
+          <Button onClick={handleConfirmDelete} color="error" autoFocus>
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 };
 

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { CheckBox, SingleSelectDropdown } from "./Fields";
-import { useData } from "../contexts/DataContext";
+import { useData } from "../contexts/data/DataContext";
 
 const FormGenerator = ({ data, setter, fields, bgcolor, viewOnly }) => {
   const handleInputChange = (name, value) => {
