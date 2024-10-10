@@ -1,6 +1,7 @@
 import projectsInit from "../db/JsonData/projects.json";
 import paymentsInit from "../db/JsonData/payments.json";
 import metadataInit from "../db/JsonData/metadata.json";
+import contractmetadataInit from "../db/JsonData/contractMetadata.json";
 
 const FAKE_USER = {
   id: "fake_user",
@@ -59,14 +60,12 @@ async function getSheetData() {
     return {
       projects: data.projectData, // Use projects from Google Apps Script or fallback to initial
       payments: data.paymentsData,
-      metadata: metadataInit, // Static metadata for now
     };
   } catch (error) {
     console.error("Error fetching projects:", error); //will be changed to throw error later
 
     return {
       projects: projectsInit, // Fallback to local data if there's an error
-      metadata: metadataInit,
       payments: paymentsInit,
     };
   }
@@ -78,6 +77,10 @@ function handleDevEnvironment(functionName, data) {
       user: FAKE_USER,
       token: "FAKE_TOKEN",
     };
+  } else if (functionName == "getMetadata") {
+    return metadataInit;
+  } else if (functionName == "getContractMetadata") {
+    return contractmetadataInit;
   } else {
     throw new Error(
       "Unhandled Fake Google Function " +

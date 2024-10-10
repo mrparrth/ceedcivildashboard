@@ -2,6 +2,14 @@ const CONFIG = {
   SETTINGS: "⚙️Settings",
   DATE_PREFIX: "D",
   PROJECT_ID_PROP: "LastProjectId",
+  METADATA_PROP: 'Metadata',
+  CONTRACT_META_PROP: 'ContractMetaData',
+  CONTRACT_TEMPLATE: '1n9mabMMM4DF8I54wxuczl8us85sfQ-VT2BvTAQUzYpI', //'136toZMz-Bau1Y6vvbwmxsLgFFNgzM1tWb1RfwpZ_jmE',
+  CONTRACT_OUTPUT_FOLDER: '1r9INUZVhcIZ7mjXrWMXAd6Eye5RbWQoH',
+  CONTRACT_ALTERNATE_COLORS: {
+    color1: '#FFFFFF',
+    color2: '#F3EFEF'
+  }
 };
 
 class User {
@@ -236,11 +244,16 @@ class PublicApp {
     this.ss = SpreadsheetApp.getActive();
     this.shProjects = this.ss.getSheetByName(this.settings.sheetNameProjects);
     this.shPayments = this.ss.getSheetByName(this.settings.sheetNamePayments);
+    this.metadata
+    this.contractMetadata
   }
 
   onOpen() {
     _createMenu_(this.settings.appName, [
       { caption: "+ New User", action: "addNewUser" },
+      null,
+      { caption: "Refresh Metadata Cache", action: "refreshMetadata" },
+      { caption: "Set 30 min metadata autorefresh", action: "metadataAutorefresh" },
       null,
       { caption: "Re-authorize Freshbooks", action: "authorizeFB" },
       { caption: "Re-authorize Dropbox", action: "authorizeDropbox" },
@@ -286,6 +299,36 @@ class PublicApp {
   setProperty(propName, value) {
     PropertiesService.getScriptProperties().setProperty(propName, value);
   }
+
+  refreshMetadata() {
+    let shMetadata = this.ss.getSheetByName('Metadata')
+    let metaSheetData = _getItemsFromSheet_(shMetadata)
+    this.metadata = {}
+    metaSheetData.forEach(({ field, options }) => {
+      this.metadata[field] = options.split('||')
+    })
+
+    this.setProperty(CONFIG.METADATA_PROP, JSON.stringify(this.metadata))
+  }
+
+  getMetadata() {
+    if (!this.metadata) {
+      this.refreshMetadata()
+      this.metadata = JSON.parse(this.getProperty(CONFIG.METADATA_PROP) || {})
+    }
+
+    return this.metadata
+  }
+
+  getContractMetadata() {
+    let shScopes = this.ss.getSheetByName('Scopes')
+    let shFavClient = this.ss.getSheetByName('Fav Clients')
+
+    let scopes = _getItemsFromSheet_(shScopes)
+    let favClients = _getItemsFromSheet_(shFavClient)
+
+    return { scopes, favClients }
+  }
 }
 
 class SecureApp extends PublicApp {
@@ -323,18 +366,19 @@ class SecureApp extends PublicApp {
         .map((project) => parseFloat(project.projectNumber))
         .filter((num) => Number.isInteger(num));
 
-      let newProjectNumber =
-        projectNumbers.length === 0 ? 100 : Math.max(...projectNumbers) + 1;
+      let maxProjectNumber =
+        projectNumbers.length === 0 ? 100 : Math.max(...projectNumbers)
+
       let cachedProjectNumber = parseInt(
         this.getProperty(CONFIG.PROJECT_ID_PROP) || 0
       );
 
-      if (cachedProjectNumber > newProjectNumber) {
-        this.setProperty(CONFIG.PROJECT_ID_PROP, cachedProjectNumber);
-        return cachedProjectNumber;
+      if (cachedProjectNumber > maxProjectNumber) {
+        this.setProperty(CONFIG.PROJECT_ID_PROP, cachedProjectNumber + 1);
+        return cachedProjectNumber + 1;
       } else {
-        this.setProperty(CONFIG.PROJECT_ID_PROP, newProjectNumber);
-        return newProjectNumber;
+        this.setProperty(CONFIG.PROJECT_ID_PROP, maxProjectNumber + 1);
+        return maxProjectNumber;
       }
     } finally {
       lock.releaseLock();
@@ -457,7 +501,7 @@ class SecureApp extends PublicApp {
     let user = this.authApp.getUserByName(payment.assignee);
     if (!user) throw "User details not found";
 
-    payment.expenseId = createFBExpense(payment, user);
+    payment.expenseId = _createFBExpense_(payment, user);
 
     this.updatePayment(payment);
     return payment.expenseId;
@@ -487,27 +531,39 @@ const include = (filename) => _include_(filename);
 
 const onOpen = () => new PublicApp().onOpen();
 const getSheetData = ({ token }) => new SecureApp(token).getSheetData();
-const updateProject = ({ token, data }) =>
-  new SecureApp(token).updateProject(data);
-const archiveProjects = ({ token, data }) =>
-  new SecureApp(token).archiveProjects(data);
-const unarchiveProjects = ({ token, data }) =>
-  new SecureApp(token).unarchiveProjects(data);
-const createProject = ({ token, data }) =>
-  new SecureApp(token).createProject(data);
-const createDropboxFolder = ({ token, data }) =>
-  new SecureApp(token).createDropboxFolder(data);
+const updateProject = ({ token, data }) => new SecureApp(token).updateProject(data);
+const archiveProjects = ({ token, data }) => new SecureApp(token).archiveProjects(data);
+const unarchiveProjects = ({ token, data }) => new SecureApp(token).unarchiveProjects(data);
+const createProject = ({ token, data }) => new SecureApp(token).createProject(data);
+const createDropboxFolder = ({ token, data }) => new SecureApp(token).createDropboxFolder(data);
+const getNewProjectNumber = ({ token, data }) => new SecureApp(token).getNewProjectNumber();
 
-const createPayments = ({ token, data }) =>
-  new SecureApp(token).createPayments(data);
-const updatePayment = ({ token, data }) =>
-  new SecureApp(token).updatePayment(data);
-const deletePayment = ({ token, data }) =>
-  new SecureApp(token).deletePayment(data);
-const createExpense = ({ token, data }) =>
-  new SecureApp(token).createExpense(data);
-const getNewProjectNumber = ({ token, data }) =>
-  new SecureApp(token).getNewProjectNumber();
+const createPayments = ({ token, data }) => new SecureApp(token).createPayments(data);
+const updatePayment = ({ token, data }) => new SecureApp(token).updatePayment(data);
+const deletePayment = ({ token, data }) => new SecureApp(token).deletePayment(data);
+
+//freshbooks functions
+const createExpense = ({ token, data }) => new SecureApp(token).createExpense(data);
+const getFBClient = ({ data }) => _getFBClient_(data)
+const createFBClient = ({ data }) => _createFBClient_(data)
+const createFBInvoice = ({ data }) => _createFBInvoice_(data)
+const createFBProject = ({ data }) => _createFBProject_(data)
+const createContract = ({ data }) => _createContract_(data)
+
+const refreshMetadata = () => new PublicApp().refreshMetadata()
+const getMetadata = () => new PublicApp().getMetadata()
+const getContractMetadata = () => new PublicApp().getContractMetadata()
+
+const metadataAutorefresh = () => {
+  let triggers = ScriptApp.getProjectTriggers()
+  triggers.forEach(trigger => {
+    if (trigger.getHandlerFunction() == 'refreshMetadata') {
+      ScriptApp.deleteTrigger(trigger)
+    }
+  })
+
+  ScriptApp.newTrigger('refreshMetadata').timeBased().everyMinutes(30).create()
+}
 
 const test = () => {
   let adminToken =
@@ -515,9 +571,9 @@ const test = () => {
   let empToken =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImVjY2I1N2EwLWM0OTItNDlkOS04NmMwLTRmYzBjNTYyMGI3YSIsImNyZWF0ZWRBdCI6IjIwMjQtMTAtMDFUMTQ6MzA6MDAuNjU4WiIsIm1vZGlmaWVkQXQiOiIyMDI0LTEwLTAxVDE0OjMwOjAwLjY1OFoiLCJuYW1lIjoiQXJuZWwiLCJlbWFpbCI6ImlhbXBhcnJ0aEBnbWFpbC5jb20iLCJyb2xlIjoiRW1wbG95ZWUiLCJzdGF0dXMiOiJBY3RpdmUiLCJfcm93SW5kZXgiOjJ9.fUo9EAvFMb+BBYJPKEgmSVZWlGnXej3Mr2FRRjbvxiU=";
 
-  let payload = { "data": { "fbClientId": 214504, "fbInvoiceId": "0001634", "date": "2024-10-09", "clientName": "Kristeen Snyder", "retainerRemaining": 5600, "siteState": "California", "clientStreet": "1850 So. 10th Street Suite 30", "checkBox": "on", "clientState": "California", "salesman": "Ryan", "deliveryDuration": "1 - 2 Weeks", "siteStreet": "6373 San Igancio", "clientZip": "95112", "gap": 0, "clientCompany": "IDEAL Environmental Products", "remainingBalance": 0, "siteAddress": "6373 San Igancio,San Jose,California 95119", "siteCity": "San Jose", "scopes": [{ "detail": "Preparation of design computations and construction drawings for building plans. Soil assumed at 1500 PSF unless soil report provided. All loads as shown. Single use for address as shown", "description": "Building Plan Calculations Package", "rate": 1800 }, { "rate": 700, "description": "Calculations Report", "detail": "Calculations report for the openings in the ceiling." }, { "description": "Engineering Review, Stamp and Seal P.E.", "detail": "Scope of work, reviewed, stamped, and sealed by state licensed P.E. CA", "rate": 2300 }, { "detail": "This is for a single use, single build, single location contract. Any State approvals or HCD approval is not authorized usage of the plans and calcs for usage other than that specified in on the plans and contract.", "rate": 0, "description": "Contract Notes" }, { "rate": 800, "detail": "Electrical pages for Scope of work, reviewed, stamped, and sealed by state licensed P.E. CA", "description": "Engineering Review, Stamp and Seal P.E." }], "clientAddress": "1850 So. 10th Street Suite 30,San Jose,California 95112", "favClients": "", clientCity: 'test', "isUpworkJob": false, "retainerDeposit": 5600, "projectNumber": "601", "fbProjectId": "12471503", "deliverableFromClient": "CAD and PDF files", "clientEmail": "kristeen.snyder@chem-stor.com", "projectName": "IDEAL - New Calcs", "clientPhone": "(209)752-3177", "totalCost": 5600, "siteZip": "95119", "ratePerHour": 200 }, "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA5MGE5NWNlLTM5MzMtNGI1Ny1hMTkxLTk2ZGMwNjdmOTg1MSIsImNyZWF0ZWRBdCI6IjIwMjQtMTAtMDNUMTM6NTU6NTEuNzcyWiIsIm1vZGlmaWVkQXQiOiIyMDI0LTEwLTAzVDEzOjU1OjUxLjc3MloiLCJuYW1lIjoiQWRtaW4iLCJlbWFpbCI6ImFkbWluQGNlZWRjaXZpbC5jb20iLCJyb2xlIjoiQWRtaW4iLCJzdGF0dXMiOiJBY3RpdmUiLCJtZXJjaGFudE5hbWUiOiJBZG1pbiIsImNhdGVnb3J5TmFtZSI6IkRyYWZ0ZXIgLSBDb250cmFjdG9yIiwiX3Jvd0luZGV4IjozfQ==.q3sodyDSjuplKUYL6ZHy6FgnPS0rAMfgeeUHXFaf2Vg=" };
+  let payload = { "data": { "sameAsClient": true, "fbInvoiceId": "0001672", "date": "2024-09-14", "clientName": "test test", "clientStreet": "Test Test", "clientState": "California", "clientCompany": "Test test", "clientZip": "95112", "clientCity": "test", "clientEmail": "test@test.com", "clientAddress": "Test Test", "clientPhone": "(000)000-0000", "siteAddress": "Test Test", "siteCity": "San Jose", "siteState": "California", "siteZip": "95119", "retainerRemaining": 5600, "checkBox": "on", "salesman": "Ryan", "deliveryDuration": "1 - 2 Weeks", "siteStreet": "6373 San Igancio", "favClients": "", "gap": 0, "remainingBalance": 0, "isUpworkJob": false, "retainerDeposit": 9, "projectNumber": "999", "fbProjectId": "12518535", "fbClientId": "", "deliverableFromClient": "CAD and PDF files", "projectName": "Test", "totalCost": 9, "ratePerHour": 200, "documentUrl": "", "scopes": [{ "detail": "Preparation of design computations and construction drawings for building plans. Soil assumed at 1500 PSF unless soil report provided. All loads as shown. Single use for address as shown", "description": "Building Plan Calculations Package", "rate": 5 }, { "rate": 2, "description": "Calculations Report", "detail": "Calculations report for the openings in the ceiling." }, { "description": "Engineering Review, Stamp and Seal P.E.", "detail": "Scope of work, reviewed, stamped, and sealed by state licensed P.E. CA", "rate": 2 }] }, "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA5MGE5NWNlLTM5MzMtNGI1Ny1hMTkxLTk2ZGMwNjdmOTg1MSIsImNyZWF0ZWRBdCI6IjIwMjQtMTAtMDNUMTM6NTU6NTEuNzcyWiIsIm1vZGlmaWVkQXQiOiIyMDI0LTEwLTAzVDEzOjU1OjUxLjc3MloiLCJuYW1lIjoiQWRtaW4iLCJlbWFpbCI6ImFkbWluQGNlZWRjaXZpbC5jb20iLCJyb2xlIjoiQWRtaW4iLCJzdGF0dXMiOiJBY3RpdmUiLCJtZXJjaGFudE5hbWUiOiJBZG1pbiIsImNhdGVnb3J5TmFtZSI6IkRyYWZ0ZXIgLSBDb250cmFjdG9yIiwiX3Jvd0luZGV4IjozfQ==.q3sodyDSjuplKUYL6ZHy6FgnPS0rAMfgeeUHXFaf2Vg=" }
 
-  console.log(createProjectJson(payload.data))
+  console.log(createContract(payload))
 
   // console.log(new SecureApp(payload.token).createExpense(payload.data));
 

@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import { Drafter, Engineering, MEP, Civil } from "./ExpandableSections";
 import { SingleSelectDropdown, MultiSelectDropdown, CheckBox } from "./Fields";
 import { useData } from "../contexts/data/DataContext";
+import { useGlobal } from "../contexts/GlobalContext";
 
 const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
-  let { metadata, updateProject, createProject, projects } = useData();
+  let { updateProject, createProject, projects } = useData();
+  let { metadata } = useGlobal();
 
   const defaultProject = {
     projectNumber: "",

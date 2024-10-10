@@ -1,6 +1,5 @@
 export const initialState = {
   projects: [],
-  metadata: {},
   payments: [],
 };
 

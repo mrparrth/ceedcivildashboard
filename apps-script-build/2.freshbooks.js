@@ -11,7 +11,7 @@ function getAccountId() {
   console.log("Your business id is " + response["response"]["business_memberships"][0]["business"]["id"]);
 }
 
-function getFBClient(data) {
+function _getFBClient_(data) {
   Logger.log(JSON.stringify(data))
   let { clientName, clientEmail } = data
   let namesplit = clientName.split(" ");
@@ -34,8 +34,8 @@ function getFBClient(data) {
   }
 }
 
-function createFBClient(data) {
-  let { clientName, clientEmail, clientPhone, clientCompany, clientStreet, clientCity,clientState,clientZip } = data
+function _createFBClient_(data) {
+  let { clientName, clientEmail, clientPhone, clientCompany, clientStreet, clientCity, clientState, clientZip } = data
   let namesplit = clientName.split(" ");
   let lastName, firstName
   if (namesplit.length > 1) {
@@ -67,21 +67,21 @@ function createFBClient(data) {
   return response.response.result.client.id
 }
 
-function createFBInvoice(data) {
-  let jsonInvoice = createInvoiceJson(data);
+function _createFBInvoice_(data) {
+  let jsonInvoice = _createInvoiceJson_(data);
   let response = fbPostRequest_(`https://api.freshbooks.com/accounting/account/${ACCOUNT_ID}/invoices/invoices`, jsonInvoice);
 
   Logger.log(`Invoice Created ${response.response.result.invoice.id}`)
   return response.response.result.invoice.invoice_number;
 }
 
-function createInvoiceJson(project) {
+function _createInvoiceJson_(project) {
   let finalDict = {};
   let rootDict = {};
   let allItems = [];
   let scopes = project['scopes']
   let { projectNumber, projectName, fbClientId, isUpworkJob } = project
-  
+
   rootDict["customerid"] = fbClientId;
   rootDict["create_date"] = Utilities.formatDate(new Date(), "UTC", "yyyy-MM-dd");
   rootDict["terms"] = _getSettings_().terms
@@ -100,7 +100,7 @@ function createInvoiceJson(project) {
     individualItems["name"] = scope.description
     individualItems["description"] = scope.detail;
     individualItems["qty"] = 1;
-    individualItems["unit_cost"] = { amount: parseCost(scope.rate), code: 'USD' }
+    individualItems["unit_cost"] = { amount: _parseCost_(scope.rate), code: 'USD' }
 
     allItems.push(individualItems);
   })
@@ -111,7 +111,7 @@ function createInvoiceJson(project) {
   return finalDict;
 }
 
-function getAllServices() {
+function _getAllServices_() {
   const response = fbGetAll_(`https://api.freshbooks.com/comments/business/${BUSINESS_ID}/services`)
   const services = response.services;
   const arrServices = [];
@@ -125,29 +125,34 @@ function getAllServices() {
   return arrServices
 }
 
-function createFBProject(project) {
-  const jsonProject = createProjectJson(project);
+function _createFBProject_(project) {
+  console.log(project)
+  const jsonProject = _createProjectJson_(project);
   const response = fbPostRequest_(`https://api.freshbooks.com/projects/business/${BUSINESS_ID}/project`, jsonProject)
 
-  return response;
+  if(response.error){
+    throw response.error
+  }else{
+    return response.project.id;
+  }
 }
 
-function parseCost(cost){
-  if(cost instanceof String){
+function _parseCost_(cost) {
+  if (cost instanceof String) {
     return parseFloat(cost.replace(/[$,]/g, '')) || 0
-  }else{
+  } else {
     return cost
   }
 }
 
-function createProjectJson(project) {
+function _createProjectJson_(project) {
   Logger.log(JSON.stringify(project))
   const finalDict = {};
   const rootDict = {};
   const allServices = [];
   let { scopes, projectNumber, projectName, fbClientId, totalCost } = project
 
-  const serviceData = getAllServices()
+  const serviceData = _getAllServices_()
 
   rootDict["title"] = `${projectNumber} - ${projectName}`
   rootDict["client_id"] = fbClientId;
@@ -156,12 +161,12 @@ function createProjectJson(project) {
   scopes.forEach(scope => {
     let indivService = {};
     indivService["name"] = scope.description
-    let serviceId = getServiceIdByName(serviceData, scope.description)
+    let serviceId = _getServiceIdByName_(serviceData, scope.description)
     if (serviceId) indivService["id"] = serviceId
     allServices.push(indivService)
   })
 
-  rootDict["fixed_price"] = parseCost(totalCost);
+  rootDict["fixed_price"] = _parseCost_(totalCost);
   rootDict["services"] = allServices;
   finalDict["project"] = rootDict;
 
@@ -170,7 +175,7 @@ function createProjectJson(project) {
   return finalDict;
 }
 
-function getServiceIdByName(serviceData, scopeDesc) {
+function _getServiceIdByName_(serviceData, scopeDesc) {
   let service = serviceData.find(service => service.name == scopeDesc)
   if (service) return service.id
 }
@@ -179,61 +184,8 @@ function getServiceIdByName(serviceData, scopeDesc) {
 function testFB() {
   createFBExpenseForFinanceRow(250)
 }
-//
-function createFBExpenseForFinanceRow(rowNo) {
-  Logger.log(`Creating expense for row number ${rowNo}`)
-  let sheet = SpreadsheetApp.getActive().getSheetByName('Finance')
 
-  let projectNo = sheet.getRange(`B${rowNo}`).getValue()
-  let user = sheet.getRange(`A${rowNo}`).getValue()
-  let totalCost = parseFloat(sheet.getRange(`O${rowNo}`).getValue())
-  let actualCost = parseFloat(sheet.getRange(`G${rowNo}`).getValue())
-  let cost = totalCost || actualCost
-
-  let note = sheet.getRange(`B${rowNo}`).getValue() + ' - ' + sheet.getRange(`C${rowNo}`).getValue()
-  let date = Utilities.formatDate(sheet.getRange(`I${rowNo}`).getValue(), SpreadsheetApp.getActive().getSpreadsheetTimeZone(), 'yyyy-MM-dd')
-  let clientId
-  try {
-    clientId = getClientIdFromInvoiceDesc(projectNo)
-  }
-  catch (e) {
-    // showError(e)
-    throw e
-  }
-
-  let usrObject = getUserObjectFromData(user)
-  let vendor = usrObject.merchantName
-  let categoryName = usrObject.categoryName
-
-
-  let expenseId
-  try {
-    expenseId = createFBExpense({ clientId, categoryName, vendor, note, cost, date })
-  }
-  catch (e) {
-    showError(e)
-    throw e
-  }
-
-  SpreadsheetApp.getActive().toast(`Expense created - ${expenseId}`)
-
-  return expenseId
-}
-
-function getUserObjectFromData(userName) {
-  let userData = SpreadsheetApp.getActive().getSheetByName('DATA').getRange('N2:P120').getValues()
-
-  for (let usrrow of userData) {
-    if (usrrow[0] == userName) {
-      return {
-        merchantName: usrrow[1],
-        categoryName: usrrow[2]
-      }
-    }
-  }
-}
-
-function getClientIdFromInvoiceDesc(invoiceDesc) {
+function _getClientIdFromInvoiceDesc_(invoiceDesc) {
   const url = `https://api.freshbooks.com/accounting/account/${ACCOUNT_ID}/invoices/invoices?search[item_description]=${invoiceDesc}`
   const result = fbGetRequest_(url)
 
@@ -245,9 +197,12 @@ function getClientIdFromInvoiceDesc(invoiceDesc) {
   }
 }
 
-function createFBExpense({ projectNumber, totalCost, actualCost, notes, datePaid }, { merchantName, categoryName }) {
+function _createFBExpense_(payment, user) {
+  let { projectNumber, totalCost, actualCost, notes, datePaid } = payment
+  let { merchantName, categoryName } = user
+
   try {
-    var clientId = getClientIdFromInvoiceDesc(projectNumber)
+    var clientId = _getClientIdFromInvoiceDesc_(projectNumber)
   }
   catch (e) {
     throw e
@@ -279,10 +234,4 @@ function createFBExpense({ projectNumber, totalCost, actualCost, notes, datePaid
   else {
     return result.response.result.expense.expenseid
   }
-}
-
-function testError() {
-  let json = { "client-name": "Maryam Asefi", "FBProjectId": "", "site-state": "Virginia", "project": "VA - FFX - Infill Lot Grading Plan", "FavClients": "", "site-address": "10708 Ox Croft Court,Fairfax Station,Virginia 22039", "deliverable-from-client": "CAD of proposed pool layout and PDF", "client-city": "Fairfax Station", "site-city": "Fairfax Station", "retainer_remaining": "$3,000", "client-zip": "22039", "client-street": "10708 Ox Croft Court", "client-email": "asefi.mary@gmail.com", "retainer-deposit": "$3,000", "total_cost": "$14,000", "upwork-job": false, "client-address": "10708 Ox Croft Court,Fairfax Station,Virginia 22039", "scopes": [{ "detail": "Existing and Proposed Contours, Established Building Setbacks, Driveway & Utilities, Demolition of the existing (if any), Existing parking spaces (if any), Proposed Construction Entrance and Driveway, Limits of Clearing and Grading, Determination of watershed and proposed impervious areas, Required Erosion and Sediment Control Devices, Site Development and Sequences of Construction Notes, Impervious Area Analysis, Watershed for the site and disturbed areas in the watershed, Frontage cover,Standard Construction Details and Certifications, Current INF checklist per ESI (found here: https://www.fairfaxcounty.gov/ landdevelopment/sites/landdevelopment/ files/assets/documents/forms/infill-lot-grading-plan-checklist.pdf)", "description": "FFX - Site Grading & Development Plan", "rate": "$2,500" }, { "detail": "As required by the county submittal, Ceed Civil Engineering will prepare the Sediment and Erosion Control Checklist. The checklist will be prepared based on the grading plan and sealed by the registered professional engineer of record (EOR).", "rate": "$500", "description": "Sediment and Erosion Control Checklist" }, { "detail": "As required per Fairfax County, Ceed Civil Engineering will perform outfall analysis for the site in order to ensure that it has adequate outfall in accordance with the PFM and Northern Virginia handbook. The outfall analysis will include pre-development, construction phase, and post-construction phase. Inova will perform field review of existing drainage pattern, set drainage divide, perform required analysis and calculations, and assess the adequacy of the outfall for the site. The Outfall Narrative will include:1.Stormwater runoff computation by runoff reduction method. Stormwater management ordinance Chapter 124.Virginia state regulations. 2.Site-specific Narrative with description of the elements of storm drainage system and adjoining properties. 3. Outfall Locations Map with contributing drainage areas and detailed hydrological and hydraulic calculations. 4. Extent of the outfall analysis per PFM chapter 6. 5. Up to five (5) cross-sections based on field run contour intervals and spot evaluations to verify the outfall adequacy. 6. Permissible velocity, based on roughness coefficient, soil classification, pipe materials, cover material and channel lining (if any). 7. Design velocities compared with the permissible channel velocities (as applicable). 8. Observed erosion conditions along the downstream channel and the presence of erosive conditions. 9. Adequacy of outfall to the bed and banks of the receiving stream. 10. Engineer’s Certification Statement regarding the adequacy of the outfall for the study site. 11. Stormwater Management completion checklists", "description": "Drainage area Map, Adequacy computations and Outfall Analysis", "rate": "$1,000" }, { "description": "Building Ht. Computation", "detail": "In accordance with the Fairfax County Letter to Industries, the average height of the existing dwelling must be computed. The certified average elevation will be shown on the Site Grading Plan. Inova will coordinate with the project Architect to obtain the house plans, coordinate elevations between the final grading and elevation plans, and include the proposed height certification per county requirements.", "rate": "$500" }, { "description": "Stormwater management facility design and BMP location map (Chapter 124)", "detail": "In accordance with the Fairfax County, the increased runoff volume due to proposed development is required to control on site. Stormwater facility will be designed, or waiver will be requested based on infiltration test reports. Infiltration testing and reports fee is not included. The testing shall be done by certified soil consultants or Geotechnical engineers. If owner wants, he can hire directly Geotech engineer or soil consultants for infiltration testing and reports.", "rate": "$1,500" }, { "description": "EVM Tree and Forest Conservation Plan (3rd Party Arborist)", "detail": "Ceed Civil Engineering's partner will provide the existing vegetation map and Tree Preservation Plan shall be prepared per Fairfax County PFM chapter 12. Tree preservation target, Tree canopy covered computation shall be provided. A 10 yr tree canopy requirement will be computed,  and plantings will propose if required to meet canopy covered requirements. The Tree conservation plan (TCP) shall be signed and sealed by the certified arborist.", "rate": "$2,000" }, { "rate": "$3,000", "description": "Survey (3rd Party Licensed Surveyor)", "detail": "Ceed Civil Engineering's partner will perform the field run topography for the entire property, calculate MSL elevations, and prepare a plan showing existing site topography with 2-ft contour intervals @ 20-ft scale. The Survey will include a 50-foot overlap around the peripheral boundary of the property. All existing vegetation shall be depicted on the plan. Spot elevations and physical features, including edge of pavements, storm drainage pipes, and other relevant features within the limits of the survey will be identified for inclusion on the topography survey. Proposed profile holes and test holes will be located on the plan." }, { "rate": "$3,000", "description": "Soil Classification (3rd Party)", "detail": "Ceed Civil Engineer will facilitate to find Geotech engineer upon request by owner. Fee for soil report is not included. OPTIONAL - IF REQUIRED" }, { "description": "Engineering Review, Stamp and Seal P.E.", "rate": "$0.00", "detail": "Scope of work, reviewed, stamped, and sealed by state licensed P.E. VA" }], "salesman": "Ryan", "date": "05/13/2024", "client-company": "", "gap": -8000, "project-number": "573", "checkBox": "on", "remaining-balance": "$3,000", "site-zip": "22039", "client-phone": "703-870-8689", "site-street": "10708 Ox Croft Court", "client-state": "Virginia", "rate-per-hour": "$200", "FBInvoiceId": "0001456", "invoiceId": "0001457", "clientId": 252343, "delivery-duration": "2 - 5 Weeks" }
-
-  createFBProject(json)
 }

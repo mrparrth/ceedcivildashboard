@@ -1,0 +1,356 @@
+{
+  "favClients": [
+    {
+      "name": "John Reynolds",
+      "company": "CAD Hawaii",
+      "street": "PO Box 430",
+      "city": "Honokaa,",
+      "state": "HI",
+      "zip": 96727,
+      "phone": "808-333-8602",
+      "email": "jr@cadhawaii.com"
+    },
+    {
+      "name": "Shane Wearmouth",
+      "company": "SafeSmart",
+      "street": "13238 Florence Ave",
+      "city": "Santa Fe Springs",
+      "state": "CA",
+      "zip": 90670,
+      "phone": "310-410-1525",
+      "email": "shanew@safesmart.com"
+    },
+    {
+      "name": "Jose Chang",
+      "company": "Elite Drafting & Design",
+      "street": "701 Brickell Ave, Suite #1550",
+      "city": "Miami",
+      "state": "FL",
+      "zip": 33131,
+      "phone": "(626) 814-5121",
+      "email": "chang@elitedraftingdesign.com"
+    },
+    {
+      "name": "Frank Pike",
+      "company": "Steel Commander Corp.",
+      "street": "2200 NW Corporate Blvd. #410",
+      "city": "Boca Raton",
+      "state": "FL",
+      "zip": 33431,
+      "phone": "561-208-8970",
+      "email": "frank@steelcommandercorp.com"
+    },
+    {
+      "name": "Karen Wilkins, Architect",
+      "company": "Wilkins Studio Architects",
+      "street": "785 Quintana Ln #180",
+      "city": "Morro Bay",
+      "state": "CA",
+      "zip": 93442,
+      "phone": "(415) 273-9054",
+      "email": "kwilkins.wsa@gmail.com"
+    },
+    {
+      "name": "Barbara Stokes",
+      "company": "GSH of Alabama, LLC",
+      "street": "PO BOX 1607",
+      "city": "Huntsville",
+      "state": "AL",
+      "zip": 35807,
+      "phone": "256-348-4322",
+      "email": "Barbara@GreenStructureHomes.com"
+    },
+    {
+      "name": "Ed Ball",
+      "company": "Ed Ball Landscape Architecture",
+      "street": "12976 Hattontown Square",
+      "city": "Oak Hill",
+      "state": "VA",
+      "zip": 20171,
+      "phone": "571.233.8982",
+      "email": "ed@ebla.pro"
+    },
+    {
+      "name": "John Williams",
+      "company": "KSI Metals",
+      "street": "1005 W Snowflake BLVD.",
+      "city": "Snowflake",
+      "state": "AZ",
+      "zip": 85937,
+      "phone": "(602) 828-3490",
+      "email": "kevinm@ksimetals.com"
+    },
+    {
+      "name": "Rashesh Shah",
+      "company": "IronS USA Inc.",
+      "street": "12872 141 St NW",
+      "city": "Edmonton,",
+      "state": "CAN",
+      "zip": "T5L 4S3",
+      "phone": "1.780.488.1726 Ext:304",
+      "email": "RasheshS@pavilionstructures.com"
+    },
+    {
+      "name": "Anthony Setliff",
+      "company": "Jessup Construction",
+      "street": "2006 Hartsfield Ave,",
+      "city": "Pineville",
+      "state": "LA",
+      "zip": 71360,
+      "phone": "318-451-8103",
+      "email": "anthony@jessupconstruct.com"
+    },
+    {
+      "name": "Charlotte Norton",
+      "company": "Allied fence and security",
+      "street": "13350 Old Kimbro Rd",
+      "city": "Manor",
+      "state": "TX",
+      "zip": 78653,
+      "phone": "512-587-9898 ",
+      "email": "charlotte@alliedfenceandsecurity.com"
+    },
+    {
+      "name": "Test LastTest",
+      "company": "Test Company",
+      "street": "Test Street",
+      "city": "Test City",
+      "state": "TX",
+      "zip": 99999,
+      "phone": "112-121-2112",
+      "email": "test@gmail.com"
+    },
+    {
+      "name": "Jerry Parent",
+      "company": "Allied fence and security",
+      "street": "13350 Old Kimbro Rd",
+      "city": "Manor",
+      "state": "TX",
+      "zip": 78653,
+      "phone": "512-587-9898 ",
+      "email": "Jerry@alliedfenceandsecurity.com"
+    },
+    {
+      "name": "Chris Moran",
+      "company": "Fusion Building Systems LLC",
+      "street": "6401 Long Point Road, Suite 202,",
+      "city": "Houston",
+      "state": "TX",
+      "zip": 77055,
+      "phone": "(225) 939-8598",
+      "email": "chris@7dayaframes.com"
+    }
+  ],
+  "scopes": [
+    {
+      "description": "Architectural Drafting",
+      "rate": 1500,
+      "detail": "Typical layout detail, interior section views, Exterior wall detail, window egress callout."
+    },
+    {
+      "description": "Building Plan Calculations Package",
+      "rate": 1000,
+      "detail": "Preparation of design computations and construction drawings for building plans. Soil assumed at 1500 PSF unless soil report provided"
+    },
+    {
+      "description": "Structural Detail Plans",
+      "rate": 2500,
+      "detail": "Structural details for building plans. S-pages drafted as needed. Foundation, section view and details. Design criteria and connection details."
+    },
+    {
+      "description": "Electrical Layout",
+      "rate": 1000,
+      "detail": "Electrical Layout Only – Outlets, Lights, Emergency Lights, Exit Signs."
+    },
+    {
+      "description": "Plumbing Layout",
+      "rate": 1000,
+      "detail": "Plumbing Layout Only - Sewage/Drainage Layout, Hot Water Layout, Cold Water Layout"
+    },
+    {
+      "description": "Mechanical Layout",
+      "rate": 1000,
+      "detail": "Mechanical Layout Only – Hood and Duct Layout, HVAC and Location."
+    },
+    {
+      "description": "Basic Building Plan Set",
+      "rate": 1700,
+      "detail": "Building plan set with simple plan layout, simple callouts, 1 section view, basic site plan layout, roof plan layout all per provided manual for gazebo."
+    },
+    {
+      "description": "Engineering Review, Stamp and Seal P.E.",
+      "rate": 0,
+      "detail": "Scope of work, reviewed, stamped, and sealed by state licensed P.E."
+    },
+    {
+      "description": "Plan Set Updates",
+      "rate": 600,
+      "detail": "Building plan updates per notes attached to client provided PDF."
+    },
+    {
+      "description": "Steel Building - Foundation Only Plans",
+      "rate": 1500,
+      "detail": "Foundation only plan set. Layout, Section view with 6\" monolithic slab/footer w/ WWM rebar in slab. Pier Footers for building connections. All sized per building manufacturers provided loads. Soil assumed at 1500 PSF unless soil report provided."
+    },
+    {
+      "description": "Steel Building - Foundation Only Calculations",
+      "rate": 100,
+      "detail": "Preparation of design computations for foundation plans. Soil assumed at 1500 PSF unless soil report provided."
+    },
+    {
+      "description": "Foundation Only Plans",
+      "rate": 1700,
+      "detail": "Foundation only plan set. Layout, Section view."
+    },
+    {
+      "description": "Container Home Details",
+      "rate": 2000,
+      "detail": "Details of container project, cutouts, and structural drafting"
+    },
+    {
+      "description": "Calculations Report",
+      "rate": 1100,
+      "detail": "Calculations report for project scope."
+    },
+    {
+      "description": "Container Structural Drafting",
+      "rate": 1000,
+      "detail": "Structural details for container building plans. S-pages drafted as needed. Foundation, section view and details. Design criteria and connection details."
+    },
+    {
+      "description": "Container Architectural Drafting",
+      "rate": 1000,
+      "detail": "Typical container layout/floor plan detail, interior section views, exterior wall detail (elevations view), window/door callouts."
+    },
+    {
+      "description": "Container Basic MEP layout Only",
+      "rate": 500,
+      "detail": "Basic MEP layout with Mini Split detail, outlet, lights, smoke detector, interior plumbing layout only"
+    },
+    {
+      "description": "Upwork Fees 20%",
+      "rate": 270,
+      "detail": "Upwork's standard 20% fee for project scope costs."
+    },
+    {
+      "description": "As-Built Plan set",
+      "rate": 1500,
+      "detail": "As-Built only plan set based on client provided sketch and photos."
+    },
+    {
+      "description": "Site/ Grading/ Conservation Plan",
+      "rate": 3500,
+      "detail": "Design plan showing proposed site improvements, grading, environmental protection controls, construction plans, specifications, and details."
+    },
+    {
+      "description": "Stormwater Management Plan",
+      "rate": 1500,
+      "detail": "Preparation of design computations and construction drawings for a SWM/BMP plan in accordance with jurisdictional requirements."
+    },
+    {
+      "description": "Limited Feasibility Study",
+      "rate": 5000,
+      "detail": "Typical limited feasibility study for project at 3433 Wisconsin Ave NW. Includes topics covering: Site/General Info, Existing condition narrative, Zoning narrative, Access/DDOT, Utilities narrative, DOEE/SWM, if applicable, Office of Tax and Rev details, other site related info."
+    },
+    {
+      "description": "Electrical Layout and Details",
+      "rate": 1000,
+      "detail": "Electrical Layout Details– Outlets, Lights, CO/SD, Load Calculations, Riser Diagram, Panel Schedule"
+    },
+    {
+      "description": "Plumbing Layout and Details",
+      "rate": 1000,
+      "detail": "Plumbing Layout Details - Sewage/Drainage Layout, Hot Water Layout, Cold Water Layout and Pipe Sizing"
+    },
+    {
+      "description": "Mechanical Layout and Details",
+      "rate": 1000,
+      "detail": "Mechanical Layout Details – Hood and Duct Layout and Size, HVAC (details provided by client) and Location and Load Calculations"
+    },
+    {
+      "description": "Lot Subdividing plan set",
+      "rate": 3000,
+      "detail": "Site layout per clients provided prefered layout for subdividing."
+    },
+    {
+      "description": "Container Notes",
+      "rate": 190,
+      "detail": "All measurements will be in US imperial measurements, in US dollars and to the USA - IBC 2020 building code level of detail."
+    },
+    {
+      "description": "Contract Notes",
+      "rate": 200,
+      "detail": "Description Text 20"
+    },
+    {
+      "description": "OPTIONAL - Permit Submittal Service",
+      "rate": 600,
+      "detail": "Facilitate permit submission to jurisdiction."
+    },
+    {
+      "description": "Basic Site Plan",
+      "rate": 350,
+      "detail": "Basic simple layout - if required - client to provide updated lot survey (plat)"
+    },
+    {
+      "description": "A-Frame - Standard Detailed Plans",
+      "rate": 2000,
+      "detail": "Structural details for building plans. S-pages drafted as needed. Foundation, section view and details. Design criteria and connection details. 120 MPH wind rating, 1500 PSF soil rating, no snow loads, Zone D standard Seismic."
+    },
+    {
+      "description": "A-Frame - Standard Architectural Detailed Plans",
+      "rate": 1000,
+      "detail": "Architectural details for building plans. A-pages drafted as needed. Layout, section view, roof plan, floor plan, and details. MEP layout. Design criteria and connection details. 120 MPH wind rating, 1500 PSF soil rating, no snow loads, Zone D standard Seismic. "
+    },
+    {
+      "description": "A-Frame - Structural Calculations Package",
+      "rate": 500,
+      "detail": "Preparation of design computations and construction drawings for building plans. Soil assumed at 1500 PSF unless soil report provided for foundation. 120 MPH winds and Seismic D."
+    },
+    {
+      "description": "A-Frame - Custom Modifications",
+      "rate": 1000,
+      "detail": "Basement, addition, deck, special zones, etc"
+    },
+    {
+      "description": "Survey (3rd Party)",
+      "rate": 2000,
+      "detail": "OPTIONAL - Ceed Civil Engineering's partner will perform the field run topography for the entire property, calculate MSL elevations, and prepare a plan showing existing site topography with 2-ft contour intervals @ 20-ft scale. The Survey will include a 50-foot overlap around the peripheral boundary of the property. All existing vegetation shall be depicted on the plan. Spot elevations and physical features, including edge of pavements, storm drainage pipes, and other relevant features within the limits of the survey will be identified for inclusion on the topography survey. Proposed profile holes and test holes will be located on the plan."
+    },
+    {
+      "description": "FFX - Site Grading & Development Plan",
+      "rate": 2000,
+      "detail": "Existing and Proposed Contours, Established Building Setbacks, Driveway & Utilities, Demolition of the existing (if any), Existing parking spaces (if any), Proposed Construction Entrance and Driveway, Limits of Clearing and Grading, Determination of watershed and proposed impervious areas, Required Erosion and Sediment Control Devices, Site Development and Sequences of Construction Notes, Impervious Area Analysis, Watershed for the site and disturbed areas in the watershed, Frontage cover,Standard Construction Details and Certifications, Current INF checklist per ESI (found here: https://www.fairfaxcounty.gov/ land development/sites/land development/ files/assets/documents/forms/infill-lot-grading-plan-checklist.pdf)"
+    },
+    {
+      "description": "Soil Classification",
+      "rate": 2000,
+      "detail": "Ceed Civil Engineer will facilitate to find Geotech engineer upon request by owner. Fee for soil report is not included. OPTIONAL - IF REQUIRED"
+    },
+    {
+      "description": "EVM Tree Conservation Plan (3rd Party Arborist)",
+      "rate": 2000,
+      "detail": "Ceed Civil Engineering's partner will provide the existing vegetation map and Tree Preservation Plan shall be prepared per Fairfax County PFM chapter 12. Tree preservation target, Tree canopy covered computation shall be provided. A 10 yr tree canopy requirement will be computed, and plantings will propose if required to meet canopy covered requirements. The Tree conservation plan (TCP) shall be signed and sealed by the certified arborist."
+    },
+    {
+      "description": "Drainage Map, Adequacy comp. & Outfall Analysis",
+      "rate": 2000,
+      "detail": "As required per Fairfax County, CCE will perform outfall analysis for the site in order to ensure that it has adequate outfall in accordance with the PFM and Northern Virginia handbook. The outfall analysis will include pre-development, construction phase, and post-construction phase. CCE will perform field review of existing drainage pattern, set drainage divide, perform required analysis and calculations, and assess the adequacy of the outfall for the site. The Outfall Narrative will include:1.Stormwater runoff computation by runoff reduction method. Stormwater management ordinance Chapter 124.Virginia state regulations. 2.Site-specific Narrative with description of the elements of storm drainage system and adjoining properties. 3. Outfall Locations Map with contributing drainage areas and detailed hydrological and hydraulic calculations. 4. Extent of the outfall analysis per PFM chapter 6. 5. Up to five (5) cross-sections based on field run contour intervals and spot evaluations to verify the outfall adequacy. 6. Permissible velocity, based on roughness coefficient, soil classification, pipe materials, cover material and channel lining (if any). 7. Design velocities compared with the permissible channel velocities (as applicable). 8. Observed erosion conditions along the downstream channel and the presence of erosive conditions. 9. Adequacy of outfall to the bed and banks of the receiving stream. 10. Engineer’s Certification Statement regarding the adequacy of the outfall for the study site. 11. Stormwater Management completion checklists"
+    },
+    {
+      "description": "Building Ht. Computation",
+      "rate": 200,
+      "detail": "As required per Fairfax County, CCE will perform outfall analysis for the site in order to ensure that it has adequate outfall in accordance with the PFM and Northern Virginia handbook. The outfall analysis will include pre-development, construction phase, and post-construction phase. CCE will perform field review of existing drainage pattern, set drainage divide, perform required analysis and calculations, and assess the adequacy of the outfall for the site. The Outfall Narrative will include:1.Stormwater runoff computation by runoff reduction method. Stormwater management ordinance Chapter 124.Virginia state regulations. 2.Site-specific Narrative with description of the elements of storm drainage system and adjoining properties. 3. Outfall Locations Map with contributing drainage areas and detailed hydrological and hydraulic calculations. 4. Extent of the outfall analysis per PFM chapter 6. 5. Up to five (5) cross-sections based on field run contour intervals and spot evaluations to verify the outfall adequacy. 6. Permissible velocity, based on roughness coefficient, soil classification, pipe materials, cover material and channel lining (if any). 7. Design velocities compared with the permissible channel velocities (as applicable). 8. Observed erosion conditions along the downstream channel and the presence of erosive conditions. 9. Adequacy of outfall to the bed and banks of the receiving stream. 10. Engineer’s Certification Statement regarding the adequacy of the outfall for the study site. 11. Stormwater Management completion checklists"
+    },
+    {
+      "description": "SWM facility design and BMP location map",
+      "rate": 1000,
+      "detail": "In accordance with the Fairfax County, the increased runoff volume due to proposed development is required to control on site. Stormwater facility will be designed, or waiver will be requested based on infiltration test reports. Infiltration testing and reports fee is not included. The testing shall be done by certified soil consultants or Geotechnical engineers. If owner wants, he can hire directly Geotech engineer or soil consultants for infiltration testing and reports."
+    },
+    {
+      "description": "Sediment and Erosion Control Checklist",
+      "rate": 500,
+      "detail": "As required by the county submittal, Ceed Civil Engineering will prepare the Sediment and Erosion Control Checklist. The checklist will be prepared based on the grading plan and sealed by the registered professional engineer of record (EOR)."
+    }
+  ]
+}

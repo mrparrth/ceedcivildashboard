@@ -9,10 +9,12 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
+import { useGlobal } from "../contexts/GlobalContext";
 
 const ProjectTableRow = ({ project, viewRow, editRow }) => {
-  const { updateProject, metadata, deleteProject, toggleProjectSelection } =
-    useData();
+  const { updateProject, deleteProject, toggleProjectSelection } = useData();
+  const { metadata } = useGlobal();
+
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
   const handleDeleteClick = () => {

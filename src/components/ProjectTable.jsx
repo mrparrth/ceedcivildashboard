@@ -6,7 +6,7 @@ import PaginationCustom from "./PaginationCustom";
 import Loader from "./LoaderCustom";
 
 const ProjectTable = ({ projects, pageNo, onPageChange, viewRow, editRow }) => {
-  const { error, isLoading } = useData();
+  const { isLoading } = useData();
   const rowsPerPage = 10;
 
   return (

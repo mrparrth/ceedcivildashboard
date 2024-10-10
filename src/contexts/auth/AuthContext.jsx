@@ -8,12 +8,12 @@ import {
 } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  validateLogin,
   saveTokenInLocalStorage,
   getTokenFromLocalStorage,
   trashToken,
   runScriptFunction,
 } from "../../db";
+import { useContractMetadata } from "../ContractMetadataHook";
 
 const checkForToken = () => getTokenFromLocalStorage() || null;
 
@@ -66,6 +66,8 @@ const reducer = (state, action) => {
 };
 
 const AuthProvider = ({ children }) => {
+  useContractMetadata(); //initializes the contract metadata
+
   const navigate = useNavigate();
   const [state, dispatch] = useReducer(reducer, initialState);
   const [isAuthInProgress, setAuthInProgress] = useState(false);
@@ -103,6 +105,7 @@ const AuthProvider = ({ children }) => {
     setAuthInProgress(true);
     try {
       let result = await runScriptFunction("login", { email, password });
+      console.log(`result:` + result);
       if (!result.user) throw new Error("Some problem occured");
 
       dispatch({

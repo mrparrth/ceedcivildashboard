@@ -1,8 +1,9 @@
 import DateRangePicker from "../components/DatePicker";
 import { useData } from "../contexts/data/DataContext";
+import { useGlobal } from "../contexts/GlobalContext";
 
 const FinanceTrackerFilters = ({ filters, onFilterChange, onResetFilters }) => {
-  let { metadata } = useData();
+  let { metadata } = useGlobal();
 
   return (
     <div className="w-100 rounded-2 bg-success p-2 text-white bg-opacity-25 d-flex flex-wrap shadow align-items-center gap-1">
@@ -66,7 +67,7 @@ const FinanceTrackerFilters = ({ filters, onFilterChange, onResetFilters }) => {
       <div className="col-md-auto">
         <button
           type="button"
-          className="btn btn-secondary btn-lg"
+          className="btn btn-secondary"
           onClick={onResetFilters}
         >
           Reset Filters

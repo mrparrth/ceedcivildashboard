@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useData } from "../contexts/data/DataContext";
+import { useGlobal } from "../contexts/GlobalContext";
+import { useContractMetadata } from "../contexts/ContractMetadataHook";
+
 import ScopeSelectorModal from "../components/ScopeSelectorModal";
 import { runScriptFunction } from "../db";
 import {
@@ -18,11 +21,12 @@ import {
   ErrorOutline as ErrorIcon,
   InfoOutlined as InfoIcon,
 } from "@mui/icons-material";
-import { Result } from "postcss";
 
 const initialFormState = {
   sameAsClient: false,
-  fbInvoiceId: "",
+  fbInvoiceId: "0001672",
+  fbClientId: "",
+  fbProjectId: "12518535",
   date: "",
   clientName: "",
   clientStreet: "",
@@ -38,7 +42,6 @@ const initialFormState = {
   siteZip: "",
   siteState: "",
   retainerRemaining: "",
-  checkBox: "",
   salesman: "",
   deliveryDuration: "",
   gap: 0,
@@ -48,28 +51,28 @@ const initialFormState = {
   favClients: "",
   isUpworkJob: false,
   retainerDeposit: "",
-  projectNumber: "",
-  fbProjectId: "",
+  projectNumber: "999",
   deliverableFromClient: "",
   projectName: "",
   totalCost: "",
   ratePerHour: "",
+  documentUrl: "",
 };
 
 const trialForm = {
-  sameAsClient: false,
-  fbInvoiceId: "0001634",
+  sameAsClient: true,
+  fbInvoiceId: "0001672",
   date: "2024-09-14",
-  clientName: "Kristeen Snyder",
-  clientStreet: "1850 So. 10th Street Suite 30",
+  clientName: "test test",
+  clientStreet: "Test Test",
   clientState: "California",
-  clientCompany: "IDEAL Environmental Products",
+  clientCompany: "Test test",
   clientZip: "95112",
   clientCity: "test",
-  clientEmail: "kristeen.snyder@chem-stor.com",
-  clientAddress: "1850 So. 10th Street Suite 30,San Jose,California 95112",
-  clientPhone: "(209)752-3177",
-  siteAddress: "6373 San Igancio,San Jose,California 95119",
+  clientEmail: "test@test.com",
+  clientAddress: "Test Test",
+  clientPhone: "(000)000-0000",
+  siteAddress: "Test Test",
   siteCity: "San Jose",
   siteState: "California",
   siteZip: "95119",
@@ -82,22 +85,24 @@ const trialForm = {
   gap: 0,
   remainingBalance: 0,
   isUpworkJob: false,
-  retainerDeposit: 5600,
-  projectNumber: "601",
-  fbProjectId: "12471503",
+  retainerDeposit: 9,
+  projectNumber: "999",
+  fbProjectId: "12518535",
+  fbClientId: "",
   deliverableFromClient: "CAD and PDF files",
-  projectName: "IDEAL - New Calcs",
-  totalCost: 5600,
+  projectName: "Test",
+  totalCost: 9,
   ratePerHour: 200,
+  documentUrl: "",
   scopes: [
     {
       detail:
         "Preparation of design computations and construction drawings for building plans. Soil assumed at 1500 PSF unless soil report provided. All loads as shown. Single use for address as shown",
       description: "Building Plan Calculations Package",
-      rate: 1800,
+      rate: 5,
     },
     {
-      rate: 700,
+      rate: 2,
       description: "Calculations Report",
       detail: "Calculations report for the openings in the ceiling.",
     },
@@ -105,25 +110,59 @@ const trialForm = {
       description: "Engineering Review, Stamp and Seal P.E.",
       detail:
         "Scope of work, reviewed, stamped, and sealed by state licensed P.E. CA",
-      rate: 2300,
-    },
-    {
-      detail:
-        "This is for a single use, single build, single location contract. Any State approvals or HCD approval is not authorized usage of the plans and calcs for usage other than that specified in on the plans and contract.",
-      rate: 0,
-      description: "Contract Notes",
-    },
-    {
-      rate: 800,
-      detail:
-        "Electrical pages for Scope of work, reviewed, stamped, and sealed by state licensed P.E. CA",
-      description: "Engineering Review, Stamp and Seal P.E.",
+      rate: 2,
     },
   ],
 };
 
+const blankProject = {
+  id: null,
+  projectNumber: "",
+  invoiceNumber: null,
+  projectName: "",
+  salesMan: "",
+  description: "",
+  overallProjectStatus: "",
+  state: "",
+  priority: "",
+  projectFilesFolder: "",
+  projectNotes: "",
+  clientProjectNameAddress: "",
+  assignedTo: [],
+  contractLink: "",
+  depositPaid: "",
+  estimatedBudget: "",
+  actualCost: "",
+  initialProjectStatus: "",
+  drafterNeeded: "",
+  drafterTaskedTo: "",
+  draftingStatus: "",
+  draftingDropboxLink: "",
+  draftingEstimatedDeliveryTime: "",
+  engineeringNeeded: "",
+  engineerTaskedTo: "",
+  engineeringStatus: "",
+  engineeringDropboxLink: "",
+  engineeringEstimatedDeliveryTime: "",
+  mepNeeded: "",
+  mepTaskedTo: "",
+  mepStatus: "",
+  mepDropboxLink: "",
+  mepEstimatedDeliveryTime: "",
+  civilNeeded: "",
+  civilEngineeringTaskedTo: "",
+  civilEngineeringStatus: "",
+  civilDropboxLink: "",
+  civilEstimatedDeliveryTime: "",
+  jobType: "",
+};
+
 const CEEDCivilForm = () => {
-  let { metadata, isLoading: isDataLoading } = useData();
+  let { isLoading: isDataLoading, createProject } = useData();
+  let { metadata } = useGlobal();
+  let { contractMetadata, isLoading: isContractDataLoading } =
+    useContractMetadata();
+
   const [formData, setFormData] = useState(trialForm);
   const [loading, setLoading] = useState(false);
   const [isScopeModalOpen, setIsScopeModalOpen] = useState(false);
@@ -152,21 +191,8 @@ const CEEDCivilForm = () => {
     formData.clientZip,
   ]);
 
-  const handleInputChange = useCallback((e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]:
-        type === "checkbox"
-          ? checked
-          : ["remainingBalance", "retainerDeposit"].includes(name)
-          ? parseFloat(value) || 0
-          : value,
-    }));
-  }, []);
-
   useEffect(() => {
-    const clientData = metadata.favClients?.find(
+    const clientData = contractMetadata.favClients?.find(
       (client) => client.name === formData.favClient
     );
     if (clientData) {
@@ -182,6 +208,19 @@ const CEEDCivilForm = () => {
       setFormData((prevData) => ({ ...prevData, ...mappedClientData }));
     }
   }, [formData.favClient]);
+
+  const handleInputChange = useCallback((e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]:
+        type === "checkbox"
+          ? checked
+          : ["remainingBalance", "retainerDeposit"].includes(name)
+          ? parseFloat(value) || 0
+          : value,
+    }));
+  }, []);
 
   const showDialog = useCallback((title, body, type = "info") => {
     return new Promise((resolve) => {
@@ -207,108 +246,97 @@ const CEEDCivilForm = () => {
     [modalState]
   );
 
-  const handleOpenScopeModal = () => {
-    setIsScopeModalOpen(true);
-  };
-
-  const createClientInvoiceProject = useCallback(() => {
+  const createClientInvoiceProject = useCallback(async () => {
     setLoading(true);
-    if (!formData.projectName) {
-      showDialog("Error", "Project description is not provided", "error").then(
-        () => setLoading(false)
-      );
-      return;
-    }
-    if (formData.scopes.length === 0) {
-      showDialog("Error", "No scopes selected", "error").then(() =>
-        setLoading(false)
-      );
-      return;
-    }
+    try {
+      // Initial checks
+      if (!formData.projectName) {
+        await showDialog(
+          "Error",
+          "Project description is not provided",
+          "error"
+        );
+        return;
+      }
+      if (formData.scopes.length === 0) {
+        await showDialog("Error", "No scopes selected", "error");
+        return;
+      }
 
-    let projectNumber, fbClientId, fbInvoiceId, fbProjectId;
-
-    (parseFloat(formData.gap) !== 0
-      ? showDialog(
+      // Check for gap
+      if (parseFloat(formData.gap) !== 0) {
+        const confirmed = await showDialog(
           "Warning",
           "Total scope value is not in align with retainer/deposit + remaining. Go ahead despite the issues?",
           "confirm"
-        )
-      : Promise.resolve(true)
-    )
-      .then((confirmed) => {
-        if (!confirmed) throw new Error("Operation cancelled");
-        return runScriptFunction("getNewProjectNumber");
-      })
-      .then((number) => {
-        projectNumber = number;
-        return runScriptFunction("getFBClient", formData);
-      })
-      .then((id) => {
-        if (id) {
-          fbClientId = id;
-          console.log(`fbClientId:` + fbClientId);
-          return showDialog(
-            "Existing Client",
-            `Client with same name and email is already present with client id: ${fbClientId}. Go ahead to create the invoice under it?`,
-            "confirm"
-          );
-        } else {
-          return runScriptFunction("createFBClient", formData);
-        }
-      })
-      .then((result) => {
-        if (typeof result === "boolean" && !result)
-          throw new Error("Operation cancelled");
-        if (typeof result === "string") fbClientId = result;
-        console.log(`result:` + result);
-        return runScriptFunction("createFBInvoice", {
-          ...formData,
-          projectNumber,
-          fbClientId,
-        });
-      })
-      .then((id) => {
-        fbInvoiceId = id;
-        console.log(`fbInvoiceId:` + fbInvoiceId);
-        return runScriptFunction("createFBProject", {
-          ...formData,
-          projectNumber,
-          fbClientId,
-          fbInvoiceId,
-        });
-      })
-      .then(({ id, error }) => {
-        if (error) throw new Error(error);
-        fbProjectId = id;
-        console.log(`fbProjectId:` + fbProjectId);
-        setFormData((prevData) => ({
-          ...prevData,
-          projectNumber,
-          fbClientId,
-          fbInvoiceId,
-          fbProjectId,
-        }));
-        return showDialog(
-          "Success",
-          `Invoice is created with invoice number - ${invoiceId}\nProject number - ${projectId}`,
-          "success"
         );
-      })
-      .catch((e) => {
-        console.log(e);
-        return showDialog("Error", e.message, "error");
-      })
-      .finally(() => {
-        setLoading(false);
+        if (!confirmed) return;
+      }
+
+      // Get new project number
+      const projectNumber = await runScriptFunction("getNewProjectNumber");
+      if (!projectNumber) throw new Error("Failed to get project number");
+
+      // Get or create FB client
+      let fbClientId = await runScriptFunction("getFBClient", formData);
+      if (fbClientId) {
+        const useExistingClient = await showDialog(
+          "Existing Client",
+          `Client with same name and email is already present with client id: ${fbClientId}. Go ahead to create the invoice under it?`,
+          "confirm"
+        );
+        if (!useExistingClient) return;
+      } else {
+        fbClientId = await runScriptFunction("createFBClient", formData);
+        if (!fbClientId) throw new Error("Failed to create FreshBooks client");
+      }
+
+      // Create FB invoice
+      const fbInvoiceId = await runScriptFunction("createFBInvoice", {
+        ...formData,
+        projectNumber,
+        fbClientId,
       });
-  }, [formData, showDialog]);
+      if (!fbInvoiceId) throw new Error("Failed to create FreshBooks invoice");
+
+      // Create FB project
+      const fbProjectId = await runScriptFunction("createFBProject", {
+        ...formData,
+        projectNumber,
+        fbClientId,
+        fbInvoiceId,
+      });
+      if (!fbProjectId) throw new Error("Failed to create FreshBooks project");
+
+      // Update form data
+      setFormData((prevData) => ({
+        ...prevData,
+        projectNumber,
+        fbClientId,
+        fbInvoiceId,
+        fbProjectId,
+      }));
+
+      // Show success dialog
+      await showDialog(
+        "Success",
+        `Invoice is created with invoice number - ${fbInvoiceId}\nProject number - ${fbProjectId}`,
+        "success"
+      );
+    } catch (error) {
+      console.error(error);
+      await showDialog("Error", error.message, "error");
+    } finally {
+      setLoading(false);
+    }
+  }, [formData, showDialog, setFormData]);
 
   const handleSubmit = useCallback(
     async (e) => {
       e.preventDefault();
       setLoading(true);
 
+      let error;
       if (!formData.fbInvoiceId || !formData.fbProjectId) {
         error = "Freshbooks invoice has not been generated yet!";
       }
@@ -323,18 +351,20 @@ const CEEDCivilForm = () => {
       }
 
       try {
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-        let documentUrl = await runScriptFunction("createContract");
+        let newProject = await runScriptFunction("createContract", formData);
         setFormData((prevData) => ({
           ...prevData,
           showDocumentLink: true,
-          documentUrl,
+          documentUrl: newProject?.contractDocumentUrl,
         }));
+
         await showDialog(
           "Success",
           "Document created successfully. You can now view the document.",
           "success"
         );
+
+        createProject({ ...blankProject, ...newProject });
       } catch (error) {
         await showDialog("Error", error.message, "error");
       } finally {
@@ -358,7 +388,11 @@ const CEEDCivilForm = () => {
     return icons[modalState.content.type] || icons.info;
   }, [modalState.content.type]);
 
-  return isDataLoading ? (
+  const handleOpenScopeModal = () => {
+    setIsScopeModalOpen(true);
+  };
+
+  return isDataLoading || isContractDataLoading ? (
     <>
       <Box
         display="flex"
@@ -388,7 +422,7 @@ const CEEDCivilForm = () => {
               <option value="" key="index" disabled>
                 Select a client
               </option>
-              {metadata.favClients.map((client, index) => (
+              {contractMetadata.favClients.map((client, index) => (
                 <option value={client.name} key={client.name}>
                   {client.name}
                 </option>
@@ -792,9 +826,13 @@ const CEEDCivilForm = () => {
             </div>
             <hr className="my-2" />
 
-            {formData.showDocumentLink && (
+            {formData.documentUrl && (
               <div className="text-center mb-3">
-                <a href="#" target="_blank" className="btn btn-info">
+                <a
+                  href={formData.documentUrl}
+                  target="_blank"
+                  className="btn btn-info"
+                >
                   <i className="bi bi-file-earmark-text me-2"></i>Click To See
                   Contract
                 </a>

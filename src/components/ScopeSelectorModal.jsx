@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useData } from "../contexts/data/DataContext";
+import { useContractMetadata } from "../contexts/ContractMetadataHook";
 
 const ScopeSelectorModal = ({ isOpen, onClose, formData, setFormData }) => {
-  const { metadata } = useData();
+  const { contractMetadata } = useContractMetadata();
   const [showAllScopes, setShowAllScopes] = useState(true);
-  const [allScopes, setAllScopes] = useState(metadata.scopes);
+  const [allScopes, setAllScopes] = useState(contractMetadata.scopes);
   const [projectScopes, setProjectScopes] = useState(formData.scopes);
   const [editingIndex, setEditingIndex] = useState(null);
   const [draggingOver, setDraggingOver] = useState(null);

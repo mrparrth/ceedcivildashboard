@@ -36,7 +36,7 @@ export const GlobalProvider = ({ children }) => {
   }, []);
 
   return (
-    <GlobalContext.Provider value={{ metadata, isLoading }}>
+    <GlobalContext.Provider value={{ metadata, isMetaLoading: isLoading }}>
       {children}
     </GlobalContext.Provider>
   );

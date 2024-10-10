@@ -2,7 +2,6 @@ import { runScriptFunction } from "../../db/index";
 
 export const createProject =
   (dispatch, addToQueue, user, addNotification) => (newProject) => {
-    console.log("Create Project");
     const projectWithDates = {
       ...newProject,
       id: crypto.randomUUID(),
