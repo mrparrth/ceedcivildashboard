@@ -16,8 +16,6 @@ export const createExpense =
       dispatch({ type: "CREATE_EXPENSE", payload: { ...payment, expenseId } });
       return expenseId;
     } catch (error) {
-      setError(error);
-      console.error("Error creating expense:", error);
-      return error;
+      throw new Error("Error creating expense: " + error);
     }
   };

@@ -193,7 +193,7 @@ function _getClientIdFromInvoiceDesc_(invoiceDesc) {
     return result.response.result.invoices[0].customerid
   }
   else {
-    throw `Invoice ${invoiceDesc} is not found `
+    throw `Invoice must be created for this project before you can create expenses`
   }
 }
 

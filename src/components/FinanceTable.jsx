@@ -6,7 +6,7 @@ import Loader from "./LoaderCustom";
 import { useAuth } from "../contexts/auth/AuthContext";
 
 const FinanceTable = ({ pageNo, onPageChange, data }) => {
-  const { isLoading, error } = useData();
+  const { isLoading } = useData();
   const { user } = useAuth();
 
   const rowsPerPage = 10;

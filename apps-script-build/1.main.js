@@ -2,14 +2,14 @@ const CONFIG = {
   SETTINGS: "⚙️Settings",
   DATE_PREFIX: "D",
   PROJECT_ID_PROP: "LastProjectId",
-  METADATA_PROP: 'Metadata',
-  CONTRACT_META_PROP: 'ContractMetaData',
-  CONTRACT_TEMPLATE: '1n9mabMMM4DF8I54wxuczl8us85sfQ-VT2BvTAQUzYpI', //'136toZMz-Bau1Y6vvbwmxsLgFFNgzM1tWb1RfwpZ_jmE',
-  CONTRACT_OUTPUT_FOLDER: '1r9INUZVhcIZ7mjXrWMXAd6Eye5RbWQoH',
+  METADATA_PROP: "Metadata",
+  CONTRACT_META_PROP: "ContractMetaData",
+  CONTRACT_TEMPLATE: "1n9mabMMM4DF8I54wxuczl8us85sfQ-VT2BvTAQUzYpI", //'136toZMz-Bau1Y6vvbwmxsLgFFNgzM1tWb1RfwpZ_jmE',
+  CONTRACT_OUTPUT_FOLDER: "1r9INUZVhcIZ7mjXrWMXAd6Eye5RbWQoH",
   CONTRACT_ALTERNATE_COLORS: {
-    color1: '#FFFFFF',
-    color2: '#F3EFEF'
-  }
+    color1: "#FFFFFF",
+    color2: "#F3EFEF",
+  },
 };
 
 class User {
@@ -244,8 +244,8 @@ class PublicApp {
     this.ss = SpreadsheetApp.getActive();
     this.shProjects = this.ss.getSheetByName(this.settings.sheetNameProjects);
     this.shPayments = this.ss.getSheetByName(this.settings.sheetNamePayments);
-    this.metadata
-    this.contractMetadata
+    this.metadata;
+    this.contractMetadata;
   }
 
   onOpen() {
@@ -253,7 +253,10 @@ class PublicApp {
       { caption: "+ New User", action: "addNewUser" },
       null,
       { caption: "Refresh Metadata Cache", action: "refreshMetadata" },
-      { caption: "Set 30 min metadata autorefresh", action: "metadataAutorefresh" },
+      {
+        caption: "Set 30 min metadata autorefresh",
+        action: "metadataAutorefresh",
+      },
       null,
       { caption: "Re-authorize Freshbooks", action: "authorizeFB" },
       { caption: "Re-authorize Dropbox", action: "authorizeDropbox" },
@@ -301,33 +304,33 @@ class PublicApp {
   }
 
   refreshMetadata() {
-    let shMetadata = this.ss.getSheetByName('Metadata')
-    let metaSheetData = _getItemsFromSheet_(shMetadata)
-    this.metadata = {}
+    let shMetadata = this.ss.getSheetByName("Metadata");
+    let metaSheetData = _getItemsFromSheet_(shMetadata);
+    this.metadata = {};
     metaSheetData.forEach(({ field, options }) => {
-      this.metadata[field] = options.split('||')
-    })
+      this.metadata[field] = options.split("||");
+    });
 
-    this.setProperty(CONFIG.METADATA_PROP, JSON.stringify(this.metadata))
+    this.setProperty(CONFIG.METADATA_PROP, JSON.stringify(this.metadata));
   }
 
   getMetadata() {
     if (!this.metadata) {
-      this.refreshMetadata()
-      this.metadata = JSON.parse(this.getProperty(CONFIG.METADATA_PROP) || {})
+      this.refreshMetadata();
+      this.metadata = JSON.parse(this.getProperty(CONFIG.METADATA_PROP) || {});
     }
 
-    return this.metadata
+    return this.metadata;
   }
 
   getContractMetadata() {
-    let shScopes = this.ss.getSheetByName('Scopes')
-    let shFavClient = this.ss.getSheetByName('Fav Clients')
+    let shScopes = this.ss.getSheetByName("Scopes");
+    let shFavClient = this.ss.getSheetByName("Fav Clients");
 
-    let scopes = _getItemsFromSheet_(shScopes)
-    let favClients = _getItemsFromSheet_(shFavClient)
+    let scopes = _getItemsFromSheet_(shScopes);
+    let favClients = _getItemsFromSheet_(shFavClient);
 
-    return { scopes, favClients }
+    return { scopes, favClients };
   }
 }
 
@@ -367,7 +370,7 @@ class SecureApp extends PublicApp {
         .filter((num) => Number.isInteger(num));
 
       let maxProjectNumber =
-        projectNumbers.length === 0 ? 100 : Math.max(...projectNumbers)
+        projectNumbers.length === 0 ? 100 : Math.max(...projectNumbers);
 
       let cachedProjectNumber = parseInt(
         this.getProperty(CONFIG.PROJECT_ID_PROP) || 0
@@ -431,7 +434,7 @@ class SecureApp extends PublicApp {
         throw new Error("Could not acquire lock");
       }
 
-      this.shProjects.insertRowBefore(2)
+      this.shProjects.insertRowBefore(2);
       this.shProjects
         .getRange(2, 1, 1, 2)
         .setValues([[project.projectName, JSON.stringify(project)]]);
@@ -471,7 +474,7 @@ class SecureApp extends PublicApp {
       if (!lock.tryLock(180000)) {
         throw new Error("Could not acquire lock");
       }
-      this.shPayments.insertRowsBefore(2, outputData.length)
+      this.shPayments.insertRowsBefore(2, outputData.length);
       this.shPayments
         .getRange(2, 1, outputData.length, outputData[0].length)
         .setValues(outputData);
@@ -531,39 +534,49 @@ const include = (filename) => _include_(filename);
 
 const onOpen = () => new PublicApp().onOpen();
 const getSheetData = ({ token }) => new SecureApp(token).getSheetData();
-const updateProject = ({ token, data }) => new SecureApp(token).updateProject(data);
-const archiveProjects = ({ token, data }) => new SecureApp(token).archiveProjects(data);
-const unarchiveProjects = ({ token, data }) => new SecureApp(token).unarchiveProjects(data);
-const createProject = ({ token, data }) => new SecureApp(token).createProject(data);
-const createDropboxFolder = ({ token, data }) => new SecureApp(token).createDropboxFolder(data);
-const getNewProjectNumber = ({ token, data }) => new SecureApp(token).getNewProjectNumber();
+const updateProject = ({ token, data }) =>
+  new SecureApp(token).updateProject(data);
+const archiveProjects = ({ token, data }) =>
+  new SecureApp(token).archiveProjects(data);
+const unarchiveProjects = ({ token, data }) =>
+  new SecureApp(token).unarchiveProjects(data);
+const createProject = ({ token, data }) =>
+  new SecureApp(token).createProject(data);
+const createDropboxFolder = ({ token, data }) =>
+  new SecureApp(token).createDropboxFolder(data);
+const getNewProjectNumber = ({ token, data }) =>
+  new SecureApp(token).getNewProjectNumber();
 
-const createPayments = ({ token, data }) => new SecureApp(token).createPayments(data);
-const updatePayment = ({ token, data }) => new SecureApp(token).updatePayment(data);
-const deletePayment = ({ token, data }) => new SecureApp(token).deletePayment(data);
+const createPayments = ({ token, data }) =>
+  new SecureApp(token).createPayments(data);
+const updatePayment = ({ token, data }) =>
+  new SecureApp(token).updatePayment(data);
+const deletePayment = ({ token, data }) =>
+  new SecureApp(token).deletePayment(data);
 
 //freshbooks functions
-const createExpense = ({ token, data }) => new SecureApp(token).createExpense(data);
-const getFBClient = ({ data }) => _getFBClient_(data)
-const createFBClient = ({ data }) => _createFBClient_(data)
-const createFBInvoice = ({ data }) => _createFBInvoice_(data)
-const createFBProject = ({ data }) => _createFBProject_(data)
-const createContract = ({ data }) => _createContract_(data)
+const createExpense = ({ token, data }) =>
+  new SecureApp(token).createExpense(data);
+const getFBClient = ({ data }) => _getFBClient_(data);
+const createFBClient = ({ data }) => _createFBClient_(data);
+const createFBInvoice = ({ data }) => _createFBInvoice_(data);
+const createFBProject = ({ data }) => _createFBProject_(data);
+const createContract = ({ data }) => _createContract_(data);
 
-const refreshMetadata = () => new PublicApp().refreshMetadata()
-const getMetadata = () => new PublicApp().getMetadata()
-const getContractMetadata = () => new PublicApp().getContractMetadata()
+const refreshMetadata = () => new PublicApp().refreshMetadata();
+const getMetadata = () => new PublicApp().getMetadata();
+const getContractMetadata = () => new PublicApp().getContractMetadata();
 
 const metadataAutorefresh = () => {
-  let triggers = ScriptApp.getProjectTriggers()
-  triggers.forEach(trigger => {
-    if (trigger.getHandlerFunction() == 'refreshMetadata') {
-      ScriptApp.deleteTrigger(trigger)
+  let triggers = ScriptApp.getProjectTriggers();
+  triggers.forEach((trigger) => {
+    if (trigger.getHandlerFunction() == "refreshMetadata") {
+      ScriptApp.deleteTrigger(trigger);
     }
-  })
+  });
 
-  ScriptApp.newTrigger('refreshMetadata').timeBased().everyMinutes(30).create()
-}
+  ScriptApp.newTrigger("refreshMetadata").timeBased().everyMinutes(30).create();
+};
 
 const test = () => {
   let adminToken =
@@ -571,9 +584,9 @@ const test = () => {
   let empToken =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImVjY2I1N2EwLWM0OTItNDlkOS04NmMwLTRmYzBjNTYyMGI3YSIsImNyZWF0ZWRBdCI6IjIwMjQtMTAtMDFUMTQ6MzA6MDAuNjU4WiIsIm1vZGlmaWVkQXQiOiIyMDI0LTEwLTAxVDE0OjMwOjAwLjY1OFoiLCJuYW1lIjoiQXJuZWwiLCJlbWFpbCI6ImlhbXBhcnJ0aEBnbWFpbC5jb20iLCJyb2xlIjoiRW1wbG95ZWUiLCJzdGF0dXMiOiJBY3RpdmUiLCJfcm93SW5kZXgiOjJ9.fUo9EAvFMb+BBYJPKEgmSVZWlGnXej3Mr2FRRjbvxiU=";
 
-  let payload = { "data": { "sameAsClient": true, "fbInvoiceId": "0001672", "date": "2024-09-14", "clientName": "test test", "clientStreet": "Test Test", "clientState": "California", "clientCompany": "Test test", "clientZip": "95112", "clientCity": "test", "clientEmail": "test@test.com", "clientAddress": "Test Test", "clientPhone": "(000)000-0000", "siteAddress": "Test Test", "siteCity": "San Jose", "siteState": "California", "siteZip": "95119", "retainerRemaining": 5600, "checkBox": "on", "salesman": "Ryan", "deliveryDuration": "1 - 2 Weeks", "siteStreet": "6373 San Igancio", "favClients": "", "gap": 0, "remainingBalance": 0, "isUpworkJob": false, "retainerDeposit": 9, "projectNumber": "999", "fbProjectId": "12518535", "fbClientId": "", "deliverableFromClient": "CAD and PDF files", "projectName": "Test", "totalCost": 9, "ratePerHour": 200, "documentUrl": "", "scopes": [{ "detail": "Preparation of design computations and construction drawings for building plans. Soil assumed at 1500 PSF unless soil report provided. All loads as shown. Single use for address as shown", "description": "Building Plan Calculations Package", "rate": 5 }, { "rate": 2, "description": "Calculations Report", "detail": "Calculations report for the openings in the ceiling." }, { "description": "Engineering Review, Stamp and Seal P.E.", "detail": "Scope of work, reviewed, stamped, and sealed by state licensed P.E. CA", "rate": 2 }] }, "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA5MGE5NWNlLTM5MzMtNGI1Ny1hMTkxLTk2ZGMwNjdmOTg1MSIsImNyZWF0ZWRBdCI6IjIwMjQtMTAtMDNUMTM6NTU6NTEuNzcyWiIsIm1vZGlmaWVkQXQiOiIyMDI0LTEwLTAzVDEzOjU1OjUxLjc3MloiLCJuYW1lIjoiQWRtaW4iLCJlbWFpbCI6ImFkbWluQGNlZWRjaXZpbC5jb20iLCJyb2xlIjoiQWRtaW4iLCJzdGF0dXMiOiJBY3RpdmUiLCJtZXJjaGFudE5hbWUiOiJBZG1pbiIsImNhdGVnb3J5TmFtZSI6IkRyYWZ0ZXIgLSBDb250cmFjdG9yIiwiX3Jvd0luZGV4IjozfQ==.q3sodyDSjuplKUYL6ZHy6FgnPS0rAMfgeeUHXFaf2Vg=" }
+  let payload = {"data":{"notes":"","revisionCost":"3","dateModified":"2024-10-09T21:27:20.672Z","revisionNeeded":false,"_rowIndex":814,"revisionPaid":false,"dateCreated":"2024-10-09T21:27:20.672Z","paid":false,"assignee":"Arnel","id":"ab72c74a-73ed-4858-a27f-303a3489a219","projectId":"a102d129-e74e-40b3-a30e-6b32a3f77998","totalCost":4,"actualCost":"1","datePaid":null,"datePaid2":null},"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA5MGE5NWNlLTM5MzMtNGI1Ny1hMTkxLTk2ZGMwNjdmOTg1MSIsImNyZWF0ZWRBdCI6IjIwMjQtMTAtMDNUMTM6NTU6NTEuNzcyWiIsIm1vZGlmaWVkQXQiOiIyMDI0LTEwLTAzVDEzOjU1OjUxLjc3MloiLCJuYW1lIjoiQWRtaW4iLCJlbWFpbCI6ImFkbWluQGNlZWRjaXZpbC5jb20iLCJyb2xlIjoiQWRtaW4iLCJzdGF0dXMiOiJBY3RpdmUiLCJtZXJjaGFudE5hbWUiOiJBZG1pbiIsImNhdGVnb3J5TmFtZSI6IkRyYWZ0ZXIgLSBDb250cmFjdG9yIiwiX3Jvd0luZGV4IjozfQ==.q3sodyDSjuplKUYL6ZHy6FgnPS0rAMfgeeUHXFaf2Vg="}
 
-  console.log(createContract(payload))
+  console.log(createExpense(payload));
 
   // console.log(new SecureApp(payload.token).createExpense(payload.data));
 

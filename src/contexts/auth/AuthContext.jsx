@@ -60,6 +60,12 @@ const reducer = (state, action) => {
       return initialState;
     }
 
+    case "SET_ERROR": {
+      return {
+        ...state,
+        ...action.payload,
+      };
+    }
     default:
       return state;
   }
@@ -127,6 +133,10 @@ const AuthProvider = ({ children }) => {
     navigate("/login");
   }, []);
 
+  const setError = (error) => {
+    dispatch({ type: "SET_ERROR", payload: { error } });
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -134,6 +144,7 @@ const AuthProvider = ({ children }) => {
         isAuthInProgress,
         login,
         logout,
+        setError,
       }}
     >
       {children}

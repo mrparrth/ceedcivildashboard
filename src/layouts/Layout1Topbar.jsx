@@ -15,22 +15,12 @@ import { NotificationProvider } from "../contexts/NotificationContext";
 import { useAuth } from "../contexts/auth/AuthContext";
 import { useSettings } from "../contexts/SettingsContext";
 import { Span } from "../components/Typography";
-import { MatxMenu, MatxSearchBox } from "../components";
+import { MatxMenu } from "../components";
 import { NotificationBar } from "../components/NotificationBar";
 import { themeShadows } from "../theme/themeColors";
 import { topBarHeight } from "../utils/constant";
 import { keyframes } from "@mui/system";
-import {
-  Home,
-  Menu,
-  Person,
-  Settings,
-  WebAsset,
-  MailOutline,
-  StarOutline,
-  PowerSettingsNew,
-  Refresh,
-} from "@mui/icons-material";
+import { Menu, PowerSettingsNew, Refresh } from "@mui/icons-material";
 import { useData } from "../contexts/data/DataContext";
 
 // STYLED COMPONENTS

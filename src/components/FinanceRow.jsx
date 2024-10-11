@@ -13,6 +13,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { useData } from "../contexts/data/DataContext";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import { useNotification } from "../contexts/NotificationContext";
 
 const formatDate = (dateValue, format = "display") => {
   if (!dateValue) return "";
@@ -49,6 +50,7 @@ const FinanceTableRow = ({ row, isAdmin }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedRow, setEditedRow] = useState(row);
   const [loading, setLoading] = useState(false);
+  const { addNotification } = useNotification();
 
   const handleEdit = () => {
     const formattedRow = {
@@ -75,7 +77,24 @@ const FinanceTableRow = ({ row, isAdmin }) => {
   };
 
   const handleChange = (field, value) => {
-    setEditedRow((prev) => ({ ...prev, [field]: value }));
+    setEditedRow((prev) => {
+      const updatedRow = { ...prev, [field]: value };
+
+      // Recalculate total cost if actualCost or revisionCost changed
+      if (
+        field === "actualCost" ||
+        field === "revisionCost" ||
+        field === "totalCost"
+      ) {
+        const actualCost = parseFloat(updatedRow.actualCost) || 0;
+        const revisionCost = parseFloat(updatedRow.revisionCost) || 0;
+        updatedRow.totalCost = parseFloat(
+          (actualCost + revisionCost).toFixed(2)
+        );
+      }
+
+      return updatedRow;
+    });
   };
 
   const handleCreateExpense = async () => {
@@ -83,6 +102,8 @@ const FinanceTableRow = ({ row, isAdmin }) => {
     try {
       await createExpense(editedRow);
       setIsEditing(false);
+    } catch (e) {
+      addNotification({ title: e.message, type: "alert" });
     } finally {
       setLoading(false);
     }
