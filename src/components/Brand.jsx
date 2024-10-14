@@ -2,7 +2,7 @@ import { Box, styled } from "@mui/material";
 import MatxLogo from "./MatxLogo";
 
 import { Span } from "./Typography";
-import { useSettings } from "../contexts/SettingsContext";
+import useSettings from "hooks/useSettings";
 
 // STYLED COMPONENTS
 const BrandRoot = styled(Box)(() => ({

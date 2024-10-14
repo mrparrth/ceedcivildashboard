@@ -1,7 +1,7 @@
 import { Fragment, useState, Children } from "react";
 import { Menu, ThemeProvider, styled } from "@mui/material";
 
-import { useSettings } from "../contexts/SettingsContext";
+import useSettings from "hooks/useSettings";
 
 // STYLED COMPONENT
 const MenuButton = styled("div")(({ theme }) => ({
@@ -29,7 +29,6 @@ export default function MatxMenu(props) {
           open={!!anchorEl}
           anchorEl={anchorEl}
           onClose={handleClose}
-          getContentAnchorEl={null}
           anchorOrigin={{ vertical: "bottom", horizontal: horizontalPosition }}
           transformOrigin={{ vertical: "top", horizontal: horizontalPosition }}
         >

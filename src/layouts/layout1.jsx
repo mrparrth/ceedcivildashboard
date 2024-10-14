@@ -3,7 +3,8 @@ import { ThemeProvider, useMediaQuery, Box, styled } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { Outlet } from "react-router-dom";
 import Scrollbar from "react-perfect-scrollbar";
-import { useSettings } from "../contexts/SettingsContext";
+import useSettings from "../hooks/useSettings";
+
 import {
   topBarHeight,
   sideNavWidth,

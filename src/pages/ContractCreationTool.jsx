@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { useData } from "../contexts/data/DataContext";
-import { useGlobal } from "../contexts/GlobalContext";
-import { useContractMetadata } from "../contexts/ContractMetadataHook";
+import useContractMetadata from "hooks/useContractMetadata";
 
 import ScopeSelectorModal from "../components/ScopeSelectorModal";
 import { runScriptFunction } from "../db";
@@ -21,6 +19,9 @@ import {
   ErrorOutline as ErrorIcon,
   InfoOutlined as InfoIcon,
 } from "@mui/icons-material";
+
+import useData from "hooks/useData";
+import useappData from "hooks/useappData";
 
 const initialFormState = {
   sameAsClient: false,
@@ -159,7 +160,7 @@ const blankProject = {
 
 const CEEDCivilForm = () => {
   let { isLoading: isDataLoading, createProject } = useData();
-  let { metadata } = useGlobal();
+  let { appData } = useappData();
   let { contractMetadata, isLoading: isContractDataLoading } =
     useContractMetadata();
 
@@ -498,7 +499,7 @@ const CEEDCivilForm = () => {
                   <option value="" key="index" disabled>
                     Select a state
                   </option>
-                  {metadata.states.map((state) => (
+                  {appData.states.map((state) => (
                     <option value={state} key={state}>
                       {state}
                     </option>
@@ -569,7 +570,7 @@ const CEEDCivilForm = () => {
                   onChange={handleInputChange}
                 >
                   <option value="">Select the sales person</option>
-                  {metadata.salesmen.map((salesman) => (
+                  {appData.salesmen.map((salesman) => (
                     <option value={salesman} key={salesman}>
                       {salesman}
                     </option>
@@ -635,7 +636,7 @@ const CEEDCivilForm = () => {
                   <option value="" disabled>
                     Select a state
                   </option>
-                  {metadata.states.map((state) => (
+                  {appData.states.map((state) => (
                     <option value={state} key={state}>
                       {state}
                     </option>

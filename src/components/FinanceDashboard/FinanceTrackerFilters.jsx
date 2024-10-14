@@ -1,9 +1,9 @@
-import DateRangePicker from "../components/DatePicker";
-import { useData } from "../contexts/data/DataContext";
-import { useGlobal } from "../contexts/GlobalContext";
+import DateRangePicker from "../DatePicker";
+
+import useappData from "hooks/useappData";
 
 const FinanceTrackerFilters = ({ filters, onFilterChange, onResetFilters }) => {
-  let { metadata } = useGlobal();
+  let { appData } = useappData();
 
   return (
     <div className="w-100 rounded-2 bg-success p-2 text-white bg-opacity-25 d-flex flex-wrap shadow align-items-center gap-1">
@@ -22,7 +22,7 @@ const FinanceTrackerFilters = ({ filters, onFilterChange, onResetFilters }) => {
           onChange={(e) => onFilterChange("assignee", e.target.value)}
         >
           <option value="">Assignee (All)</option>
-          {(metadata.assignTo || []).map((assignee) => (
+          {(appData.assignTo || []).map((assignee) => (
             <option key={assignee} value={assignee}>
               {assignee}
             </option>
@@ -36,7 +36,7 @@ const FinanceTrackerFilters = ({ filters, onFilterChange, onResetFilters }) => {
           onChange={(e) => onFilterChange("salesman", e.target.value)}
         >
           <option value="">Salesman (All)</option>
-          {(metadata.salesmen || []).map((salesman) => (
+          {(appData.salesmen || []).map((salesman) => (
             <option key={salesman} value={salesman}>
               {salesman}
             </option>
@@ -77,4 +77,4 @@ const FinanceTrackerFilters = ({ filters, onFilterChange, onResetFilters }) => {
   );
 };
 
-export { FinanceTrackerFilters };
+export default FinanceTrackerFilters;

@@ -26,7 +26,6 @@ function _createContract_(data) {
 
 function _createNewProjectFromContract_(data) {
   let ss = SpreadsheetApp.getActive()
-  let shProjects = ss.getSheetByName('Projects')
 
   let { state, salesman, projectName, projectNumber, fbInvoiceId, clientName, siteAddress, clientEmail, clientPhone, siteState } = data
 
@@ -75,8 +74,9 @@ function _createContractDoc_(data) {
 }
 
 function createNewDocFromTemplate(name) {
-  let document = DriveApp.getFileById(CONFIG.CONTRACT_TEMPLATE).makeCopy();
-  document.moveTo(DriveApp.getFolderById(CONFIG.CONTRACT_OUTPUT_FOLDER))
+  let settings = _getSettings_()
+  let document = DriveApp.getFileById(_getIdFromUrl_(settings.contractTemplate)).makeCopy();
+  document.moveTo(DriveApp.getFolderById(_getIdFromUrl_(settings.contractExportFolder)))
   Logger.log(`New document created ${document.getUrl()}`)
 
   let outputDoc = DocumentApp.openById(document.getId())

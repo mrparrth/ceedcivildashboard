@@ -13,12 +13,13 @@ import {
 } from "@mui/material";
 import { Clear, Notifications } from "@mui/icons-material";
 import { differenceInSeconds } from "date-fns";
-import { useSettings } from "../../contexts/SettingsContext";
-import { useNotification } from "../../contexts/NotificationContext";
 import { sideNavWidth, topBarHeight } from "../../utils/constant";
 import { themeShadows } from "../../theme/themeColors";
 import { Paragraph, Small } from "../Typography";
 import PopupNotification from "../PopupNotification";
+
+import useSettings from "../../hooks/useSettings";
+import useNotification from "hooks/useNotification";
 
 function getTimeDifference(date) {
   let difference = differenceInSeconds(new Date(), date);

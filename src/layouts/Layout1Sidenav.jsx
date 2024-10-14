@@ -1,6 +1,6 @@
 import { Hidden, Switch, Box, styled, useTheme } from "@mui/material";
 
-import { useSettings } from "../contexts/SettingsContext";
+import useSettings from "hooks/useSettings";
 
 import Brand from "../components/Brand";
 import Sidenav from "../components/Sidenav";

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useContractMetadata } from "../contexts/ContractMetadataHook";
+import useContractMetadata from "hooks/useContractMetadata";
 
 const ScopeSelectorModal = ({ isOpen, onClose, formData, setFormData }) => {
   const { contractMetadata } = useContractMetadata();

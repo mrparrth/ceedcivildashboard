@@ -32,8 +32,6 @@ const reducer = (state, action) => {
   }
 };
 
-const NotificationContext = createContext(null);
-
 const getIconDetails = (type = "") => {
   switch (type.toLowerCase()) {
     case "message":
@@ -45,7 +43,9 @@ const getIconDetails = (type = "") => {
   }
 };
 
-export const NotificationProvider = ({ children }) => {
+export const NotificationContext = createContext(null);
+
+export default function NotificationProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const deleteNotification = (id) => {
@@ -95,14 +95,4 @@ export const NotificationProvider = ({ children }) => {
       {children}
     </NotificationContext.Provider>
   );
-};
-
-export const useNotification = () => {
-  const context = useContext(NotificationContext);
-  if (context === null) {
-    throw new Error(
-      "useNotification must be used within a NotificationProvider"
-    );
-  }
-  return context;
-};
+}

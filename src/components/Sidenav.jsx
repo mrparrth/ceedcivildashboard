@@ -1,9 +1,11 @@
+import useSettings from "hooks/useSettings";
+import useAppData from "../hooks/useAppData";
+
 import { Fragment } from "react";
 import { styled } from "@mui/material/styles";
 import Scrollbar from "react-perfect-scrollbar";
-import { useSettings } from "../contexts/SettingsContext";
 import { MatxVerticalNav } from "../components/MatxVerticalNav";
-import { navigations } from "../navigations";
+import { getNavigations } from "../navigations";
 
 // STYLED COMPONENTS
 const StyledScrollBar = styled(Scrollbar)(() => ({
@@ -26,6 +28,7 @@ const SideNavMobile = styled("div")(({ theme }) => ({
 
 export default function Sidenav({ children }) {
   const { settings, updateSettings } = useSettings();
+  const { appData } = useAppData();
 
   const updateSidebarMode = (sidebarSettings) => {
     let activeLayoutSettingsName = settings.activeLayout + "Settings";
@@ -43,11 +46,13 @@ export default function Sidenav({ children }) {
     });
   };
 
+  const navigationItems = getNavigations(appData);
+
   return (
     <Fragment>
       <StyledScrollBar options={{ suppressScrollX: true }}>
         {children}
-        <MatxVerticalNav items={navigations} />
+        <MatxVerticalNav items={navigationItems} />
       </StyledScrollBar>
 
       <SideNavMobile onClick={() => updateSidebarMode({ mode: "close" })} />

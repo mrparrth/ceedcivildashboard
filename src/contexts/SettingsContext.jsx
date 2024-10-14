@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useEffect } from "react";
 import { createContext, useState } from "react";
 import { themes } from "../theme/initThemes";
 import { merge } from "lodash";
@@ -33,12 +33,12 @@ let initialSettings = {
   },
 };
 
-const SettingsContext = createContext({
+export const SettingsContext = createContext({
   settings: initialSettings,
   updateSettings: () => {},
 });
 
-function SettingsProvider({ settings, children }) {
+export default function SettingsProvider({ settings, children }) {
   const [currentSettings, setCurrentSettings] = useState(
     settings || initialSettings
   );
@@ -74,11 +74,3 @@ function SettingsProvider({ settings, children }) {
     </SettingsContext.Provider>
   );
 }
-
-const useSettings = () => {
-  let settings = useContext(SettingsContext);
-  if (settings === undefined)
-    throw new Error("AuthContext was used outside of SettingsProvider");
-  return settings;
-};
-export { useSettings, SettingsProvider };

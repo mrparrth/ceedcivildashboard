@@ -1,9 +1,10 @@
-import React, { useState, useContext, useEffect } from "react";
+import React from "react";
 
-import ProjectTableRow from "../components/ProjectRow";
-import { useData } from "../contexts/data/DataContext";
-import PaginationCustom from "./PaginationCustom";
-import Loader from "./LoaderCustom";
+import ProjectRow from "./ProjectRow";
+import PaginationCustom from "../PaginationCustom";
+import Loader from "../LoaderCustom";
+
+import useData from "hooks/useData";
 
 const ProjectTable = ({ projects, pageNo, onPageChange, viewRow, editRow }) => {
   const { isLoading } = useData();
@@ -46,7 +47,7 @@ const ProjectTable = ({ projects, pageNo, onPageChange, viewRow, editRow }) => {
             projects
               .slice((pageNo - 1) * rowsPerPage, pageNo * rowsPerPage)
               .map((project) => (
-                <ProjectTableRow
+                <ProjectRow
                   key={project.id}
                   project={project}
                   viewRow={viewRow}

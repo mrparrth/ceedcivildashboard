@@ -1,15 +1,12 @@
 import React, {
   createContext,
-  useContext,
   useReducer,
   useEffect,
   useState,
   useCallback,
 } from "react";
-import { useAuth } from "../auth/AuthContext";
-import { useNotification } from "../NotificationContext";
 import { dataReducer, initialState } from "./dataReducer";
-import { getSheetData } from "../../db/index";
+import { runScriptFunction } from "../../db/index";
 import { useQueueManager } from "./queueManager";
 import {
   createProject,
@@ -21,14 +18,18 @@ import {
   toggleProjectSelection,
 } from "./projectOperations";
 import {
+  createPayment,
   updatePayment,
   deletePayment,
-  createExpense,
+  createFbExpense,
 } from "./paymentOperations";
 
-const DataContext = createContext(initialState);
+import useNotification from "hooks/useNotification";
+import useAuth from "hooks/useAuth";
 
-export const DataProvider = ({ children }) => {
+export const DataContext = createContext(initialState);
+
+export default function DataProvider({ children }) {
   const { isAuthenticated, user } = useAuth();
   const { addNotification } = useNotification();
   const [isLoading, setIsLoading] = useState(true);
@@ -42,8 +43,8 @@ export const DataProvider = ({ children }) => {
     if (isAuthenticated) {
       try {
         setIsLoading(true);
-        const initialData = await getSheetData();
-        dispatch({ type: "SET_INITIAL_DATA", payload: initialData });
+        const data = await runScriptFunction("getSheetData");
+        dispatch({ type: "SET_INITIAL_DATA", payload: data });
       } catch (error) {
         console.error("Error fetching initial data:", error);
         setError(error);
@@ -90,20 +91,13 @@ export const DataProvider = ({ children }) => {
     archiveProjects: archiveProjects(dispatch, addToQueue),
     unarchiveProjects: unarchiveProjects(dispatch, addToQueue),
     createDropboxFolder: createDropboxFolder(dispatch, addNotification),
+    createPayment: createPayment(dispatch, addToQueue),
     updatePayment: updatePayment(dispatch, addToQueue),
     deletePayment: deletePayment(dispatch, addToQueue),
-    createExpense: createExpense(dispatch, addToQueue, setError),
+    createFbExpense: createFbExpense(dispatch),
   };
 
   return (
     <DataContext.Provider value={contextValue}>{children}</DataContext.Provider>
   );
-};
-
-export const useData = () => {
-  const context = useContext(DataContext);
-  if (context === undefined) {
-    throw new Error("useData must be used within a DataProvider");
-  }
-  return context;
-};
+}

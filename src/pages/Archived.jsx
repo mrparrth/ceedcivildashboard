@@ -1,9 +1,9 @@
-import { useState, useEffect, useContext } from "react";
-import ProjectModal from "../components/ProjectModal";
+import { useState, useEffect } from "react";
+import { ProjectModal, ProjectTable } from "../components/ProjectDashboard";
 import Button from "@mui/material/Button";
 import { BiSolidArchiveIn } from "react-icons/bi";
-import ProjectTable from "../components/ProjectTable";
-import { useData } from "../contexts/data/DataContext";
+
+import useData from "hooks/useData";
 
 const Archived = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);

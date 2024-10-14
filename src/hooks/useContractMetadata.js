@@ -3,7 +3,7 @@ import { runScriptFunction } from "../db/index";
 
 let cachedContractMetadata = null;
 
-export const useContractMetadata = () => {
+export default function useContractMetadata() {
   const [contractMetadata, setContractMetadata] = useState(
     cachedContractMetadata
   );
@@ -35,11 +35,5 @@ export const useContractMetadata = () => {
     fetchContractMetadata();
   }, []);
 
-  // console.log("useContractMetadata hook state:", {
-  //   isLoading,
-  //   contractMetadata,
-  //   error,
-  // });
-
   return { contractMetadata, isLoading, error };
-};
+}

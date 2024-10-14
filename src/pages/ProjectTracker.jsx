@@ -13,9 +13,9 @@ import { styled } from "@mui/material/styles";
 import ArchiveIcon from "@mui/icons-material/Archive";
 import AddIcon from "@mui/icons-material/Add";
 import DropboxIcon from "@mui/icons-material/CloudQueue"; // Using a cloud icon as a substitute for Dropbox
-import ProjectModal from "../components/ProjectModal";
-import ProjectTable from "../components/ProjectTable";
-import { useData } from "../contexts/data/DataContext";
+import { ProjectModal, ProjectTable } from "../components/ProjectDashboard";
+
+import useData from "hooks/useData";
 
 const StyledButton = styled(Button)(({ theme }) => ({
   margin: theme.spacing(1),
@@ -87,14 +87,14 @@ const ProjectTracker = () => {
           >
             Archive Project(s)
           </StyledButton>
-          <StyledButton
+          {/* <StyledButton
             variant="contained"
             color="info"
             startIcon={<DropboxIcon />}
             onClick={handleDropboxFolderCreation}
           >
             Create Dropbox Folder
-          </StyledButton>
+          </StyledButton> */}
           <StyledButton
             variant="contained"
             color="primary"

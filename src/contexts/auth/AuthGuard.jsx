@@ -1,5 +1,5 @@
 import { Navigate, useLocation, matchPath } from "react-router-dom";
-import { useAuth } from "./AuthContext";
+import useAuth from "hooks/useAuth";
 import routes from "../../routes"; // Import your routes
 
 export default function AuthGuard({ children }) {

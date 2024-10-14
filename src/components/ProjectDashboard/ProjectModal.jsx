@@ -1,12 +1,13 @@
 import React, { useState } from "react";
-import { Drafter, Engineering, MEP, Civil } from "./ExpandableSections";
-import { SingleSelectDropdown, MultiSelectDropdown, CheckBox } from "./Fields";
-import { useData } from "../contexts/data/DataContext";
-import { useGlobal } from "../contexts/GlobalContext";
+import { Drafter, Engineering, MEP, Civil } from "../ExpandableSections";
+import { SingleSelectDropdown, MultiSelectDropdown, CheckBox } from "../Fields";
+
+import useData from "hooks/useData";
+import useappData from "hooks/useappData";
 
 const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
   let { updateProject, createProject, projects } = useData();
-  let { metadata } = useGlobal();
+  let { appData } = useappData();
 
   const defaultProject = {
     projectNumber: "",
@@ -55,7 +56,6 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
     initProject = projects.find((project) => project.id == projectKey);
 
   const [project, setProject] = useState(initProject || defaultProject);
-  const [showAlert, setShowAlert] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [drafterToggle, setDrafterToggle] = useState(false);
@@ -72,18 +72,18 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
   const validateForm = () => {
     const newErrors = {};
     //change
-    // if (!project.projectName)
-    //   newErrors.projectName = "Project Name is required";
+    if (!project.projectName)
+      newErrors.projectName = "Project Name is required";
     // if (!project.salesMan) newErrors.salesMan = "Salesman is required";
-    // if (!project.description) newErrors.description = "Description is required";
+    if (!project.description) newErrors.description = "Description is required";
     // if (!project.overallProjectStatus)
     //   newErrors.overallProjectStatus = "Overall Status is required";
     // if (!project.state) newErrors.state = "State is required";
     // if (!project.priority) newErrors.priority = "Priority is required";
-    // if (!project.estimatedBudget)
-    //   newErrors.estimatedBudget = "Estimated Budget is required";
+    if (!project.estimatedBudget)
+      newErrors.estimatedBudget = "Estimated Budget is required";
 
-    // setErrors(newErrors);
+    setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
@@ -122,26 +122,26 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
       label: "Salesman",
       key: "salesMan",
       isSingleSelect: true,
-      options: metadata.salesmen,
+      options: appData.salesmen,
     },
     { label: "Description", key: "description", isTextarea: true },
     {
       label: "Overall Status",
       key: "overallProjectStatus",
       isSingleSelect: true,
-      options: metadata.status,
+      options: appData.status,
     },
     {
       label: "State",
       key: "state",
       isSingleSelect: true,
-      options: metadata.states,
+      options: appData.states,
     },
     {
       label: "Priority",
       key: "priority",
       isSingleSelect: true,
-      options: metadata.priority,
+      options: appData.priority,
     },
     { label: "Project Files Folder", key: "projectFilesFolder" },
     { label: "Project Notes", key: "projectNotes", isTextarea: true },
@@ -156,12 +156,12 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
       label: "Initial Status",
       key: "initialProjectStatus",
       isSingleSelect: true,
-      options: metadata.initialStatus,
+      options: appData.initialStatus,
     },
     {
       label: "Assigned To",
       key: "assignedTo",
-      options: metadata.assignTo,
+      options: appData.assignTo,
       isMultiSelect: true,
     },
     {
@@ -338,13 +338,6 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
             )}
           </button>
         </div>
-        {showAlert && (
-          <div className="alert-success">
-            {isNewProject
-              ? "Project created successfully!"
-              : "Project updated successfully!"}
-          </div>
-        )}
       </div>
     </div>
   );

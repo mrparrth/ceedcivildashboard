@@ -1,6 +1,5 @@
 import { CheckBox, SingleSelectDropdown } from "./Fields";
-import { useData } from "../contexts/data/DataContext";
-import { useGlobal } from "../contexts/GlobalContext";
+import useappData from "hooks/useappData";
 
 const FormGenerator = ({ data, setter, fields, bgcolor, viewOnly }) => {
   const handleInputChange = (name, value) => {
@@ -52,7 +51,7 @@ const FormGenerator = ({ data, setter, fields, bgcolor, viewOnly }) => {
 };
 
 const Drafter = ({ data, setter, viewOnly }) => {
-  const { drafters, draftingStatus } = useGlobal().metadata || {};
+  const { drafters, draftingStatus } = useappData().appData || {};
 
   const fields = [
     { label: "Drafter Needed", name: "drafterNeeded", type: "checkbox" },
@@ -88,7 +87,7 @@ const Drafter = ({ data, setter, viewOnly }) => {
 };
 
 const Engineering = ({ data, setter, viewOnly }) => {
-  const { engineers, draftingStatus } = useGlobal().metadata || {};
+  const { engineers, draftingStatus } = useappData().appData || {};
 
   const fields = [
     {
@@ -128,7 +127,7 @@ const Engineering = ({ data, setter, viewOnly }) => {
 };
 
 const MEP = ({ data, setter, viewOnly }) => {
-  const { mep, draftingStatus } = useGlobal().metadata || {};
+  const { mep, draftingStatus } = useappData().appData || {};
 
   const fields = [
     { label: "MEP Needed", name: "mepNeeded", type: "checkbox" },
@@ -164,7 +163,7 @@ const MEP = ({ data, setter, viewOnly }) => {
 };
 
 const Civil = ({ data, setter, viewOnly }) => {
-  const { civil, draftingStatus } = useGlobal().metadata || {};
+  const { civil, draftingStatus } = useappData().appData || {};
 
   const fields = [
     { label: "Civil Needed", name: "civilNeeded", type: "checkbox" },

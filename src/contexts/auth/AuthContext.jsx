@@ -1,6 +1,5 @@
 import {
   createContext,
-  useContext,
   useReducer,
   useCallback,
   useEffect,
@@ -13,7 +12,7 @@ import {
   trashToken,
   runScriptFunction,
 } from "../../db";
-import { useContractMetadata } from "../ContractMetadataHook";
+import useContractMetadata from "hooks/useContractMetadata";
 
 const checkForToken = () => getTokenFromLocalStorage() || null;
 
@@ -23,8 +22,6 @@ const initialState = {
   token: null,
   error: null,
 };
-
-const AuthContext = createContext(initialState);
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -71,7 +68,9 @@ const reducer = (state, action) => {
   }
 };
 
-const AuthProvider = ({ children }) => {
+export const AuthContext = createContext(initialState);
+
+export default function AuthProvider({ children }) {
   useContractMetadata(); //initializes the contract metadata
 
   const navigate = useNavigate();
@@ -150,14 +149,4 @@ const AuthProvider = ({ children }) => {
       {children}
     </AuthContext.Provider>
   );
-};
-
-function useAuth() {
-  const context = useContext(AuthContext);
-  if (context === undefined)
-    throw new Error("useAuth must be used within an AuthProvider");
-
-  return context;
 }
-
-export { AuthProvider, useAuth };

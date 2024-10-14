@@ -1,4 +1,4 @@
-import { useSettings } from "../contexts/SettingsContext";
+import useSettings from "hooks/useSettings";
 
 export default function MatxLogo({ className }) {
   const { settings } = useSettings();

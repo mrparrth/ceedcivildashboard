@@ -108,5 +108,7 @@
   "drafters": ["Arnel", "Fe"],
   "engineers": ["Luan", "E-Struc - Eng", "VSC -ENG"],
   "mep": ["Nicko"],
-  "civil": ["Civil Engineer"]
+  "civil": ["Civil Engineer"],
+  "contractExportFolder": "https://drive.google.com/drive/u/0/folders/1r9INUZVhcIZ7mjXrWMXAd6Eye5RbWQoH",
+  "contractTemplate": "https://docs.google.com/document/d/1n9mabMMM4DF8I54wxuczl8us85sfQ-VT2BvTAQUzYpI/edit"
 }

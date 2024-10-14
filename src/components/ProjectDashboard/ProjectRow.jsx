@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { MultiSelectDropdown } from "./Fields";
-import { useData } from "../contexts/data/DataContext";
+import { MultiSelectDropdown } from "../Fields";
 import { FaEye, FaPencilAlt } from "react-icons/fa";
 import Button from "@mui/material/Button";
 import { MdDelete } from "react-icons/md";
@@ -9,11 +8,13 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import { useGlobal } from "../contexts/GlobalContext";
 
-const ProjectTableRow = ({ project, viewRow, editRow }) => {
+import useAppData from "hooks/useAppData";
+import useData from "hooks/useData";
+
+const ProjectRow = ({ project, viewRow, editRow }) => {
   const { updateProject, deleteProject, toggleProjectSelection } = useData();
-  const { metadata } = useGlobal();
+  const { appData } = useAppData();
 
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
@@ -47,7 +48,7 @@ const ProjectTableRow = ({ project, viewRow, editRow }) => {
         <td>{project.invoiceNumber}</td>
         <td>
           <MultiSelectDropdown
-            options={metadata.assignTo}
+            options={appData.assignTo}
             selectedOptions={project.assignedTo}
             setSelectedOptions={(newSelectedOptions) =>
               updateProject({ id: project.id, assignedTo: newSelectedOptions })
@@ -66,7 +67,7 @@ const ProjectTableRow = ({ project, viewRow, editRow }) => {
               })
             }
           >
-            {metadata.status.map((status) => (
+            {appData.status.map((status) => (
               <option key={status} value={status}>
                 {status}
               </option>
@@ -84,7 +85,7 @@ const ProjectTableRow = ({ project, viewRow, editRow }) => {
               })
             }
           >
-            {metadata.states.map((stateName) => (
+            {appData.states.map((stateName) => (
               <option key={stateName} value={stateName}>
                 {stateName}
               </option>
@@ -133,8 +134,9 @@ const ProjectTableRow = ({ project, viewRow, editRow }) => {
         <DialogTitle id="alert-dialog-title">{"Confirm Delete"}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Are you sure you want to delete this project? This action cannot be
-            undone.
+            Are you sure you want to delete this project?
+            <br />
+            This action cannot be undone.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -150,4 +152,4 @@ const ProjectTableRow = ({ project, viewRow, editRow }) => {
   );
 };
 
-export default ProjectTableRow;
+export default ProjectRow;

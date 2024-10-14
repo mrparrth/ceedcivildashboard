@@ -1,43 +1,18 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
-import { runScriptFunction } from "../db";
+import React, { createContext, useState } from "react";
+import { getappData } from "../db";
+import defaultappData from "../db/JsonData/appData.json";
 
-const GlobalContext = createContext();
+export const GlobalContext = createContext(defaultappData);
 
-export const useGlobal = () => useContext(GlobalContext);
-
-export const GlobalProvider = ({ children }) => {
-  const [metadata, setMetadata] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const loadMetadata = async () => {
-      const savedMetadata = localStorage.getItem("ceedCivil_Metadata");
-
-      if (savedMetadata) {
-        setMetadata(JSON.parse(savedMetadata));
-        setIsLoading(false);
-      } else {
-        try {
-          // If not in localStorage, fetch from API
-          const data = await runScriptFunction("getMetadata");
-
-          setMetadata(data);
-
-          localStorage.setItem("ceedCivil_Metadata", JSON.stringify(data));
-        } catch (error) {
-          console.error("Error fetching metadata:", error);
-        } finally {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    loadMetadata();
-  }, []);
+export default function GlobalProvider({ children }) {
+  const [appData, setappData] = useState(() => {
+    const extractedData = getappData();
+    return extractedData || defaultappData;
+  });
 
   return (
-    <GlobalContext.Provider value={{ metadata, isMetaLoading: isLoading }}>
+    <GlobalContext.Provider value={{ appData, setappData }}>
       {children}
     </GlobalContext.Provider>
   );
-};
+}

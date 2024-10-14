@@ -21,14 +21,12 @@ export const useQueueManager = (addNotification) => {
     try {
       await runScriptFunction(functionName, data);
       setRequestQueue((prevQueue) => prevQueue.slice(1));
-      addNotification({ title: `${functionName} completed successfully` });
     } catch (error) {
       console.error(`Error processing ${functionName}:`, error);
       if (retryCount >= 1) {
-        //prodchg to 4
         setRequestQueue((prevQueue) => prevQueue.slice(1));
         addNotification({
-          title: `${functionName} failed after multiple attempts`,
+          title: `${functionName} failed: ${error.message}`,
           type: "alert",
         });
       } else {

@@ -1,20 +1,11 @@
 import { Fragment } from "react";
 import { NavLink } from "react-router-dom";
-import {
-  Box,
-  ButtonBase,
-  Icon,
-  styled,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Divider,
-} from "@mui/material";
+import { Box, ButtonBase, Icon, styled, Divider } from "@mui/material";
 
-import { useSettings } from "../../contexts/SettingsContext";
+import useSettings from "hooks/useSettings";
 import { Paragraph, Span } from "../../components/Typography";
 import MatxVerticalNavExpansionPanel from "./MatxVerticalNavExpansionPanel";
-import { useAuth } from "../../contexts/auth/AuthContext";
+import useAuth from "hooks/useAuth";
 
 // STYLED COMPONENTS
 const ListLabel = styled(Paragraph)(({ theme, mode }) => ({
@@ -117,7 +108,7 @@ const LogoutItem = styled(ButtonBase)(({ theme, mode }) => ({
 export default function MatxVerticalNav({ items }) {
   const { settings } = useSettings();
   const { mode } = settings.layout1Settings.leftSidebar;
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
 
   const renderLevels = (data) => {
     return data.map((item, index) => {
@@ -223,5 +214,13 @@ export default function MatxVerticalNav({ items }) {
     });
   };
 
-  return <div className="navigation">{renderLevels(items)}</div>;
+  return (
+    <div className="navigation">
+      {renderLevels(
+        items.filter(
+          (item) => !item.auth || item.auth.includes(user?.role?.toUpperCase())
+        )
+      )}
+    </div>
+  );
 }

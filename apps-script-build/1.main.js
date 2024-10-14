@@ -4,8 +4,6 @@ const CONFIG = {
   PROJECT_ID_PROP: "LastProjectId",
   METADATA_PROP: "Metadata",
   CONTRACT_META_PROP: "ContractMetaData",
-  CONTRACT_TEMPLATE: "1n9mabMMM4DF8I54wxuczl8us85sfQ-VT2BvTAQUzYpI", //'136toZMz-Bau1Y6vvbwmxsLgFFNgzM1tWb1RfwpZ_jmE',
-  CONTRACT_OUTPUT_FOLDER: "1r9INUZVhcIZ7mjXrWMXAd6Eye5RbWQoH",
   CONTRACT_ALTERNATE_COLORS: {
     color1: "#FFFFFF",
     color2: "#F3EFEF",
@@ -277,17 +275,22 @@ class PublicApp {
   }
 
   getAppData() {
+    let metadata = this.getMetadata()
+    
     return {
+      ...metadata,
       appName: this.settings.appName,
       urlLogo: this.settings.urlLogo,
-      dropdowns: this.getDropdowns(),
-      users: new User().getAllUsers(),
+      contractExportFolder: this.settings.contractExportFolder,
+      contractTemplate: this.settings.contractTemplate
     };
   }
 
   doGet() {
     const template = HtmlService.createTemplateFromFile("index");
-    // template.appData = JSON.stringify(this.getAppData());
+    // template.contractExportFolder = this.settings.contractExportFolder
+    // template.contractTemplate = this.settings.contractTemplate
+    template.appData = JSON.stringify(this.getAppData());
     return template
       .evaluate()
       .setTitle(this.settings.appName)
@@ -405,14 +408,14 @@ class SecureApp extends PublicApp {
   getSheetData() {
     let { name, role } = this.user;
 
-    let projectData = this.getProjects(
+    let projects = this.getProjects(
       (project) => role == "Admin" || project.assignedTo.includes(name)
     );
-    let paymentsData = this.getPayments(
+    let payments = this.getPayments(
       (payment) =>
         role == "Admin" || payment.assignee.toLowerCase() == name.toLowerCase()
     );
-    return { projectData, paymentsData };
+    return { projects, payments };
   }
 
   createProject(project) {
@@ -500,7 +503,7 @@ class SecureApp extends PublicApp {
     this.shPayments.deleteRow(payment._rowIndex);
   }
 
-  createExpense(payment) {
+  createFBExpense(payment) {
     let user = this.authApp.getUserByName(payment.assignee);
     if (!user) throw "User details not found";
 
@@ -534,29 +537,20 @@ const include = (filename) => _include_(filename);
 
 const onOpen = () => new PublicApp().onOpen();
 const getSheetData = ({ token }) => new SecureApp(token).getSheetData();
-const updateProject = ({ token, data }) =>
-  new SecureApp(token).updateProject(data);
-const archiveProjects = ({ token, data }) =>
-  new SecureApp(token).archiveProjects(data);
-const unarchiveProjects = ({ token, data }) =>
-  new SecureApp(token).unarchiveProjects(data);
-const createProject = ({ token, data }) =>
-  new SecureApp(token).createProject(data);
-const createDropboxFolder = ({ token, data }) =>
-  new SecureApp(token).createDropboxFolder(data);
-const getNewProjectNumber = ({ token, data }) =>
-  new SecureApp(token).getNewProjectNumber();
+const updateProject = ({ token, data }) =>  new SecureApp(token).updateProject(data);
+const archiveProjects = ({ token, data }) =>  new SecureApp(token).archiveProjects(data);
+const unarchiveProjects = ({ token, data }) =>  new SecureApp(token).unarchiveProjects(data);
+const createProject = ({ token, data }) =>  new SecureApp(token).createProject(data);
+const createDropboxFolder = ({ token, data }) =>  new SecureApp(token).createDropboxFolder(data);
+const getNewProjectNumber = ({ token }) =>  new SecureApp(token).getNewProjectNumber();
 
-const createPayments = ({ token, data }) =>
-  new SecureApp(token).createPayments(data);
-const updatePayment = ({ token, data }) =>
-  new SecureApp(token).updatePayment(data);
-const deletePayment = ({ token, data }) =>
-  new SecureApp(token).deletePayment(data);
+const createPayments = ({ token, data }) => new SecureApp(token).createPayments(data);
+const updatePayment = ({ token, data }) => new SecureApp(token).updatePayment(data);
+const deletePayment = ({ token, data }) => new SecureApp(token).deletePayment(data);
 
 //freshbooks functions
-const createExpense = ({ token, data }) =>
-  new SecureApp(token).createExpense(data);
+const createFBExpense = ({ token, data }) =>
+  new SecureApp(token).createFBExpense(data);
 const getFBClient = ({ data }) => _getFBClient_(data);
 const createFBClient = ({ data }) => _createFBClient_(data);
 const createFBInvoice = ({ data }) => _createFBInvoice_(data);
@@ -584,13 +578,13 @@ const test = () => {
   let empToken =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImVjY2I1N2EwLWM0OTItNDlkOS04NmMwLTRmYzBjNTYyMGI3YSIsImNyZWF0ZWRBdCI6IjIwMjQtMTAtMDFUMTQ6MzA6MDAuNjU4WiIsIm1vZGlmaWVkQXQiOiIyMDI0LTEwLTAxVDE0OjMwOjAwLjY1OFoiLCJuYW1lIjoiQXJuZWwiLCJlbWFpbCI6ImlhbXBhcnJ0aEBnbWFpbC5jb20iLCJyb2xlIjoiRW1wbG95ZWUiLCJzdGF0dXMiOiJBY3RpdmUiLCJfcm93SW5kZXgiOjJ9.fUo9EAvFMb+BBYJPKEgmSVZWlGnXej3Mr2FRRjbvxiU=";
 
-  let payload = {"data":{"notes":"","revisionCost":"3","dateModified":"2024-10-09T21:27:20.672Z","revisionNeeded":false,"_rowIndex":814,"revisionPaid":false,"dateCreated":"2024-10-09T21:27:20.672Z","paid":false,"assignee":"Arnel","id":"ab72c74a-73ed-4858-a27f-303a3489a219","projectId":"a102d129-e74e-40b3-a30e-6b32a3f77998","totalCost":4,"actualCost":"1","datePaid":null,"datePaid2":null},"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA5MGE5NWNlLTM5MzMtNGI1Ny1hMTkxLTk2ZGMwNjdmOTg1MSIsImNyZWF0ZWRBdCI6IjIwMjQtMTAtMDNUMTM6NTU6NTEuNzcyWiIsIm1vZGlmaWVkQXQiOiIyMDI0LTEwLTAzVDEzOjU1OjUxLjc3MloiLCJuYW1lIjoiQWRtaW4iLCJlbWFpbCI6ImFkbWluQGNlZWRjaXZpbC5jb20iLCJyb2xlIjoiQWRtaW4iLCJzdGF0dXMiOiJBY3RpdmUiLCJtZXJjaGFudE5hbWUiOiJBZG1pbiIsImNhdGVnb3J5TmFtZSI6IkRyYWZ0ZXIgLSBDb250cmFjdG9yIiwiX3Jvd0luZGV4IjozfQ==.q3sodyDSjuplKUYL6ZHy6FgnPS0rAMfgeeUHXFaf2Vg="}
+  let payload = {"data":{"siteZip":"95119","retainerRemaining":5600,"clientStreet":"Test Test","sameAsClient":true,"clientAddress":"Test Test","scopes":[{"rate":5,"description":"Building Plan Calculations Package","detail":"Preparation of design computations and construction drawings for building plans. Soil assumed at 1500 PSF unless soil report provided. All loads as shown. Single use for address as shown"},{"description":"Calculations Report","rate":2,"detail":"Calculations report for the openings in the ceiling."},{"detail":"Scope of work, reviewed, stamped, and sealed by state licensed P.E. CA","rate":2,"description":"Engineering Review, Stamp and Seal P.E."}],"gap":0,"retainerDeposit":9,"siteStreet":"6373 San Igancio","projectName":"Test","deliveryDuration":"1 - 2 Weeks","clientCompany":"Test test","projectNumber":"999","favClients":"","date":"2024-09-14","remainingBalance":0,"isUpworkJob":false,"salesman":"Ryan","siteAddress":"Test Test","fbClientId":"","siteState":"California","documentUrl":"","clientName":"test test","checkBox":"on","clientEmail":"test@test.com","clientState":"California","fbProjectId":"12518535","ratePerHour":200,"siteCity":"San Jose","clientPhone":"(000)000-0000","deliverableFromClient":"CAD and PDF files","totalCost":9,"fbInvoiceId":"0001672","clientZip":"95112","clientCity":"test"},"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA5MGE5NWNlLTM5MzMtNGI1Ny1hMTkxLTk2ZGMwNjdmOTg1MSIsImNyZWF0ZWRBdCI6IjIwMjQtMTAtMDNUMTM6NTU6NTEuNzcyWiIsIm1vZGlmaWVkQXQiOiIyMDI0LTEwLTAzVDEzOjU1OjUxLjc3MloiLCJuYW1lIjoiQWRtaW4iLCJlbWFpbCI6ImFkbWluQGNlZWRjaXZpbC5jb20iLCJyb2xlIjoiQWRtaW4iLCJzdGF0dXMiOiJBY3RpdmUiLCJtZXJjaGFudE5hbWUiOiJBZG1pbiIsImNhdGVnb3J5TmFtZSI6IkRyYWZ0ZXIgLSBDb250cmFjdG9yIiwiX3Jvd0luZGV4IjozfQ==.q3sodyDSjuplKUYL6ZHy6FgnPS0rAMfgeeUHXFaf2Vg="}
 
-  console.log(createExpense(payload));
+  console.log(createContract(payload));
 
   // console.log(new SecureApp(payload.token).createExpense(payload.data));
 
-  // payload = { "data": { "projectNumber": "", "invoiceNumber": "90000", "projectName": "FL - Container Home - I-beams", "salesMan": "Jerry", "description": "asdf", "overallProjectStatus": "HOLD", "state": "Alabama", "priority": "Urgent", "projectFilesFolder": "asdf", "projectNotes": "asfd", "clientProjectNameAddress": "asfd", "assignedTo": ["Admin"], "contractLink": "asf", "depositPaid": false, "estimatedBudget": "asf", "actualCost": "", "initialProjectStatus": "Submitted for Permit", "drafterNeeded": false, "drafterTaskedTo": "", "draftingStatus": "", "draftingDropboxLink": "", "draftingEstimatedDeliveryTime": "", "engineeringNeeded": false, "engineerTaskedTo": "", "engineeringStatus": "", "engineeringDropboxLink": "", "engineeringEstimatedDeliveryTime": "", "mepNeeded": false, "mepTaskedTo": "", "mepStatus": "", "mepDropboxLink": "", "mepEstimatedDeliveryTime": "", "civilNeeded": false, "civilEngineeringTaskedTo": "", "civilEngineeringStatus": "", "civilDropboxLink": "", "civilEstimatedDeliveryTime": "", "jobType": "", "isArchived": false, "id": "214e4dbf-724c-40b4-ba65-c2306f4497aa", "dateCreated": "2024-10-07T06:07:21.555Z", "dateModified": "2024-10-07T06:07:21.555Z", "createdBy": "Admin", "modifiedBy": "Admin" }, "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA5MGE5NWNlLTM5MzMtNGI1Ny1hMTkxLTk2ZGMwNjdmOTg1MSIsImNyZWF0ZWRBdCI6IjIwMjQtMTAtMDNUMTM6NTU6NTEuNzcyWiIsIm1vZGlmaWVkQXQiOiIyMDI0LTEwLTAzVDEzOjU1OjUxLjc3MloiLCJuYW1lIjoiQWRtaW4iLCJlbWFpbCI6ImFkbWluQGNlZWRjaXZpbC5jb20iLCJyb2xlIjoiQWRtaW4iLCJzdGF0dXMiOiJBY3RpdmUiLCJfcm93SW5kZXgiOjN9.yyF0FGeVa4bOVauiHdJmwvN4gHi1YYwhi1y/ZQP3khg=" }
+  payload = { "data": { "projectNumber": "", "invoiceNumber": "90000", "projectName": "FL - Container Home - I-beams", "salesMan": "Jerry", "description": "asdf", "overallProjectStatus": "HOLD", "state": "Alabama", "priority": "Urgent", "projectFilesFolder": "asdf", "projectNotes": "asfd", "clientProjectNameAddress": "asfd", "assignedTo": ["Admin"], "contractLink": "asf", "depositPaid": false, "estimatedBudget": "asf", "actualCost": "", "initialProjectStatus": "Submitted for Permit", "drafterNeeded": false, "drafterTaskedTo": "", "draftingStatus": "", "draftingDropboxLink": "", "draftingEstimatedDeliveryTime": "", "engineeringNeeded": false, "engineerTaskedTo": "", "engineeringStatus": "", "engineeringDropboxLink": "", "engineeringEstimatedDeliveryTime": "", "mepNeeded": false, "mepTaskedTo": "", "mepStatus": "", "mepDropboxLink": "", "mepEstimatedDeliveryTime": "", "civilNeeded": false, "civilEngineeringTaskedTo": "", "civilEngineeringStatus": "", "civilDropboxLink": "", "civilEstimatedDeliveryTime": "", "jobType": "", "isArchived": false, "id": "214e4dbf-724c-40b4-ba65-c2306f4497aa", "dateCreated": "2024-10-07T06:07:21.555Z", "dateModified": "2024-10-07T06:07:21.555Z", "createdBy": "Admin", "modifiedBy": "Admin" }, "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA5MGE5NWNlLTM5MzMtNGI1Ny1hMTkxLTk2ZGMwNjdmOTg1MSIsImNyZWF0ZWRBdCI6IjIwMjQtMTAtMDNUMTM6NTU6NTEuNzcyWiIsIm1vZGlmaWVkQXQiOiIyMDI0LTEwLTAzVDEzOjU1OjUxLjc3MloiLCJuYW1lIjoiQWRtaW4iLCJlbWFpbCI6ImFkbWluQGNlZWRjaXZpbC5jb20iLCJyb2xlIjoiQWRtaW4iLCJzdGF0dXMiOiJBY3RpdmUiLCJfcm93SW5kZXgiOjN9.yyF0FGeVa4bOVauiHdJmwvN4gHi1YYwhi1y/ZQP3khg=" }
 
   // console.log(new SecureApp(payload.token).createProject(payload.data))
   // new Auth().login({ token: data.token });

@@ -59,6 +59,11 @@ export const dataReducer = (state, action) => {
             : project
         ),
       };
+    case "ADD_PAYMENT":
+      return {
+        ...state,
+        payments: [action.payload, ...state.payments],
+      };
     case "UPDATE_PAYMENT":
       return {
         ...state,

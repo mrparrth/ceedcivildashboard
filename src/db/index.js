@@ -1,13 +1,14 @@
 import projectsInit from "../db/JsonData/projects.json";
 import paymentsInit from "../db/JsonData/payments.json";
-import metadataInit from "../db/JsonData/metadata.json";
+import appDataInit from "../db/JsonData/appData.json";
 import contractmetadataInit from "../db/JsonData/contractMetadata.json";
+const ge = typeof google != "undefined"; // Check if google.script.run is available
 
 const FAKE_USER = {
   id: "fake_user",
   createdAt: "2024-10-03T13:55:51.772Z",
   modifiedAt: "2024-10-03T13:55:51.772Z",
-  name: "Fake User",
+  name: "Arnel",
   email: "fake_user@ceedcivil.com",
   password: "fake_user",
   role: "Admin",
@@ -32,61 +33,50 @@ function runScriptFunction(functionName, inputData = {}) {
   );
 
   return new Promise((resolve, reject) => {
-    // Check if google.script.run is available
-    if (typeof google === "undefined" || !google.script || !google.script.run) {
+    console.log(`ge:` + ge);
+    if (ge) {
+      google.script.run
+        .withSuccessHandler((result) => {
+          console.log(`Google Success: ${functionName} returned`, result);
+          resolve(result);
+        })
+        .withFailureHandler((error) => {
+          console.error(
+            `Google Failure: ${functionName} encountered an error`,
+            error
+          );
+          reject(error); // Pass the error to the calling function
+        })
+        [functionName](inputData);
+    } else {
       return resolve(handleDevEnvironment(functionName, inputData));
     }
-
-    google.script.run
-      .withSuccessHandler((result) => {
-        console.log(`Google Success: ${functionName} returned`, result);
-        resolve(result);
-      })
-      .withFailureHandler((error) => {
-        console.error(
-          `Google Failure: ${functionName} encountered an error`,
-          error
-        );
-        reject(error); // Pass the error to the calling function
-      })
-      [functionName](inputData);
   });
 }
 
-async function getSheetData() {
-  try {
-    let data = await runScriptFunction("getSheetData");
-
-    return {
-      projects: data.projectData, // Use projects from Google Apps Script or fallback to initial
-      payments: data.paymentsData,
-    };
-  } catch (error) {
-    console.error("Error fetching projects:", error); //will be changed to throw error later
-
-    return {
-      projects: projectsInit, // Fallback to local data if there's an error
-      payments: paymentsInit,
-    };
-  }
-}
-
 function handleDevEnvironment(functionName, data) {
-  if (functionName == "login") {
-    return {
-      user: FAKE_USER,
-      token: "FAKE_TOKEN",
-    };
-  } else if (functionName == "getMetadata") {
-    return metadataInit;
-  } else if (functionName == "getContractMetadata") {
-    return contractmetadataInit;
-  } else {
-    throw new Error(
-      "Unhandled Fake Google Function " +
-        functionName +
-        ` ${Object.keys(data.data).length > 0 ? JSON.stringify(data) : ""}`
-    );
+  switch (functionName) {
+    case "login":
+      return {
+        user: FAKE_USER,
+        token: "FAKE_TOKEN",
+      };
+    case "getSheetData":
+      return {
+        projects: projectsInit, // Fallback to local data if there's an error
+        payments: paymentsInit,
+      };
+    case "getContractMetadata":
+      return contractmetadataInit;
+    case "createFbExpense":
+      sleep(3000);
+      return "fakeExpense";
+    default:
+      throw new Error(
+        "Unhandled Fake Google Function " +
+          functionName +
+          ` ${Object.keys(data.data).length > 0 ? JSON.stringify(data) : ""}`
+      );
   }
 }
 
@@ -133,6 +123,23 @@ async function validateLogin(inputData) {
   }
 }
 
+function getappData() {
+  if (ge) {
+    const appDataElement = document.getElementById("app-data");
+    if (appDataElement) {
+      try {
+        return JSON.parse(appDataElement.getAttribute("app-data"));
+      } catch (error) {
+        console.error("Error parsing app data:", error);
+        return appDataInit;
+      }
+    }
+  } else {
+    console.log(`appDataInit:` + JSON.stringify(appDataInit));
+    return appDataInit;
+  }
+}
+
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -152,8 +159,9 @@ function trashToken() {
 export {
   saveTokenInLocalStorage,
   getTokenFromLocalStorage,
-  getSheetData,
   validateLogin,
   trashToken,
   runScriptFunction,
+  getappData,
+  sleep,
 };

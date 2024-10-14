@@ -1,5 +1,4 @@
 import { memo } from "react";
-import { Link } from "react-router-dom";
 import {
   Box,
   styled,
@@ -11,9 +10,6 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import { useState } from "react";
-import { NotificationProvider } from "../contexts/NotificationContext";
-import { useAuth } from "../contexts/auth/AuthContext";
-import { useSettings } from "../contexts/SettingsContext";
 import { Span } from "../components/Typography";
 import { MatxMenu } from "../components";
 import { NotificationBar } from "../components/NotificationBar";
@@ -21,7 +17,10 @@ import { themeShadows } from "../theme/themeColors";
 import { topBarHeight } from "../utils/constant";
 import { keyframes } from "@mui/system";
 import { Menu, PowerSettingsNew, Refresh } from "@mui/icons-material";
-import { useData } from "../contexts/data/DataContext";
+
+import useSettings from "hooks/useSettings";
+import useData from "hooks/useData";
+import useAuth from "hooks/useAuth";
 
 // STYLED COMPONENTS
 const StyledIconButton = styled(IconButton)(({ theme }) => ({

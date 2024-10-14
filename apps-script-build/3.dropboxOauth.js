@@ -1,5 +1,5 @@
-var CLIENT_ID = 'gcmh6p1ybimrz1s';
-var CLIENT_SECRET = 'yodox58rihu300z';
+var DROPBOX_CLIENT_ID = 'gcmh6p1ybimrz1s';
+var DROPBOX_CLIENT_SECRET = 'yodox58rihu300z';
 
 function authorizeDropbox() {
   resetDropbox()
@@ -20,8 +20,8 @@ function getDropboxService_() {
   return OAuth2.createService('Dropbox')
     .setAuthorizationBaseUrl('https://www.dropbox.com/oauth2/authorize?token_access_type=offline')
     .setTokenUrl('https://api.dropboxapi.com/oauth2/token')
-    .setClientId(CLIENT_ID)
-    .setClientSecret(CLIENT_SECRET)
+    .setClientId(DROPBOX_CLIENT_ID)
+    .setClientSecret(DROPBOX_CLIENT_SECRET)
     .setCallbackFunction('authCallback')
     .setPropertyStore(PropertiesService.getScriptProperties())
     .setParam('response_type', 'code');
@@ -66,6 +66,7 @@ function createDropBoxFolderAndGetLink(folderName) {
 }
 
 function _createDropboxFolder_(service, folderName) {
+  let settings = _getSettings_()
   let url = 'https://api.dropboxapi.com/2/files/create_folder_v2';
   let options = {
     headers: {
@@ -74,7 +75,7 @@ function _createDropboxFolder_(service, folderName) {
     },
     'method': 'post',
     'payload': JSON.stringify({
-      "path": `${DROPBOX_CONFIG.ROOT_FOLDER}/${folderName}`
+      "path": `${settings.dropboxRootFolder}/${folderName}`
     })
   };
 
