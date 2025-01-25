@@ -4,7 +4,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Button,
+  Button
 } from "@mui/material";
 
 const ConfirmationModal = ({
@@ -14,14 +14,14 @@ const ConfirmationModal = ({
   title,
   message,
   choices,
+  showCancel = true
 }) => {
   return (
     <Dialog
       open={isOpen}
       onClose={onClose}
       aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description"
-    >
+      aria-describedby="alert-dialog-description">
       <DialogTitle id="alert-dialog-title">{title}</DialogTitle>
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
@@ -33,14 +33,15 @@ const ConfirmationModal = ({
           <Button
             key={index}
             onClick={() => onConfirm(choice.value)}
-            color="primary"
-          >
+            color="primary">
             {choice.label}
           </Button>
         ))}
-        <Button onClick={onClose} color="primary">
-          Cancel
-        </Button>
+        {showCancel && (
+          <Button onClick={onClose} color="primary">
+            Cancel
+          </Button>
+        )}
       </DialogActions>
     </Dialog>
   );

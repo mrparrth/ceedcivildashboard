@@ -7,7 +7,7 @@ import {
   Button,
   Typography,
   InputAdornment,
-  Grid,
+  Grid
 } from "@mui/material";
 import { styled } from "@mui/system";
 import EmailIcon from "@mui/icons-material/Email";
@@ -21,7 +21,7 @@ const GradientBackground = styled(Box)({
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  padding: "20px",
+  padding: "20px"
 });
 
 const GlassmorphicContainer = styled(Box)({
@@ -31,7 +31,7 @@ const GlassmorphicContainer = styled(Box)({
   overflow: "hidden",
   boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.37)",
   width: "80%",
-  maxWidth: "1000px",
+  maxWidth: "1000px"
 });
 
 const WelcomeSection = styled(Box)({
@@ -41,16 +41,16 @@ const WelcomeSection = styled(Box)({
   justifyContent: "center",
   alignItems: "center",
   height: "100%",
-  backgroundColor: "rgba(0, 0, 0, 0.5)",
+  backgroundColor: "rgba(0, 0, 0, 0.5)"
 });
 
 const LoginSection = styled(Box)({
-  padding: "40px",
+  padding: "40px"
 });
 
 const LoginGrid = styled(Grid)({
   backgroundColor: "rgba(255, 255, 255, 0.25)",
-  padding: "40px",
+  padding: "40px"
 });
 
 const GradientButton = styled(Button)({
@@ -59,8 +59,8 @@ const GradientButton = styled(Button)({
   borderRadius: "10px",
   padding: "10px 0",
   "&:hover": {
-    opacity: 0.9,
-  },
+    opacity: 0.9
+  }
 });
 
 const safeUrl = (url) => {
@@ -71,8 +71,8 @@ const safeUrl = (url) => {
 };
 
 export default function Login() {
-  const [userId, setUserId] = useState("fakeuser@ceedcivil.com");
-  const [password, setPassword] = useState("password");
+  const [userId, setUserId] = useState("");
+  const [password, setPassword] = useState("");
   const { login, isAuthenticated, isAuthInProgress, error, setError } =
     useAuth();
   const navigate = useNavigate();
@@ -108,15 +108,13 @@ export default function Login() {
                 variant="h4"
                 align="center"
                 gutterBottom
-                sx={{ color: "white", fontWeight: "bold" }}
-              >
+                sx={{ color: "white", fontWeight: "bold" }}>
                 Welcome Back to CeedCivil
               </Typography>
               <Typography
                 variant="body1"
                 align="center"
-                sx={{ color: "rgba(255, 255, 255, 0.8)" }}
-              >
+                sx={{ color: "rgba(255, 255, 255, 0.8)" }}>
                 Please login to access your account
               </Typography>
             </WelcomeSection>
@@ -126,8 +124,7 @@ export default function Login() {
               <Typography
                 variant="h5"
                 gutterBottom
-                sx={{ color: "white", fontWeight: "bold" }}
-              ></Typography>
+                sx={{ color: "white", fontWeight: "bold" }}></Typography>
               <Box component="form" onSubmit={handleSubmit} noValidate>
                 <CustomInput
                   fullWidth
@@ -140,7 +137,7 @@ export default function Login() {
                       <InputAdornment position="start">
                         <EmailIcon />
                       </InputAdornment>
-                    ),
+                    )
                   }}
                 />
                 <CustomInput
@@ -155,15 +152,14 @@ export default function Login() {
                       <InputAdornment position="start">
                         <LockIcon />
                       </InputAdornment>
-                    ),
+                    )
                   }}
                 />
                 <GradientButton
                   fullWidth
                   type="submit"
                   disabled={isAuthInProgress}
-                  sx={{ mt: 3, mb: 2 }}
-                >
+                  sx={{ mt: 3, mb: 2 }}>
                   {isAuthInProgress ? "Logging in..." : "Log In"}
                 </GradientButton>
 
@@ -175,8 +171,7 @@ export default function Login() {
                 <Typography
                   variant="body2"
                   align="center"
-                  sx={{ color: "white", mt: 2 }}
-                ></Typography>
+                  sx={{ color: "white", mt: 2 }}></Typography>
               </Box>
             </LoginSection>
           </LoginGrid>

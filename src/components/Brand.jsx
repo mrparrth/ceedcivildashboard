@@ -1,5 +1,5 @@
 import { Box, styled } from "@mui/material";
-import MatxLogo from "./MatxLogo";
+import Logo from "./Logo";
 
 import { Span } from "./Typography";
 import useSettings from "hooks/useSettings";
@@ -9,13 +9,14 @@ const BrandRoot = styled(Box)(() => ({
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
-  padding: "20px 18px 20px 29px",
+  padding: "0px 16px",
+  margin: "5px 0px"
 }));
 
 const StyledSpan = styled(Span)(({ mode }) => ({
   fontSize: 18,
   marginLeft: ".5rem",
-  display: mode === "compact" ? "none" : "block",
+  display: mode === "compact" ? "none" : "block"
 }));
 
 export default function Brand({ children }) {
@@ -26,16 +27,15 @@ export default function Brand({ children }) {
   return (
     <BrandRoot>
       <Box display="flex" alignItems="center">
-        <MatxLogo />
-        <StyledSpan mode={mode} className="sidenavHoverShow">
+        <Logo />
+        {/* <StyledSpan mode={mode} className="sidenavHoverShow">
           Ceed Civil
-        </StyledSpan>
+        </StyledSpan> */}
       </Box>
 
       <Box
         className="sidenavHoverShow"
-        sx={{ display: mode === "compact" ? "none" : "block" }}
-      >
+        sx={{ display: mode === "compact" ? "none" : "block" }}>
         {children || null}
       </Box>
     </BrandRoot>

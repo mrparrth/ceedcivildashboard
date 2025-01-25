@@ -8,34 +8,34 @@ let initialSettings = {
   showHeader: true,
   windowWidth: window.innerWidth,
   activeLayout: "layout1", // layout1, layout2
-  activeTheme: "blue", // View all valid theme colors inside MatxTheme/themeColors.js
+  activeTheme: "blue", // View all valid theme colors inside Theme/themeColors.js
   perfectScrollbar: false,
 
   themes: themes,
   layout1Settings: {
     leftSidebar: {
       show: true,
-      mode: "full", // full, close, compact, mobile,
-      theme: "slateDark1", // View all valid theme colors inside MatxTheme/themeColors.js
-      bgImgURL: "/assets/images/sidebar/sidebar-bg-dark.jpg",
+      mode: "compact", // full, close, compact, mobile,
+      theme: "whiteBlue", // View all valid theme colors inside Theme/themeColors.js
+      bgImgURL: "/assets/images/sidebar/sidebar-bg-dark.jpg"
     },
     topbar: {
       show: true,
       fixed: true,
-      theme: "whiteBlue", // View all valid theme colors inside MatxTheme/themeColors.js
-    },
+      theme: "whiteBlue" // View all valid theme colors inside Theme/themeColors.js
+    }
   }, // open Layout1/Layout1Settings.js
 
   secondarySidebar: {
     show: true,
     open: false,
-    theme: "slateDark1", // View all valid theme colors inside MatxTheme/themeColors.js
-  },
+    theme: "slateDark1" // View all valid theme colors inside Theme/themeColors.js
+  }
 };
 
 export const SettingsContext = createContext({
   settings: initialSettings,
-  updateSettings: () => {},
+  updateSettings: () => {}
 });
 
 export default function SettingsProvider({ settings, children }) {
@@ -47,7 +47,7 @@ export default function SettingsProvider({ settings, children }) {
     const handleResize = () => {
       setCurrentSettings((prevSettings) => ({
         ...prevSettings,
-        windowWidth: window.innerWidth,
+        windowWidth: window.innerWidth
       }));
     };
 
@@ -67,9 +67,8 @@ export default function SettingsProvider({ settings, children }) {
     <SettingsContext.Provider
       value={{
         settings: currentSettings,
-        updateSettings: handleUpdateSettings,
-      }}
-    >
+        updateSettings: handleUpdateSettings
+      }}>
       {children}
     </SettingsContext.Provider>
   );

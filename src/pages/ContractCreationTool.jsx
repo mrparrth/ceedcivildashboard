@@ -12,22 +12,23 @@ import {
   DialogTitle,
   CircularProgress,
   Typography,
-  Box,
+  Box
 } from "@mui/material";
 import {
   CheckCircleOutline as SuccessIcon,
   ErrorOutline as ErrorIcon,
   InfoOutlined as InfoIcon,
+  CoPresentOutlined
 } from "@mui/icons-material";
 
 import useData from "hooks/useData";
-import useappData from "hooks/useappData";
+import useappData from "hooks/useAppData";
 
 const initialFormState = {
   sameAsClient: false,
-  fbInvoiceId: "0001672",
+  fbInvoiceId: "",
   fbClientId: "",
-  fbProjectId: "12518535",
+  fbProjectId: "",
   date: "",
   clientName: "",
   clientStreet: "",
@@ -52,12 +53,16 @@ const initialFormState = {
   favClients: "",
   isUpworkJob: false,
   retainerDeposit: "",
-  projectNumber: "999",
+  projectNumber: "",
   deliverableFromClient: "",
   projectName: "",
   totalCost: "",
-  ratePerHour: "",
+  ratePerHour: 225,
   documentUrl: "",
+  sendProjectEmail: true,
+  archFolder: true,
+  mepFolder: true,
+  structuralFolder: true
 };
 
 const trialForm = {
@@ -100,20 +105,24 @@ const trialForm = {
       detail:
         "Preparation of design computations and construction drawings for building plans. Soil assumed at 1500 PSF unless soil report provided. All loads as shown. Single use for address as shown",
       description: "Building Plan Calculations Package",
-      rate: 5,
+      rate: 5
     },
     {
       rate: 2,
       description: "Calculations Report",
-      detail: "Calculations report for the openings in the ceiling.",
+      detail: "Calculations report for the openings in the ceiling."
     },
     {
       description: "Engineering Review, Stamp and Seal P.E.",
       detail:
         "Scope of work, reviewed, stamped, and sealed by state licensed P.E. CA",
-      rate: 2,
-    },
+      rate: 2
+    }
   ],
+  sendProjectEmail: true,
+  archFolder: true,
+  mepFolder: true,
+  structuralFolder: true
 };
 
 const blankProject = {
@@ -155,7 +164,7 @@ const blankProject = {
   civilEngineeringStatus: "",
   civilDropboxLink: "",
   civilEstimatedDeliveryTime: "",
-  jobType: "",
+  jobType: ""
 };
 
 const CEEDCivilForm = () => {
@@ -164,7 +173,7 @@ const CEEDCivilForm = () => {
   let { contractMetadata, isLoading: isContractDataLoading } =
     useContractMetadata();
 
-  const [formData, setFormData] = useState(trialForm);
+  const [formData, setFormData] = useState(initialFormState);
   const [loading, setLoading] = useState(false);
   const [isScopeModalOpen, setIsScopeModalOpen] = useState(false);
   const [modalState, setModalState] = useState({ isOpen: false, content: {} });
@@ -181,7 +190,7 @@ const CEEDCivilForm = () => {
         siteStreet: prevData.clientStreet,
         siteCity: prevData.clientCity,
         siteState: prevData.clientState,
-        siteZip: prevData.clientZip,
+        siteZip: prevData.clientZip
       }));
     }
   }, [
@@ -189,7 +198,7 @@ const CEEDCivilForm = () => {
     formData.clientStreet,
     formData.clientCity,
     formData.clientState,
-    formData.clientZip,
+    formData.clientZip
   ]);
 
   useEffect(() => {
@@ -218,8 +227,8 @@ const CEEDCivilForm = () => {
         type === "checkbox"
           ? checked
           : ["remainingBalance", "retainerDeposit"].includes(name)
-          ? parseFloat(value) || 0
-          : value,
+          ? Math.round(parseFloat(value) * 100) / 100
+          : value
     }));
   }, []);
 
@@ -234,8 +243,8 @@ const CEEDCivilForm = () => {
           onConfirm: (result) => {
             setModalState((prev) => ({ ...prev, isOpen: false }));
             resolve(result);
-          },
-        },
+          }
+        }
       });
     });
   }, []);
@@ -268,7 +277,9 @@ const CEEDCivilForm = () => {
       if (parseFloat(formData.gap) !== 0) {
         const confirmed = await showDialog(
           "Warning",
-          "Total scope value is not in align with retainer/deposit + remaining. Go ahead despite the issues?",
+          `Total scope value is not in align with retainer/deposit + remaining (Gap of ${parseFloat(
+            formData.gap
+          )}). Go ahead despite the issues?`,
           "confirm"
         );
         if (!confirmed) return;
@@ -296,7 +307,7 @@ const CEEDCivilForm = () => {
       const fbInvoiceId = await runScriptFunction("createFBInvoice", {
         ...formData,
         projectNumber,
-        fbClientId,
+        fbClientId
       });
       if (!fbInvoiceId) throw new Error("Failed to create FreshBooks invoice");
 
@@ -305,7 +316,7 @@ const CEEDCivilForm = () => {
         ...formData,
         projectNumber,
         fbClientId,
-        fbInvoiceId,
+        fbInvoiceId
       });
       if (!fbProjectId) throw new Error("Failed to create FreshBooks project");
 
@@ -315,7 +326,7 @@ const CEEDCivilForm = () => {
         projectNumber,
         fbClientId,
         fbInvoiceId,
-        fbProjectId,
+        fbProjectId
       }));
 
       // Show success dialog
@@ -344,11 +355,14 @@ const CEEDCivilForm = () => {
 
       if (error) {
         const confirmed = await showDialog(
-          "Existing Client",
+          "No Invoice",
           `${error}\nGo ahead despite the issues?`,
           "confirm"
         );
-        if (!confirmed) return;
+        if (!confirmed) {
+          setLoading(false);
+          return;
+        }
       }
 
       try {
@@ -356,35 +370,72 @@ const CEEDCivilForm = () => {
         setFormData((prevData) => ({
           ...prevData,
           showDocumentLink: true,
-          documentUrl: newProject?.contractDocumentUrl,
+          documentUrl: newProject?.contractDocumentUrl
         }));
+
+        const folderOptions = {
+          sendProjectEmail: formData.sendProjectEmail,
+          archFolder: formData.archFolder,
+          mepFolder: formData.mepFolder,
+          structuralFolder: formData.structuralFolder
+        };
+
+        console.log({ ...blankProject, ...newProject, folderOptions });
+
+        createProject({ ...blankProject, ...newProject, folderOptions });
 
         await showDialog(
           "Success",
           "Document created successfully. You can now view the document.",
           "success"
         );
-
-        createProject({ ...blankProject, ...newProject });
       } catch (error) {
+        console.error(error);
         await showDialog("Error", error.message, "error");
       } finally {
         setLoading(false);
       }
     },
-    [showDialog]
+    [formData, showDialog, setFormData]
   );
 
-  const resetForm = useCallback(() => {
-    setFormData(initialFormState);
-  }, []);
+  const resetForm = useCallback(async () => {
+    // Check for unsaved work
+    const warnings = [];
+    if (formData.projectNumber)
+      warnings.push("Project number is already generated");
+    if (formData.fbInvoiceId) warnings.push("Invoice has been generated");
+    if (formData.documentUrl) warnings.push("Document has been created");
+
+    let confirmMessage = "Are you sure you want to reset the form?";
+    if (warnings.length > 0) {
+      confirmMessage += "\n\nWarning:\n" + warnings.join("\n");
+    }
+
+    const confirmed = await showDialog(
+      "Confirm Reset",
+      confirmMessage,
+      "confirm"
+    );
+
+    if (confirmed) {
+      setFormData(initialFormState);
+      const today = new Date().toISOString().split("T")[0];
+      setFormData((prev) => ({ ...initialFormState, date: today }));
+    }
+  }, [
+    formData.projectNumber,
+    formData.fbInvoiceId,
+    formData.documentUrl,
+    showDialog
+  ]);
 
   const modalIcon = useMemo(() => {
     const icons = {
       success: <SuccessIcon fontSize="large" color="success" />,
       error: <ErrorIcon fontSize="large" color="error" />,
       info: <InfoIcon fontSize="large" color="info" />,
-      confirm: <InfoIcon fontSize="large" color="info" />,
+      confirm: <InfoIcon fontSize="large" color="info" />
     };
     return icons[modalState.content.type] || icons.info;
   }, [modalState.content.type]);
@@ -399,8 +450,7 @@ const CEEDCivilForm = () => {
         display="flex"
         justifyContent="center"
         alignItems="center"
-        height="100vh"
-      >
+        height="100vh">
         <CircularProgress />
       </Box>
     </>
@@ -417,9 +467,8 @@ const CEEDCivilForm = () => {
               className="form-select"
               id="favClient"
               name="favClient"
-              value={formData.favClient}
-              onChange={handleInputChange}
-            >
+              value={formData.favClient || ""}
+              onChange={handleInputChange}>
               <option value="" key="index" disabled>
                 Select a client
               </option>
@@ -494,8 +543,7 @@ const CEEDCivilForm = () => {
                   id="clientState"
                   name="clientState"
                   value={formData.clientState}
-                  onChange={handleInputChange}
-                >
+                  onChange={handleInputChange}>
                   <option value="" key="index" disabled>
                     Select a state
                   </option>
@@ -567,8 +615,7 @@ const CEEDCivilForm = () => {
                   id="salesman"
                   name="salesman"
                   value={formData.salesman}
-                  onChange={handleInputChange}
-                >
+                  onChange={handleInputChange}>
                   <option value="">Select the sales person</option>
                   {appData.salesmen.map((salesman) => (
                     <option value={salesman} key={salesman}>
@@ -631,8 +678,7 @@ const CEEDCivilForm = () => {
                   id="siteState"
                   name="siteState"
                   value={formData.siteState}
-                  onChange={handleInputChange}
-                >
+                  onChange={handleInputChange}>
                   <option value="" disabled>
                     Select a state
                   </option>
@@ -666,6 +712,9 @@ const CEEDCivilForm = () => {
                 className="form-check-input"
                 id="isUpworkJob"
                 name="isUpworkJob"
+                style={{
+                  transform: "scale(1.5)"
+                }}
                 checked={formData.isUpworkJob}
                 onChange={handleInputChange}
               />
@@ -693,7 +742,7 @@ const CEEDCivilForm = () => {
                   Retainer/Deposit
                 </label>
                 <input
-                  type="text"
+                  type="number"
                   className="form-control"
                   id="retainerDeposit"
                   name="retainerDeposit"
@@ -706,7 +755,7 @@ const CEEDCivilForm = () => {
                   Remaining$
                 </label>
                 <input
-                  type="text"
+                  type="number"
                   className="form-control"
                   id="remainingBalance"
                   name="remainingBalance"
@@ -725,7 +774,7 @@ const CEEDCivilForm = () => {
                   type="text"
                   className="form-control"
                   id="project"
-                  name="project"
+                  name="projectName"
                   value={formData.projectName}
                   onChange={handleInputChange}
                 />
@@ -765,11 +814,113 @@ const CEEDCivilForm = () => {
               </div>
             </div>
 
+            <hr className="my-4" />
+            <div className="mb-4">
+              <label className="form-label fw-bold mb-3">
+                Folder Creation Options
+              </label>
+
+              <div className="form-check mb-3">
+                <input
+                  type="checkbox"
+                  className="form-check-input"
+                  style={{
+                    transform: "scale(1.5)",
+                    marginRight: "12px",
+                    marginLeft: "4px"
+                  }}
+                  id="sendProjectEmail"
+                  name="sendProjectEmail"
+                  checked={formData.sendProjectEmail}
+                  onChange={handleInputChange}
+                />
+                <label
+                  className="form-check-label"
+                  style={{ fontSize: "1.1rem" }}
+                  htmlFor="sendProjectEmail">
+                  Send Document Upload Email To Client?
+                </label>
+              </div>
+
+              <div className="row g-4 mt-1">
+                <div className="col-md-4">
+                  <div className="form-check d-flex align-items-center">
+                    <input
+                      type="checkbox"
+                      className="form-check-input"
+                      style={{
+                        transform: "scale(1.5)",
+                        marginRight: "12px",
+                        marginLeft: "4px"
+                      }}
+                      id="archFolder"
+                      name="archFolder"
+                      checked={formData.archFolder}
+                      onChange={handleInputChange}
+                    />
+                    <label
+                      className="form-check-label"
+                      style={{ fontSize: "1.1rem" }}
+                      htmlFor="archFolder">
+                      Arch
+                    </label>
+                  </div>
+                </div>
+
+                <div className="col-md-4">
+                  <div className="form-check d-flex align-items-center">
+                    <input
+                      type="checkbox"
+                      className="form-check-input"
+                      style={{
+                        transform: "scale(1.5)",
+                        marginRight: "12px",
+                        marginLeft: "4px"
+                      }}
+                      id="mepFolder"
+                      name="mepFolder"
+                      checked={formData.mepFolder}
+                      onChange={handleInputChange}
+                    />
+                    <label
+                      className="form-check-label"
+                      style={{ fontSize: "1.1rem" }}
+                      htmlFor="mepFolder">
+                      MEP
+                    </label>
+                  </div>
+                </div>
+
+                <div className="col-md-4">
+                  <div className="form-check d-flex align-items-center">
+                    <input
+                      type="checkbox"
+                      className="form-check-input"
+                      style={{
+                        transform: "scale(1.5)",
+                        marginRight: "12px",
+                        marginLeft: "2px"
+                      }}
+                      id="structuralFolder"
+                      name="structuralFolder"
+                      checked={formData.structuralFolder}
+                      onChange={handleInputChange}
+                    />
+                    <label
+                      className="form-check-label"
+                      style={{ fontSize: "1.1rem" }}
+                      htmlFor="structuralFolder">
+                      Structural
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <hr className="my-4" />
             <button
               type="button"
               className="btn btn-primary w-100 mb-3  py-2"
-              onClick={createClientInvoiceProject}
-            >
+              onClick={createClientInvoiceProject}>
               {loading ? (
                 <CircularProgress size={24} color="inherit" />
               ) : (
@@ -785,8 +936,7 @@ const CEEDCivilForm = () => {
                 <button
                   type="button"
                   className="btn btn-info w-100  py-2"
-                  onClick={handleOpenScopeModal}
-                >
+                  onClick={handleOpenScopeModal}>
                   <i className="bi bi-search me-2"></i>Scope
                 </button>
               </div>
@@ -794,8 +944,7 @@ const CEEDCivilForm = () => {
                 <button
                   type="button"
                   className="btn btn-danger w-100  py-2"
-                  onClick={resetForm}
-                >
+                  onClick={resetForm}>
                   <i className="bi bi-trash-fill me-2"></i>Reset
                 </button>
               </div>
@@ -832,8 +981,7 @@ const CEEDCivilForm = () => {
                 <a
                   href={formData.documentUrl}
                   target="_blank"
-                  className="btn btn-info"
-                >
+                  className="btn btn-info">
                   <i className="bi bi-file-earmark-text me-2"></i>Click To See
                   Contract
                 </a>
@@ -844,8 +992,7 @@ const CEEDCivilForm = () => {
               open={modalState.isOpen}
               onClose={() => handleCloseModal(false)}
               aria-labelledby="alert-dialog-title"
-              aria-describedby="alert-dialog-description"
-            >
+              aria-describedby="alert-dialog-description">
               <DialogTitle id="alert-dialog-title">
                 <Box display="flex" alignItems="center">
                   {modalIcon}
@@ -855,7 +1002,14 @@ const CEEDCivilForm = () => {
                 </Box>
               </DialogTitle>
               <DialogContent>
-                <DialogContentText id="alert-dialog-description">
+                <DialogContentText
+                  id="alert-dialog-description"
+                  sx={{
+                    whiteSpace: "pre-line", // This preserves line breaks
+                    "& p": {
+                      marginBottom: "8px" // Add spacing between paragraphs
+                    }
+                  }}>
                   {modalState.content.body}
                 </DialogContentText>
               </DialogContent>

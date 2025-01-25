@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { SingleSelectDropdown, CheckBox } from "../Fields";
 import useData from "hooks/useData";
-import useAppData from "hooks/useappData";
+import useAppData from "hooks/useAppData";
 import useAuth from "hooks/useAuth";
 
 const initialPayment = {
-  id: crypto.randomUUID(),
+  id: null,
   assignee: "",
   projectNumber: "",
   projectName: "",
@@ -20,8 +20,8 @@ const initialPayment = {
   revisionCost: "",
   revisionsPaid: false,
   notes: "",
-  totalProjectCost: "",
-  expenseId: null,
+  totalCost: "",
+  expenseId: null
 };
 
 const NewPaymentModal = ({ closeModal }) => {
@@ -46,7 +46,6 @@ const NewPaymentModal = ({ closeModal }) => {
     setPayment((prev) => ({ ...prev, [key]: value }));
     setErrors((prev) => ({ ...prev, [key]: "" }));
 
-    console.log(`value:` + value);
     if (["projectNumber", "projectName"].includes(key) && !value)
       setSuggestion("");
     else {
@@ -54,6 +53,7 @@ const NewPaymentModal = ({ closeModal }) => {
         populateProjectDetails(value, "number");
       } else if (key === "projectName") {
         handleProjectNameChange(value);
+        populateProjectDetails(value, "name");
       }
     }
   };
@@ -80,7 +80,6 @@ const NewPaymentModal = ({ closeModal }) => {
         : project.projectName.toLowerCase() === value.toLowerCase()
     );
 
-    console.log(projectDetails);
     if (projectDetails) {
       setPayment((prev) => ({
         ...prev,
@@ -88,7 +87,7 @@ const NewPaymentModal = ({ closeModal }) => {
         projectName: projectDetails.projectName,
         salesMan: projectDetails.salesMan,
         overallProjectStatus: projectDetails.overallProjectStatus,
-        estimatedBudget: projectDetails.estimatedBudget || "",
+        estimatedBudget: projectDetails.estimatedBudget || ""
       }));
       setSuggestion("");
     } else {
@@ -113,12 +112,17 @@ const NewPaymentModal = ({ closeModal }) => {
 
   const calculateTotal = () => {
     const estimatedBudget = parseFloat(payment.estimatedBudget) || 0;
-    const actualCost = parseFloat(payment.actualCost) || 0;
-    const revisionCost = parseFloat(payment.revisionCost) || 0;
 
-    const total = Math.max(estimatedBudget, actualCost) + revisionCost;
+    let total;
+    if (payment.actualCost == "" && payment.revisionCost == "") {
+      total = "";
+    } else {
+      const actualCost = parseFloat(payment.actualCost) || 0;
+      const revisionCost = parseFloat(payment.revisionCost) || 0;
+      total = (actualCost + revisionCost).toFixed(2);
+    }
 
-    setPayment((prev) => ({ ...prev, totalProjectCost: total.toFixed(2) }));
+    setPayment((prev) => ({ ...prev, totalCost: total }));
   };
 
   const validateForm = () => {
@@ -129,8 +133,8 @@ const NewPaymentModal = ({ closeModal }) => {
     // if (!payment.projectName) newErrors.projectName = "Project Name is required";
     // if (!payment.salesMan) newErrors.salesMan = "Sales Man is required";
     // if (!payment.status) newErrors.status = "Status is required";
-    if (!payment.estimatedBudget)
-      newErrors.status = "Estimated Budget is required";
+    // if (!payment.estimatedBudget)
+    //   newErrors.estimatedBudget = "Estimated Budget is required";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -139,14 +143,13 @@ const NewPaymentModal = ({ closeModal }) => {
     if (validateForm()) {
       setLoading(true);
       try {
-        console.log(1);
-        createPayment(payment);
+        await createPayment(payment);
         closeModal();
       } catch (error) {
         console.error("Error creating payment:", error);
         setErrors({
           submit:
-            "An error occurred while creating the payment. Please try again.",
+            "An error occurred while creating the payment. Please try again."
         });
       } finally {
         setLoading(false);
@@ -160,26 +163,26 @@ const NewPaymentModal = ({ closeModal }) => {
       key: "assignee",
       isSingleSelect: true,
       options: appData.assignTo,
-      isDisabled: !isAdmin,
+      isDisabled: !isAdmin
     },
     { label: "Project #", key: "projectNumber", placeHolder: "Type to search" },
     {
       label: "Project",
       key: "projectName",
       isShadowAutocomplete: true,
-      placeHolder: "Type to search",
+      placeHolder: "Type to search"
     },
     {
       label: "Sales Man",
       key: "salesMan",
       isSingleSelect: true,
-      options: appData.salesmen,
+      options: appData.salesmen
     },
     {
       label: "Status",
       key: "overallProjectStatus",
       isSingleSelect: true,
-      options: appData.status,
+      options: appData.status
     },
     { label: "Estimated Budget", key: "estimatedBudget" },
     { label: "Actual Cost", key: "actualCost" },
@@ -190,7 +193,12 @@ const NewPaymentModal = ({ closeModal }) => {
     { label: "Revision Cost", key: "revisionCost" },
     { label: "Revisions Paid?", key: "revisionsPaid", isCheckbox: true },
     { label: "Notes/Remarks", key: "notes", isTextarea: true },
-    { label: "Total Project Cost", key: "totalProjectCost" },
+    {
+      label: "Total Project Cost",
+      key: "totalCost",
+      isDisabled: true,
+      placeHolder: "Autocalculated: Enter actual cost or revision cost."
+    }
   ];
 
   return (
@@ -229,7 +237,7 @@ const NewPaymentModal = ({ closeModal }) => {
                   </div>
                 ) : field.isSingleSelect ? (
                   <SingleSelectDropdown
-                    itemKey={field.key}
+                    id={field.key}
                     options={field.options}
                     selectedOption={payment[field.key]}
                     onChange={handleInputChange}
@@ -271,6 +279,7 @@ const NewPaymentModal = ({ closeModal }) => {
                     onChange={(e) =>
                       handleInputChange(field.key, e.target.value)
                     }
+                    disabled={field.isDisabled}
                     className="form-input"
                     placeholder={field.placeHolder}
                   />
@@ -286,8 +295,7 @@ const NewPaymentModal = ({ closeModal }) => {
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="submit-button"
-          >
+            className="submit-button">
             {loading ? (
               <>
                 <span className="spinner"></span>

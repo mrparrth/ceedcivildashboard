@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useState } from "react";
 import {
   Box,
   styled,
@@ -8,10 +8,16 @@ import {
   MenuItem,
   IconButton,
   useMediaQuery,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Button,
+  Typography
 } from "@mui/material";
-import { useState } from "react";
 import { Span } from "../components/Typography";
-import { MatxMenu } from "../components";
+import { MatMenu } from "../components";
 import { NotificationBar } from "../components/NotificationBar";
 import { themeShadows } from "../theme/themeColors";
 import { topBarHeight } from "../utils/constant";
@@ -24,7 +30,7 @@ import useAuth from "hooks/useAuth";
 
 // STYLED COMPONENTS
 const StyledIconButton = styled(IconButton)(({ theme }) => ({
-  color: theme.palette.text.primary,
+  color: theme.palette.text.primary
 }));
 
 const TopbarRoot = styled("div")({
@@ -32,7 +38,7 @@ const TopbarRoot = styled("div")({
   zIndex: 96,
   height: topBarHeight,
   boxShadow: themeShadows[8],
-  transition: "all 0.3s ease",
+  transition: "all 0.3s ease"
 });
 
 const TopbarContainer = styled(Box)(({ theme }) => ({
@@ -45,7 +51,7 @@ const TopbarContainer = styled(Box)(({ theme }) => ({
   justifyContent: "space-between",
   background: theme.palette.primary.main,
   [theme.breakpoints.down("sm")]: { paddingLeft: 16, paddingRight: 16 },
-  [theme.breakpoints.down("xs")]: { paddingLeft: 14, paddingRight: 16 },
+  [theme.breakpoints.down("xs")]: { paddingLeft: 14, paddingRight: 16 }
 }));
 
 const UserMenu = styled(Box)({
@@ -54,7 +60,7 @@ const UserMenu = styled(Box)({
   borderRadius: 24,
   cursor: "pointer",
   alignItems: "center",
-  "& span": { margin: "0 8px" },
+  "& span": { margin: "0 8px" }
 });
 
 const StyledItem = styled(MenuItem)(({ theme }) => ({
@@ -65,14 +71,14 @@ const StyledItem = styled(MenuItem)(({ theme }) => ({
     width: "100%",
     display: "flex",
     alignItems: "center",
-    textDecoration: "none",
+    textDecoration: "none"
   },
-  "& span": { marginRight: "10px", color: theme.palette.text.primary },
+  "& span": { marginRight: "10px", color: theme.palette.text.primary }
 }));
 
 const IconBox = styled("div")(({ theme }) => ({
   display: "inherit",
-  [theme.breakpoints.down("md")]: { display: "none !important" },
+  [theme.breakpoints.down("md")]: { display: "none !important" }
 }));
 
 const spin = keyframes`
@@ -86,7 +92,44 @@ const spin = keyframes`
 
 const RefreshIconButton = styled(IconButton)(({ theme, refreshing }) => ({
   color: theme.palette.text.primary,
-  animation: refreshing ? `${spin} 2s linear infinite` : "none",
+  animation: refreshing ? `${spin} 2s linear infinite` : "none"
+}));
+
+const StyledDialog = styled(Dialog)(({ theme }) => ({
+  "& .MuiDialog-paper": {
+    minWidth: "400px",
+    padding: theme.spacing(2),
+    borderRadius: "12px"
+  }
+}));
+
+const StyledDialogTitle = styled(DialogTitle)(({ theme }) => ({
+  padding: theme.spacing(2),
+  paddingBottom: theme.spacing(1),
+  "& .MuiTypography-root": {
+    fontSize: "1.5rem",
+    fontWeight: 600
+  }
+}));
+
+const StyledDialogContent = styled(DialogContent)(({ theme }) => ({
+  padding: theme.spacing(2),
+  paddingTop: theme.spacing(1),
+  paddingBottom: theme.spacing(3),
+  "& .MuiDialogContentText-root": {
+    color: theme.palette.text.secondary,
+    fontSize: "1rem",
+    marginBottom: 0
+  }
+}));
+
+const StyledDialogActions = styled(DialogActions)(({ theme }) => ({
+  padding: theme.spacing(2),
+  paddingTop: theme.spacing(1),
+  gap: theme.spacing(1),
+  "& .MuiButton-root": {
+    minWidth: "100px"
+  }
 }));
 
 const Layout1Topbar = () => {
@@ -95,12 +138,13 @@ const Layout1Topbar = () => {
   const { logout, user } = useAuth();
   const { refreshData } = useData();
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
 
   const isMdScreen = useMediaQuery(theme.breakpoints.down("md"));
 
   const updateSidebarMode = (sidebarSettings) => {
     updateSettings({
-      layout1Settings: { leftSidebar: { ...sidebarSettings } },
+      layout1Settings: { leftSidebar: { ...sidebarSettings } }
     });
   };
 
@@ -126,6 +170,19 @@ const Layout1Topbar = () => {
     updateSidebarMode({ mode });
   };
 
+  const handleLogoutClick = () => {
+    setLogoutDialogOpen(true);
+  };
+
+  const handleLogoutConfirm = () => {
+    setLogoutDialogOpen(false);
+    logout();
+  };
+
+  const handleLogoutCancel = () => {
+    setLogoutDialogOpen(false);
+  };
+
   return (
     <TopbarRoot>
       <TopbarContainer>
@@ -138,24 +195,13 @@ const Layout1Topbar = () => {
             <RefreshIconButton onClick={handleRefresh} disabled={isRefreshing}>
               <Refresh />
             </RefreshIconButton>
-            {/* <StyledIconButton>
-              <WebAsset />
-            </StyledIconButton> */}
-
-            {/* <StyledIconButton>
-              <StarOutline />
-            </StyledIconButton> */}
           </IconBox>
         </Box>
 
         <Box display="flex" alignItems="center">
-          {/* <MatxSearchBox /> */}
-
-          {/* <NotificationProvider> */}
           <NotificationBar />
-          {/* </NotificationProvider> */}
 
-          <MatxMenu
+          <MatMenu
             menuButton={
               <UserMenu>
                 <Hidden xsDown>
@@ -165,18 +211,44 @@ const Layout1Topbar = () => {
                 </Hidden>
                 <Avatar src={user.avatar} sx={{ cursor: "pointer" }} />
               </UserMenu>
-            }
-          >
-            {/* <StyledItem>
-              <Settings />
-              <Span>Settings</Span>
-            </StyledItem> */}
-            <StyledItem onClick={logout}>
+            }>
+            <StyledItem onClick={handleLogoutClick}>
               <PowerSettingsNew />
               <Span>Logout</Span>
             </StyledItem>
-          </MatxMenu>
+          </MatMenu>
         </Box>
+        <StyledDialog
+          open={logoutDialogOpen}
+          onClose={handleLogoutCancel}
+          aria-labelledby="logout-dialog-title"
+          aria-describedby="logout-dialog-description">
+          <StyledDialogTitle id="logout-dialog-title">
+            <Typography>Confirm Logout</Typography>
+          </StyledDialogTitle>
+          <StyledDialogContent>
+            <DialogContentText id="logout-dialog-description">
+              Are you sure you want to logout?
+              <br />
+              All unsaved changes will be lost.
+            </DialogContentText>
+          </StyledDialogContent>
+          <StyledDialogActions>
+            <Button
+              onClick={handleLogoutCancel}
+              variant="outlined"
+              color="inherit">
+              Cancel
+            </Button>
+            <Button
+              onClick={handleLogoutConfirm}
+              variant="outlined"
+              color="error"
+              autoFocus>
+              Logout
+            </Button>
+          </StyledDialogActions>
+        </StyledDialog>
       </TopbarContainer>
     </TopbarRoot>
   );

@@ -2,12 +2,12 @@ import Pagination from "@mui/material/Pagination";
 export default function PaginationCustom({
   data,
   pageNo,
-  rowPerPage = 10,
-  onPageChange,
+  rowsPerPage = 10,
+  onPageChange
 }) {
-  const indexOfLastRow = pageNo * rowPerPage;
-  const indexOfFirstRow = indexOfLastRow - rowPerPage;
-  const totalPages = Math.ceil(data.length / rowPerPage);
+  const indexOfLastRow = pageNo * rowsPerPage;
+  const indexOfFirstRow = indexOfLastRow - rowsPerPage;
+  const totalPages = Math.ceil(data.length / rowsPerPage);
 
   return (
     <div className="d-flex justify-content-between align-items-center mt-2">

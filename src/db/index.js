@@ -13,27 +13,22 @@ const FAKE_USER = {
   password: "fake_user",
   role: "Admin",
   status: "Active",
-  _rowIndex: 3,
+  _rowIndex: 3
 };
 
 function runScriptFunction(functionName, inputData = {}) {
   if (inputData) {
     inputData = {
       data: inputData,
-      token: getTokenFromLocalStorage(),
+      token: getTokenFromLocalStorage()
     };
   } else {
     inputData = {
-      token: getTokenFromLocalStorage(),
+      token: getTokenFromLocalStorage()
     };
   }
 
-  console.log(
-    `Google: running ${functionName} with data ${JSON.stringify(inputData)}`
-  );
-
   return new Promise((resolve, reject) => {
-    console.log(`ge:` + ge);
     if (ge) {
       google.script.run
         .withSuccessHandler((result) => {
@@ -54,23 +49,30 @@ function runScriptFunction(functionName, inputData = {}) {
   });
 }
 
-function handleDevEnvironment(functionName, data) {
+async function handleDevEnvironment(functionName, data) {
   switch (functionName) {
     case "login":
       return {
         user: FAKE_USER,
-        token: "FAKE_TOKEN",
+        token: "FAKE_TOKEN"
       };
     case "getSheetData":
       return {
         projects: projectsInit, // Fallback to local data if there's an error
-        payments: paymentsInit,
+        payments: paymentsInit
       };
     case "getContractMetadata":
       return contractmetadataInit;
     case "createFbExpense":
-      sleep(3000);
+      await sleep(3000);
       return "fakeExpense";
+
+    case "updatePayment":
+      await sleep(3000);
+      return null;
+    case "createContract":
+      await sleep(1000);
+      return projectsInit[0];
     default:
       throw new Error(
         "Unhandled Fake Google Function " +
@@ -97,14 +99,14 @@ async function validateLogin(inputData) {
       password: "password",
       role: "Admin",
       status: "Active",
-      _rowIndex: 3,
+      _rowIndex: 3
     };
 
     if (inputData.token)
       return {
         user: FAKE_USER,
         token:
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA5MGE5NWNlLTM5MzMtNGI1Ny1hMTkxLTk2ZGMwNjdmOTg1MSIsImNyZWF0ZWRBdCI6IjIwMjQtMTAtMDNUMTM6NTU6NTEuNzcyWiIsIm1vZGlmaWVkQXQiOiIyMDI0LTEwLTAzVDEzOjU1OjUxLjc3MloiLCJuYW1lIjoiQWRtaW4iLCJlbWFpbCI6ImFkbWluQGNlZWRjaXZpbC5jb20iLCJyb2xlIjoiQWRtaW4iLCJzdGF0dXMiOiJBY3RpdmUiLCJfcm93SW5kZXgiOjN9.yyF0FGeVa4bOVauiHdJmwvN4gHi1YYwhi1y/ZQP3khg=",
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA5MGE5NWNlLTM5MzMtNGI1Ny1hMTkxLTk2ZGMwNjdmOTg1MSIsImNyZWF0ZWRBdCI6IjIwMjQtMTAtMDNUMTM6NTU6NTEuNzcyWiIsIm1vZGlmaWVkQXQiOiIyMDI0LTEwLTAzVDEzOjU1OjUxLjc3MloiLCJuYW1lIjoiQWRtaW4iLCJlbWFpbCI6ImFkbWluQGNlZWRjaXZpbC5jb20iLCJyb2xlIjoiQWRtaW4iLCJzdGF0dXMiOiJBY3RpdmUiLCJfcm93SW5kZXgiOjN9.yyF0FGeVa4bOVauiHdJmwvN4gHi1YYwhi1y/ZQP3khg="
       };
 
     if (
@@ -115,7 +117,7 @@ async function validateLogin(inputData) {
         user: FAKE_USER,
         msg: null,
         token:
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA5MGE5NWNlLTM5MzMtNGI1Ny1hMTkxLTk2ZGMwNjdmOTg1MSIsImNyZWF0ZWRBdCI6IjIwMjQtMTAtMDNUMTM6NTU6NTEuNzcyWiIsIm1vZGlmaWVkQXQiOiIyMDI0LTEwLTAzVDEzOjU1OjUxLjc3MloiLCJuYW1lIjoiQWRtaW4iLCJlbWFpbCI6ImFkbWluQGNlZWRjaXZpbC5jb20iLCJyb2xlIjoiQWRtaW4iLCJzdGF0dXMiOiJBY3RpdmUiLCJfcm93SW5kZXgiOjN9.yyF0FGeVa4bOVauiHdJmwvN4gHi1YYwhi1y/ZQP3khg=",
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA5MGE5NWNlLTM5MzMtNGI1Ny1hMTkxLTk2ZGMwNjdmOTg1MSIsImNyZWF0ZWRBdCI6IjIwMjQtMTAtMDNUMTM6NTU6NTEuNzcyWiIsIm1vZGlmaWVkQXQiOiIyMDI0LTEwLTAzVDEzOjU1OjUxLjc3MloiLCJuYW1lIjoiQWRtaW4iLCJlbWFpbCI6ImFkbWluQGNlZWRjaXZpbC5jb20iLCJyb2xlIjoiQWRtaW4iLCJzdGF0dXMiOiJBY3RpdmUiLCJfcm93SW5kZXgiOjN9.yyF0FGeVa4bOVauiHdJmwvN4gHi1YYwhi1y/ZQP3khg="
       };
     } else {
       throw new Error("Wrong username or password");
@@ -163,5 +165,5 @@ export {
   trashToken,
   runScriptFunction,
   getappData,
-  sleep,
+  sleep
 };

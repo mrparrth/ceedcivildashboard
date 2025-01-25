@@ -7,18 +7,17 @@ import {
   Typography,
   Toolbar,
   useTheme,
-  useMediaQuery,
+  useMediaQuery
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import ArchiveIcon from "@mui/icons-material/Archive";
 import AddIcon from "@mui/icons-material/Add";
-import DropboxIcon from "@mui/icons-material/CloudQueue"; // Using a cloud icon as a substitute for Dropbox
 import { ProjectModal, ProjectTable } from "../components/ProjectDashboard";
 
 import useData from "hooks/useData";
 
 const StyledButton = styled(Button)(({ theme }) => ({
-  margin: theme.spacing(1),
+  margin: theme.spacing(1)
 }));
 
 const ProjectTracker = () => {
@@ -71,43 +70,31 @@ const ProjectTracker = () => {
       <Paper elevation={3}>
         <Toolbar
           sx={{
-            flexDirection: isXsScreen ? "column" : "row",
-            alignItems: isXsScreen ? "stretch" : "center",
-            "& > button": {
-              width: isXsScreen ? "100%" : "auto",
-              marginBottom: isXsScreen ? 1 : 0,
-            },
-          }}
-        >
+            flexDirection: { xs: "column", sm: "row" },
+            alignItems: { xs: "stretch", sm: "center" },
+            gap: 2
+          }}>
           <StyledButton
             variant="contained"
             color="secondary"
             startIcon={<ArchiveIcon />}
             onClick={handleArchiveProject}
-          >
+            fullWidth={isXsScreen}>
             Archive Project(s)
           </StyledButton>
-          {/* <StyledButton
-            variant="contained"
-            color="info"
-            startIcon={<DropboxIcon />}
-            onClick={handleDropboxFolderCreation}
-          >
-            Create Dropbox Folder
-          </StyledButton> */}
           <StyledButton
             variant="contained"
             color="primary"
             startIcon={<AddIcon />}
             onClick={showNewProjectModal}
-          >
+            fullWidth={isXsScreen}>
             New Project
           </StyledButton>
         </Toolbar>
       </Paper>
 
-      <Paper elevation={3} sx={{ mt: 3 }}>
-        <Box p={2}>
+      <Paper elevation={3} sx={{ mt: 1 }}>
+        <Box p={1}>
           <ProjectTable
             projects={projects.filter(
               (project) => !project.isArchived && !project.isDeleted

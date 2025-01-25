@@ -9,7 +9,7 @@ import {
   Drawer,
   styled,
   IconButton,
-  ThemeProvider,
+  ThemeProvider
 } from "@mui/material";
 import { Clear, Notifications } from "@mui/icons-material";
 import { differenceInSeconds } from "date-fns";
@@ -45,24 +45,24 @@ const Notification = styled("div")(() => ({
     marginLeft: "8px",
     marginTop: 0,
     marginBottom: 0,
-    fontWeight: "500",
-  },
+    fontWeight: "500"
+  }
 }));
 
 const NotificationCard = styled(Box)(({ theme }) => ({
   position: "relative",
   "&:hover": {
     "& .messageTime": {
-      display: "none",
+      display: "none"
     },
     "& .deleteButton": {
-      opacity: "1",
-    },
+      opacity: "1"
+    }
   },
   "& .messageTime": {
-    color: theme.palette.text.secondary,
+    color: theme.palette.text.secondary
   },
-  "& .icon": { fontSize: "1.25rem" },
+  "& .icon": { fontSize: "1.25rem" }
 }));
 
 const DeleteButton = styled(IconButton)(({ theme }) => ({
@@ -71,7 +71,7 @@ const DeleteButton = styled(IconButton)(({ theme }) => ({
   right: 5,
   marginTop: 9,
   marginRight: "24px",
-  background: "rgba(0, 0, 0, 0.01)",
+  background: "rgba(0, 0, 0, 0.01)"
 }));
 
 const CardLeftContent = styled("div")(({ theme }) => ({
@@ -83,14 +83,14 @@ const CardLeftContent = styled("div")(({ theme }) => ({
   "& small": {
     fontWeight: "500",
     marginLeft: "16px",
-    color: theme.palette.text.secondary,
-  },
+    color: theme.palette.text.secondary
+  }
 }));
 
 const Heading = styled("span")(({ theme }) => ({
   fontWeight: "500",
   marginLeft: "16px",
-  color: theme.palette.text.secondary,
+  color: theme.palette.text.secondary
 }));
 
 export default function NotificationBar({ container }) {
@@ -101,7 +101,7 @@ export default function NotificationBar({ container }) {
     clearNotifications,
     notifications,
     currentPopup,
-    hidePopup,
+    hidePopup
   } = useNotification();
 
   const handleDrawerToggle = () => setPanelOpen(!panelOpen);
@@ -122,8 +122,7 @@ export default function NotificationBar({ container }) {
           anchor={"right"}
           open={panelOpen}
           onClose={handleDrawerToggle}
-          ModalProps={{ keepMounted: true }}
-        >
+          ModalProps={{ keepMounted: true }}>
           <Box sx={{ width: sideNavWidth }}>
             <Notification>
               <Notifications color="primary" />
@@ -135,16 +134,14 @@ export default function NotificationBar({ container }) {
                 <DeleteButton
                   size="small"
                   className="deleteButton"
-                  onClick={() => deleteNotification(notification.id)}
-                >
+                  onClick={() => deleteNotification(notification.id)}>
                   <Clear className="icon" />
                 </DeleteButton>
 
                 <Link
                   to={`/${notification.path}`}
                   onClick={handleDrawerToggle}
-                  style={{ textDecoration: "none" }}
-                >
+                  style={{ textDecoration: "none" }}>
                   <Card sx={{ mx: 2, mb: 3 }} elevation={3}>
                     <CardLeftContent>
                       <Box display="flex">
@@ -156,7 +153,7 @@ export default function NotificationBar({ container }) {
 
                       <Small className="messageTime">
                         {getTimeDifference(new Date(notification.timestamp))}
-                        ago
+                        {" ago"}
                       </Small>
                     </CardLeftContent>
 

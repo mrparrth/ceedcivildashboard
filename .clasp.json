@@ -1,6 +1,6 @@
 {
-  "scriptId": "1XiynCoHBNOnwS3ethrt8eE2ysxk6BfLWwdEMwoFXFdo-xXNQQSUDMmcf",
-  "devScriptId": "1c7h8FcHRq9oNxD0lX2rlZbtD2Ql0UySAaCyZXq9q3MxWsUB5Dgkwcac9",
-  "nfscriptId": "1c7h8FcHRq9oNxD0lX2rlZbtD2Ql0UySAaCyZXq9q3MxWsUB5Dgkwcac9",
-  "rootDir": "/Users/mrparrth/Documents/Personal/Upwork/ceedcivildashboard/apps-script-build"
+  "scriptId": "1JQaFM1xETjKpvDloZIaoEmP75yXCgbdjHre8xT1vAI4zQ7hqVzM-Wlsy",
+  "devScriptId": "1JQaFM1xETjKpvDloZIaoEmP75yXCgbdjHre8xT1vAI4zQ7hqVzM-Wlsy",
+  "prodScriptId": "1XiynCoHBNOnwS3ethrt8eE2ysxk6BfLWwdEMwoFXFdo-xXNQQSUDMmcf",
+  "rootDir": "./apps-script"
 }

@@ -1,5 +1,5 @@
 import { CheckBox, SingleSelectDropdown } from "./Fields";
-import useappData from "hooks/useappData";
+import useappData from "hooks/useAppData";
 
 const FormGenerator = ({ data, setter, fields, bgcolor, viewOnly }) => {
   const handleInputChange = (name, value) => {

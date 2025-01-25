@@ -8,9 +8,12 @@ export const createProject =
       dateCreated: new Date().toISOString(),
       dateModified: new Date().toISOString(),
       createdBy: user?.name,
-      modifiedBy: user?.name,
+      modifiedBy: user?.name
     };
 
+    addNotification({
+      title: `Creating project ${projectWithDates.projectName}`
+    });
     runScriptFunction("createProject", projectWithDates)
       .then((project) => {
         addNotification({ title: `Project ${project.projectNumber} created` });
@@ -26,7 +29,7 @@ export const createProject =
       .catch((e) => {
         addNotification({
           title: `Unfortunately failed to create ${newProject.projectName}`,
-          type: "alert",
+          type: "alert"
         });
       });
   };
@@ -35,14 +38,13 @@ export const updateProject =
   (dispatch, projects, addToQueue) => (updatedProject) => {
     const originalProject =
       projects.find((p) => p.id === updatedProject.id) || {};
-    console.log(`originalProject:` + originalProject);
     const newAssignees =
       updatedProject.assignedTo?.filter(
         (assignee) => !originalProject.assignedTo?.includes(assignee)
       ) || [];
     const newPayments = newAssignees.map((assignee) =>
       createPaymentForAssignment(originalProject, assignee, {
-        name: updatedProject.modifiedBy,
+        name: updatedProject.modifiedBy
       })
     );
 
@@ -51,18 +53,19 @@ export const updateProject =
     if (newPayments.length > 0) addToQueue("createPayments", newPayments);
   };
 
-export const deleteProject = (dispatch) => (projectId) => {
+export const deleteProject = (dispatch, addToQueue) => (projectId) => {
   dispatch({
     type: "UPDATE_PROJECT",
     payload: { id: projectId, isDeleted: true },
-    newPayments: [],
+    newPayments: []
   });
+  addToQueue("updateProject", { id: projectId, isDeleted: true });
 };
 
 export const archiveProjects = (dispatch, addToQueue) => (ids) => {
   dispatch({
     type: "ARCHIVE_PROJECTS",
-    payload: { ids },
+    payload: { ids }
   });
 
   addToQueue("archiveProjects", ids);
@@ -71,7 +74,7 @@ export const archiveProjects = (dispatch, addToQueue) => (ids) => {
 export const unarchiveProjects = (dispatch, addToQueue) => (ids) => {
   dispatch({
     type: "UNARCHIVE_PROJECTS",
-    payload: { ids },
+    payload: { ids }
   });
 
   addToQueue("unarchiveProjects", ids);
@@ -86,18 +89,18 @@ export const createDropboxFolder =
           payload: {
             id: project.id,
             projectFilesFolder: url,
-            isSelected: false,
-          },
+            isSelected: false
+          }
         });
 
         addNotification({
-          title: `Dropbox created for Project ${project.projectNumber}`,
+          title: `Dropbox created for Project ${project.projectNumber}`
         });
       })
       .catch((error) => {
         addNotification({
           title: `Dropbox creation failed for Project ${project.projectNumber}`,
-          type: "alert",
+          type: "alert"
         });
       });
   };
@@ -105,7 +108,7 @@ export const createDropboxFolder =
 export const toggleProjectSelection = (dispatch) => (projectId) => {
   dispatch({
     type: "TOGGLE_PROJECT_SELECTION",
-    payload: { id: projectId },
+    payload: { id: projectId }
   });
 };
 
@@ -130,5 +133,5 @@ const createPaymentForAssignment = (project, assignee, user) => ({
   createdBy: user?.name,
   modifiedBy: user?.name,
   dateCreated: new Date().toISOString(),
-  dateModified: new Date().toISOString(),
+  dateModified: new Date().toISOString()
 });

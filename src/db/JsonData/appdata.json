@@ -7,7 +7,7 @@
     "Jerry - Full"
   ],
   "status": [
-    "HOLD",
+    "Hold",
     "Pending Start",
     "In Work",
     "For Ryan Review",
@@ -17,7 +17,7 @@
     "Submitted for Premit",
     "Completed",
     "Final",
-    "CANCELED"
+    "Cancelled"
   ],
   "draftingStatus": [
     "Not Started",

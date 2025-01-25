@@ -10,7 +10,7 @@ const MenuButton = styled("div")(({ theme }) => ({
   "& div:hover": { backgroundColor: theme.palette.action.hover },
 }));
 
-export default function MatxMenu(props) {
+export default function MatMenu(props) {
   const { settings } = useSettings();
   const [anchorEl, setAnchorEl] = useState(null);
 

@@ -4,6 +4,7 @@ import LinearProgress from "@mui/material/LinearProgress";
 import AddIcon from "@mui/icons-material/Add";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import useAuth from "hooks/useAuth";
+import { Button, Paper, Box, Typography, Toolbar } from "@mui/material";
 
 const FinanceActionBar = ({
   selectedRows,
@@ -12,7 +13,7 @@ const FinanceActionBar = ({
   totalExpenses,
   loading,
   processedRowsCount,
-  justCompleted,
+  justCompleted
 }) => {
   let { user } = useAuth();
   const progress = loading
@@ -21,20 +22,33 @@ const FinanceActionBar = ({
   const isAdmin = user?.role?.toUpperCase() === "ADMIN";
 
   return (
-    <div className="mt-2 w-100 rounded-2 bg-warning px-3 bg-opacity-25 shadow">
-      <div className="d-flex flex-wrap align-items-center justify-content-between p-2">
-        <div className="d-flex gap-2">
+    <Paper elevation={3}>
+      <Toolbar
+        sx={{
+          flexDirection: { xs: "column", sm: "row" },
+          justifyContent: "space-between",
+          alignItems: { xs: "stretch", sm: "center" },
+          gap: 2,
+          mt: 1,
+          bgcolor: "grey.200"
+        }}>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: { xs: "column", sm: "row" },
+            gap: 2,
+            flexGrow: 1
+          }}>
           <Button
             variant="contained"
             color="primary"
             startIcon={<AddIcon />}
             onClick={handleNewPayment}
-            disabled={loading}
-          >
+            disabled={loading}>
             New Payment
           </Button>
           {isAdmin && (
-            <div>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
               <Button
                 variant="contained"
                 color="secondary"
@@ -50,8 +64,7 @@ const FinanceActionBar = ({
                   )
                 }
                 onClick={onCreateFreshbooksExpense}
-                disabled={selectedRows.length === 0 || loading}
-              >
+                disabled={selectedRows.length === 0 || loading}>
                 {loading
                   ? justCompleted
                     ? "Completed"
@@ -59,7 +72,7 @@ const FinanceActionBar = ({
                   : `New Freshbooks Expense (${selectedRows.length})`}
               </Button>
               {loading && (
-                <Box sx={{ mt: 1, width: "100%" }}>
+                <Box sx={{ width: "100%" }}>
                   <LinearProgress
                     variant="determinate"
                     value={justCompleted ? 100 : progress}
@@ -67,25 +80,43 @@ const FinanceActionBar = ({
                   <Typography
                     variant="body2"
                     color="text.secondary"
-                    align="right"
-                  >
+                    align="right">
                     {justCompleted ? "100%" : `${Math.round(progress)}%`}
                   </Typography>
                 </Box>
               )}
-            </div>
+            </Box>
           )}
-        </div>
+        </Box>
         {isAdmin && (
-          <div className="text-end">
-            <Typography variant="subtitle1">Total</Typography>
-            <Typography variant="h5" component="div" fontWeight="bold">
-              ${(totalExpenses || 0).toFixed(2)}
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: { xs: "flex-start", sm: "flex-end" },
+              justifyContent: "center",
+              minWidth: { sm: "120px" } // Ensure consistent width on larger screens
+            }}>
+            <Typography
+              variant="caption"
+              sx={{ fontSize: "0.8rem", color: "text.secondary" }}>
+              Total
             </Typography>
-          </div>
+            <Typography
+              variant="body2"
+              fontWeight="bold"
+              sx={{ fontSize: "1.1rem", color: "primary.main" }} // Changed color to primary theme color
+            >
+              $
+              {(totalExpenses || 0).toLocaleString("en-US", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+              })}
+            </Typography>
+          </Box>
         )}
-      </div>
-    </div>
+      </Toolbar>
+    </Paper>
   );
 };
 

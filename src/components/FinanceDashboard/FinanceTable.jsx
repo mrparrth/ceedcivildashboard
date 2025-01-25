@@ -2,40 +2,118 @@ import React, { useState, useCallback } from "react";
 import FinanceRow from "./FinanceRow";
 import PaginationCustom from "../PaginationCustom";
 import Loader from "../LoaderCustom";
-import { Checkbox, FormControlLabel, Tooltip } from "@mui/material";
 import useNotification from "../../hooks/useNotification";
 import useData from "hooks/useData";
 import useAuth from "hooks/useAuth";
+import { Paper, Box, Checkbox } from "@mui/material";
+import { ArrowUpward, ArrowDownward } from "@mui/icons-material";
 
 const FinanceTable = ({
   pageNo,
   onPageChange,
   data,
   selectedRows,
-  onRowSelection,
+  onRowSelection
 }) => {
   const { isLoading } = useData();
   const { user } = useAuth();
   const { addNotification } = useNotification();
+  const [sortConfig, setSortConfig] = useState({
+    key: null,
+    direction: "asc"
+  });
 
-  const rowsPerPage = 10;
+  const rowsPerPage = 50;
   const maxAllowedSelection = 7;
 
   const fixedHeaderStyle = {
     backgroundColor: "#343a40",
     color: "white",
+    cursor: "pointer",
+    userSelect: "none",
+    position: "relative",
+    paddingRight: "20px" // Space for sort icon
   };
 
   const editableHeaderStyle = {
     backgroundColor: "#4a86e8",
     color: "white",
+    cursor: "pointer",
+    userSelect: "none",
+    position: "relative",
+    paddingRight: "20px" // Space for sort icon
   };
 
   const checkboxStyle = {
     padding: 0,
     color: "white",
     "&.Mui-checked": { color: "white" },
-    "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.08)" },
+    "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.08)" }
+  };
+
+  const sortIconStyle = {
+    position: "absolute",
+    right: "4px",
+    top: "50%",
+    transform: "translateY(-50%)",
+    fontSize: "16px"
+  };
+
+  // Sorting logic
+  const sortData = useCallback(
+    (data) => {
+      if (!sortConfig.key) return data;
+
+      return [...data].sort((a, b) => {
+        let aValue = a[sortConfig.key];
+        let bValue = b[sortConfig.key];
+
+        // Handle special cases
+        if (
+          sortConfig.key === "estimatedBudget" ||
+          sortConfig.key === "actualCost" ||
+          sortConfig.key === "paid" ||
+          sortConfig.key === "revisionCost" ||
+          sortConfig.key === "totalProjectCost"
+        ) {
+          aValue = parseFloat(aValue) || 0;
+          bValue = parseFloat(bValue) || 0;
+        }
+
+        if (aValue === null || aValue === undefined) return 1;
+        if (bValue === null || bValue === undefined) return -1;
+
+        if (aValue < bValue) {
+          return sortConfig.direction === "asc" ? -1 : 1;
+        }
+        if (aValue > bValue) {
+          return sortConfig.direction === "asc" ? 1 : -1;
+        }
+        return 0;
+      });
+    },
+    [sortConfig]
+  );
+
+  const requestSort = (key) => {
+    let direction = "asc";
+    if (sortConfig.key === key && sortConfig.direction === "asc") {
+      direction = "desc";
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const SortIcon = ({ columnKey }) => {
+    if (sortConfig.key !== columnKey) return null;
+    return (
+      <span style={sortIconStyle}>
+        {sortConfig.direction === "asc" ? (
+          <ArrowUpward fontSize="small" />
+        ) : (
+          <ArrowDownward fontSize="small" />
+        )}
+      </span>
+    );
   };
 
   const handleSelectRow = (row) => {
@@ -49,10 +127,13 @@ const FinanceTable = ({
 
   const isAdmin = user?.role?.toUpperCase() === "ADMIN";
 
-  const currentPageData = data.slice(
+  const sortedData = sortData(data);
+
+  const currentPageData = sortedData.slice(
     (pageNo - 1) * rowsPerPage,
     pageNo * rowsPerPage
   );
+
 
   const handleSelectAll = useCallback(
     (event) => {
@@ -60,7 +141,7 @@ const FinanceTable = ({
         onRowSelection(currentPageData.slice(0, maxAllowedSelection));
         if (currentPageData.length > maxAllowedSelection) {
           addNotification({
-            title: `You can create a maximum of ${maxAllowedSelection} expenses at a time`,
+            title: `You can create a maximum of ${maxAllowedSelection} expenses at a time`
           });
         }
       } else {
@@ -72,22 +153,41 @@ const FinanceTable = ({
 
   const renderTableHeaders = () => {
     const headers = [
-      { title: "Actions", style: fixedHeaderStyle },
-      { title: "Assignee", style: fixedHeaderStyle },
-      { title: "Project #", style: fixedHeaderStyle },
-      { title: "Project", style: fixedHeaderStyle },
-      { title: "Sales Man", style: fixedHeaderStyle },
-      { title: "Status", style: fixedHeaderStyle },
-      { title: "Estimated Budget", style: fixedHeaderStyle },
-      { title: "Actual Cost", style: editableHeaderStyle },
-      { title: "Paid", style: editableHeaderStyle },
-      { title: "Date Paid", style: editableHeaderStyle },
-      { title: "Revision Needed?", style: editableHeaderStyle },
-      { title: "Date Paid", style: editableHeaderStyle },
-      { title: "Revision Cost", style: editableHeaderStyle },
-      { title: "Revisions Paid?", style: editableHeaderStyle },
-      { title: "Notes/Remarks", style: editableHeaderStyle },
-      { title: "Total Project Cost", style: editableHeaderStyle },
+      { title: "Actions", key: null, style: fixedHeaderStyle },
+      { title: "Assignee", key: "assignee", style: fixedHeaderStyle },
+      { title: "Project #", key: "projectNumber", style: fixedHeaderStyle },
+      { title: "Project", key: "projectName", style: fixedHeaderStyle },
+      { title: "Sales Man", key: "salesMan", style: fixedHeaderStyle },
+      { title: "Status", key: "status", style: fixedHeaderStyle },
+      {
+        title: "Estimated Budget",
+        key: "estimatedBudget",
+        style: fixedHeaderStyle
+      },
+      { title: "Actual Cost", key: "actualCost", style: editableHeaderStyle },
+      { title: "Paid", key: "paid", style: editableHeaderStyle },
+      { title: "Date Paid", key: "datePaid", style: editableHeaderStyle },
+      {
+        title: "Revisions Needed?",
+        key: "revisionNeeded",
+        style: editableHeaderStyle
+      },
+      {
+        title: "Date Paid",
+        key: "revisionDatePaid",
+        style: editableHeaderStyle
+      },
+      {
+        title: "Revision Cost",
+        key: "revisionCost",
+        style: editableHeaderStyle
+      },
+      { title: "Notes/Remarks", key: "notes", style: editableHeaderStyle },
+      {
+        title: "Total Project Cost",
+        key: "totalProjectCost",
+        style: editableHeaderStyle
+      }
     ];
 
     if (isAdmin) {
@@ -107,24 +207,31 @@ const FinanceTable = ({
             sx={checkboxStyle}
           />
         ),
-        style: fixedHeaderStyle,
+        key: null,
+        style: fixedHeaderStyle
       });
       headers.push({
         title: "Create Expense/Expense Id",
-        style: editableHeaderStyle,
+        key: "expenseId",
+        style: editableHeaderStyle
       });
     }
 
     return headers.map((header, index) => (
-      <th key={index} scope="col" style={header.style}>
+      <th
+        key={index}
+        scope="col"
+        style={header.style}
+        onClick={() => header.key && requestSort(header.key)}>
         {header.title}
+        {header.key && <SortIcon columnKey={header.key} />}
       </th>
     ));
   };
 
   return (
-    <>
-      <div className="card shadow border-0 p-3 mt-3">
+    <Paper elevation={3} sx={{ mt: 1 }}>
+      <Box p={1}>
         <div className="table-wrapper">
           <table className="table table-hover text-center align-middle relative">
             <thead>
@@ -150,7 +257,7 @@ const FinanceTable = ({
 
           {!isLoading && (
             <PaginationCustom
-              data={data}
+              data={sortedData}
               pageNo={pageNo}
               rowsPerPage={rowsPerPage}
               isLoading={isLoading}
@@ -158,8 +265,8 @@ const FinanceTable = ({
             />
           )}
         </div>
-      </div>
-    </>
+      </Box>
+    </Paper>
   );
 };
 

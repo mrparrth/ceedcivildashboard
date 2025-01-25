@@ -3,7 +3,7 @@ import React, {
   useReducer,
   useEffect,
   useState,
-  useCallback,
+  useCallback
 } from "react";
 import { dataReducer, initialState } from "./dataReducer";
 import { runScriptFunction } from "../../db/index";
@@ -15,13 +15,13 @@ import {
   archiveProjects,
   unarchiveProjects,
   createDropboxFolder,
-  toggleProjectSelection,
+  toggleProjectSelection
 } from "./projectOperations";
 import {
   createPayment,
   updatePayment,
   deletePayment,
-  createFbExpense,
+  createFbExpense
 } from "./paymentOperations";
 
 import useNotification from "hooks/useNotification";
@@ -87,14 +87,14 @@ export default function DataProvider({ children }) {
     toggleProjectSelection: toggleProjectSelection(dispatch),
     createProject: createProject(dispatch, addToQueue, user, addNotification),
     updateProject: updateProject(dispatch, state.projects, addToQueue),
-    deleteProject: deleteProject(dispatch),
+    deleteProject: deleteProject(dispatch, addToQueue),
     archiveProjects: archiveProjects(dispatch, addToQueue),
     unarchiveProjects: unarchiveProjects(dispatch, addToQueue),
     createDropboxFolder: createDropboxFolder(dispatch, addNotification),
     createPayment: createPayment(dispatch, addToQueue),
     updatePayment: updatePayment(dispatch, addToQueue),
     deletePayment: deletePayment(dispatch, addToQueue),
-    createFbExpense: createFbExpense(dispatch),
+    createFbExpense: createFbExpense(dispatch)
   };
 
   return (

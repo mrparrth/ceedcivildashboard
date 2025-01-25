@@ -19,7 +19,7 @@ const StyledLoading = styled("div")({
   },
 });
 
-export default function MatxLoading() {
+export default function Loading() {
   return (
     <StyledLoading>
       <Box position="relative">

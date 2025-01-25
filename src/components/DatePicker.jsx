@@ -4,13 +4,13 @@ const DateRangePicker = ({
   startDate,
   endDate,
   onStartDateChange,
-  onEndDateChange,
+  onEndDateChange
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
   const formatDate = (date) => {
-    return date ? new Date(date).toLocaleDateString("en-GB") : "";
+    return date ? new Date(date).toLocaleDateString() : "";
   };
 
   const displayValue =

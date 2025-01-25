@@ -1,6 +1,6 @@
 export const initialState = {
   projects: [],
-  payments: [],
+  payments: []
 };
 
 export const dataReducer = (state, action) => {
@@ -11,7 +11,7 @@ export const dataReducer = (state, action) => {
       return {
         ...state,
         projects: [action.payload, ...state.projects],
-        payments: [...action.newPayments, ...state.payments],
+        payments: [...action.newPayments, ...state.payments]
       };
     case "UPDATE_PROJECT":
       return {
@@ -21,7 +21,7 @@ export const dataReducer = (state, action) => {
             ? { ...project, ...action.payload }
             : project
         ),
-        payments: [...action.newPayments, ...state.payments],
+        payments: [...action.newPayments, ...state.payments]
       };
     case "ARCHIVE_PROJECTS":
       return {
@@ -30,7 +30,7 @@ export const dataReducer = (state, action) => {
           action.payload.ids.includes(project.id)
             ? { ...project, isArchived: true, isSelected: false }
             : project
-        ),
+        )
       };
     case "UNARCHIVE_PROJECTS":
       return {
@@ -39,7 +39,7 @@ export const dataReducer = (state, action) => {
           action.payload.ids.includes(project.id)
             ? { ...project, isArchived: false, isSelected: false }
             : project
-        ),
+        )
       };
     case "TOGGLE_PROJECT_SELECTION":
       return {
@@ -48,7 +48,7 @@ export const dataReducer = (state, action) => {
           project.id === action.payload.id
             ? { ...project, isSelected: !project.isSelected }
             : project
-        ),
+        )
       };
     case "CREATE_DROPBOX":
       return {
@@ -57,12 +57,12 @@ export const dataReducer = (state, action) => {
           project.id === action.payload.id
             ? { ...project, ...action.payload }
             : project
-        ),
+        )
       };
     case "ADD_PAYMENT":
       return {
         ...state,
-        payments: [action.payload, ...state.payments],
+        payments: [action.payload, ...state.payments]
       };
     case "UPDATE_PAYMENT":
       return {
@@ -71,14 +71,14 @@ export const dataReducer = (state, action) => {
           payment.id === action.payload.id
             ? { ...payment, ...action.payload }
             : payment
-        ),
+        )
       };
     case "DELETE_PAYMENT":
       return {
         ...state,
         payments: state.payments.filter(
           (payment) => payment.id !== action.payload
-        ),
+        )
       };
     case "CREATE_EXPENSE":
       return {
@@ -87,7 +87,7 @@ export const dataReducer = (state, action) => {
           payment.id === action.payload.id
             ? { ...payment, ...action.payload }
             : payment
-        ),
+        )
       };
     default:
       return state;

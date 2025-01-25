@@ -12,7 +12,7 @@
     "gstart": "clasp push --watch",
     "gclone": "clasp clone 13KY-pq1Xwwyjsn-IuTYjO3xVhDVMDhiFlz8r0eP6dFld-43wYVEa4SdN",
     "start": "parcel ./src/index.html --dist-dir ./apps-script",
-    "build": "parcel build ./src/index.html --dist-dir ./apps-script-build",
+    "build": "parcel build ./src/index.html --dist-dir ./apps-script",
     "buildnpush": "npm run build && npm run gpush",
     "dev": "vite",
     "vbuild": "vite build",

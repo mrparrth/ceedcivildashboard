@@ -1,5 +1,6 @@
-import React from "react";
-
+import React, { useState } from "react";
+import { ArrowUpward, ArrowDownward } from "@mui/icons-material";
+import { IconButton, Box } from "@mui/material";
 import ProjectRow from "./ProjectRow";
 import PaginationCustom from "../PaginationCustom";
 import Loader from "../LoaderCustom";
@@ -8,7 +9,68 @@ import useData from "hooks/useData";
 
 const ProjectTable = ({ projects, pageNo, onPageChange, viewRow, editRow }) => {
   const { isLoading } = useData();
-  const rowsPerPage = 10;
+  const rowsPerPage = 50;
+  const [sortConfig, setSortConfig] = useState({
+    key: null,
+    direction: "asc"
+  });
+
+  // Sorting function
+  const sortedProjects = React.useMemo(() => {
+    if (!sortConfig.key) return projects;
+
+    return [...projects].sort((a, b) => {
+      if (a[sortConfig.key] < b[sortConfig.key]) {
+        return sortConfig.direction === "asc" ? -1 : 1;
+      }
+      if (a[sortConfig.key] > b[sortConfig.key]) {
+        return sortConfig.direction === "asc" ? 1 : -1;
+      }
+      return 0;
+    });
+  }, [projects, sortConfig]);
+
+  const requestSort = (key) => {
+    let direction = "asc";
+    if (sortConfig.key === key && sortConfig.direction === "asc") {
+      direction = "desc";
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const SortIcon = ({ columnKey }) => {
+    if (sortConfig.key !== columnKey) return null;
+
+    return sortConfig.direction === "asc" ? (
+      <ArrowUpward fontSize="small" />
+    ) : (
+      <ArrowDownward fontSize="small" />
+    );
+  };
+
+  const SortableHeader = ({ column, label, className = "" }) => (
+    <th scope="col" className={className}>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: column === "projectName" ? "flex-start" : "center",
+          cursor: "pointer",
+          userSelect: "none",
+          "&:hover": {
+            opacity: 0.8
+          }
+        }}
+        onClick={() => requestSort(column)}>
+        {label}
+        <Box
+          component="span"
+          sx={{ ml: 0.5, display: "flex", alignItems: "center" }}>
+          <SortIcon columnKey={column} />
+        </Box>
+      </Box>
+    </th>
+  );
 
   return (
     <>
@@ -16,24 +78,32 @@ const ProjectTable = ({ projects, pageNo, onPageChange, viewRow, editRow }) => {
         <thead className="table-dark">
           <tr>
             <th scope="col" className="text-start"></th>
-            <th scope="col" className="text-start col-3">
-              Project
-            </th>
-            <th scope="col" className="col-1">
-              Project ID
-            </th>
-            <th scope="col" className="col-1">
-              Job Number
-            </th>
-            <th scope="col" className="col-2">
-              Assigned To
-            </th>
-            <th scope="col" className="col-1">
-              Status
-            </th>
-            <th scope="col" className="col-1">
-              State
-            </th>
+            <SortableHeader
+              column="projectName"
+              label="Project"
+              className="text-start col-3"
+            />
+            <SortableHeader
+              column="projectNumber"
+              label="Project ID"
+              className="col-1"
+            />
+            <SortableHeader
+              column="invoiceNumber"
+              label="Invoice Number"
+              className="col-1"
+            />
+            <SortableHeader
+              column="assignedTo"
+              label="Assigned To"
+              className="col-2"
+            />
+            <SortableHeader
+              column="overallProjectStatus"
+              label="Status"
+              className="col-1"
+            />
+            <SortableHeader column="state" label="State" className="col-1" />
             <th scope="col" className="col-1">
               Files
             </th>
@@ -42,9 +112,9 @@ const ProjectTable = ({ projects, pageNo, onPageChange, viewRow, editRow }) => {
             </th>
           </tr>
         </thead>
-        <tbody className="px-4 py-2 text-center ">
+        <tbody className="px-4 py-2 text-center">
           {!isLoading &&
-            projects
+            sortedProjects
               .slice((pageNo - 1) * rowsPerPage, pageNo * rowsPerPage)
               .map((project) => (
                 <ProjectRow
@@ -61,7 +131,7 @@ const ProjectTable = ({ projects, pageNo, onPageChange, viewRow, editRow }) => {
 
       {!isLoading && (
         <PaginationCustom
-          data={projects}
+          data={sortedProjects}
           pageNo={pageNo}
           rowsPerPage={rowsPerPage}
           isLoading={isLoading}

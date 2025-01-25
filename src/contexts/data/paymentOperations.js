@@ -1,8 +1,9 @@
 import { runScriptFunction } from "../../db/index";
 
 export const createPayment = (dispatch, addToQueue) => async (payment) => {
-  console.log(payment);
   try {
+    payment.id = crypto.randomUUID();
+
     addToQueue("createPayments", [payment]);
     dispatch({ type: "ADD_PAYMENT", payload: payment });
   } catch (error) {

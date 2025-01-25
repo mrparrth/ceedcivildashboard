@@ -3,14 +3,14 @@ import {
   useReducer,
   useCallback,
   useEffect,
-  useState,
+  useState
 } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   saveTokenInLocalStorage,
   getTokenFromLocalStorage,
   trashToken,
-  runScriptFunction,
+  runScriptFunction
 } from "../../db";
 import useContractMetadata from "hooks/useContractMetadata";
 
@@ -20,7 +20,7 @@ const initialState = {
   user: null,
   isAuthenticated: false,
   token: null,
-  error: null,
+  error: null
 };
 
 const reducer = (state, action) => {
@@ -31,7 +31,7 @@ const reducer = (state, action) => {
         ...state,
         isAuthenticated: true,
         token: action.payload.token,
-        user: action.payload.user,
+        user: action.payload.user
       };
     }
 
@@ -40,7 +40,7 @@ const reducer = (state, action) => {
       return {
         ...state,
         ...action.payload,
-        isAuthenticated: true,
+        isAuthenticated: true
       };
     }
 
@@ -48,7 +48,7 @@ const reducer = (state, action) => {
       return {
         ...state,
         ...action.payload,
-        isAuthenticated: false,
+        isAuthenticated: false
       };
     }
 
@@ -60,7 +60,7 @@ const reducer = (state, action) => {
     case "SET_ERROR": {
       return {
         ...state,
-        ...action.payload,
+        ...action.payload
       };
     }
     default:
@@ -89,12 +89,12 @@ export default function AuthProvider({ children }) {
 
         dispatch({
           type: "INITIALIZE_AUTH",
-          payload: { token, user },
+          payload: { token, user }
         });
       } catch (error) {
         dispatch({
           type: "LOGIN_FAILURE",
-          payload: { error: error.message },
+          payload: { error: error.message }
         });
       } finally {
         setAuthInProgress(false);
@@ -110,17 +110,16 @@ export default function AuthProvider({ children }) {
     setAuthInProgress(true);
     try {
       let result = await runScriptFunction("login", { email, password });
-      console.log(`result:` + result);
       if (!result.user) throw new Error("Some problem occured");
 
       dispatch({
         type: "LOGIN_SUCCESS",
-        payload: result,
+        payload: result
       });
     } catch (error) {
       dispatch({
         type: "LOGIN_FAILURE",
-        payload: { error: error.message },
+        payload: { error: error.message }
       });
     } finally {
       setAuthInProgress(false);
@@ -143,9 +142,8 @@ export default function AuthProvider({ children }) {
         isAuthInProgress,
         login,
         logout,
-        setError,
-      }}
-    >
+        setError
+      }}>
       {children}
     </AuthContext.Provider>
   );

@@ -14,7 +14,7 @@ const ScopeSelectorModal = ({ isOpen, onClose, formData, setFormData }) => {
   const handleFormChange = (keyvaluePair) => {
     setFormData((prevData) => ({
       ...prevData,
-      ...keyvaluePair,
+      ...keyvaluePair
     }));
   };
 
@@ -50,13 +50,16 @@ const ScopeSelectorModal = ({ isOpen, onClose, formData, setFormData }) => {
   };
 
   const updateTotalCost = () => {
-    const totalCost = projectScopes.reduce(
-      (acc, scope) => acc + parseFloat(scope.rate),
-      0
-    );
+    const totalCost =
+      Math.round(
+        projectScopes.reduce((acc, scope) => acc + scope.rate, 0) * 100
+      ) / 100;
 
-    const total = formData.retainerDeposit + formData.remainingBalance;
+    const total =
+      (Math.round(parseFloat(formData.retainerDeposit) * 100) / 100 || 0) +
+      (Math.round(parseFloat(formData.remainingBalance) * 100) / 100 || 0);
     const gap = total - totalCost;
+
     handleFormChange({ totalCost, gap });
   };
 
@@ -114,35 +117,30 @@ const ScopeSelectorModal = ({ isOpen, onClose, formData, setFormData }) => {
   return (
     <div
       className="modal"
-      style={{ display: "block", backgroundColor: "rgba(0,0,0,0.5)" }}
-    >
+      style={{ display: "block", backgroundColor: "rgba(0,0,0,0.5)" }}>
       <div className="modal-dialog modal-xl modal-dialog-scrollable  d-flex justify-content-center">
         <div className="modal-content">
           <div className="modal-header bg-light p-2">
             <div className="d-flex justify-content-between align-items-center w-100">
               <button
                 className="btn btn-sm btn-danger d-flex align-items-center"
-                onClick={handleClose}
-              >
+                onClick={handleClose}>
                 <span
                   className="btn-close btn-close-white me-2"
                   aria-hidden="true"
-                  style={{ fontSize: "0.5rem" }}
-                ></span>
+                  style={{ fontSize: "0.5rem" }}></span>
                 Close
               </button>
               {!showAllScopes ? (
                 <div
                   className="bg-white p-2 rounded border"
-                  style={{ minWidth: "400px" }}
-                >
+                  style={{ minWidth: "400px" }}>
                   <div className="d-flex justify-content-between w-100">
-                    <div className="flex-grow-1 me-3 w-50">
+                    <div className="flex-grow-1 me-1 w-75">
                       <div className="mb-2 d-flex align-items-center">
                         <label
                           htmlFor="retainer-deposit"
-                          className="text-end pe-2 fw-bold w-75"
-                        >
+                          className="text-end pe-2 fw-bold w-75">
                           Retainer Deposit:
                         </label>
                         <input
@@ -152,7 +150,9 @@ const ScopeSelectorModal = ({ isOpen, onClose, formData, setFormData }) => {
                           value={formData.retainerDeposit || 0}
                           onChange={(e) =>
                             handleFormChange({
-                              retainerDeposit: parseFloat(e.target.value) || 0,
+                              retainerDeposit:
+                                Math.round(parseFloat(e.target.value) * 100) /
+                                100
                             })
                           }
                         />
@@ -160,8 +160,7 @@ const ScopeSelectorModal = ({ isOpen, onClose, formData, setFormData }) => {
                       <div className="d-flex align-items-center">
                         <label
                           htmlFor="remaining-balance"
-                          className="text-end pe-2 fw-bold w-75"
-                        >
+                          className="text-end pe-2 fw-bold w-75">
                           Balance Remaining:
                         </label>
                         <input
@@ -171,7 +170,9 @@ const ScopeSelectorModal = ({ isOpen, onClose, formData, setFormData }) => {
                           value={formData.remainingBalance || 0}
                           onChange={(e) =>
                             handleFormChange({
-                              remainingBalance: parseFloat(e.target.value) || 0,
+                              remainingBalance:
+                                Math.round(parseFloat(e.target.value) * 100) /
+                                100
                             })
                           }
                         />
@@ -182,7 +183,7 @@ const ScopeSelectorModal = ({ isOpen, onClose, formData, setFormData }) => {
                         <span className="text-end pe-2 fw-bold w-50">
                           Total Cost:
                         </span>
-                        <span className="w-50">${totalCost.toFixed(0)}</span>
+                        <span className="w-50">${totalCost.toFixed(2)}</span>
                       </div>
                       <div className="d-flex align-items-center">
                         <span className="text-end pe-2 fw-bold w-50">Gap:</span>
@@ -190,9 +191,8 @@ const ScopeSelectorModal = ({ isOpen, onClose, formData, setFormData }) => {
                           className={
                             (gap === 0 ? "text-success" : "text-danger") +
                             " w-50"
-                          }
-                        >
-                          ${Math.abs(gap).toFixed(0)}
+                          }>
+                          ${Math.abs(gap).toFixed(2)}
                           <span className="ms-1">
                             {gap === 0 ? "😃" : "😐"}
                           </span>
@@ -208,16 +208,14 @@ const ScopeSelectorModal = ({ isOpen, onClose, formData, setFormData }) => {
                   <button
                     className="btn btn-success me-2"
                     onClick={addSelectedRows}
-                    type="button"
-                  >
+                    type="button">
                     + Add
                   </button>
                 ) : null}
                 <button
                   className="btn btn-info"
                   onClick={toggleView}
-                  type="button"
-                >
+                  type="button">
                   {showAllScopes ? "Show Selected" : "Show All"}
                 </button>
               </div>
@@ -230,7 +228,9 @@ const ScopeSelectorModal = ({ isOpen, onClose, formData, setFormData }) => {
                   <th className="col-3  text-white">Desc</th>
                   <th className="col-2 text-white">Rate</th>
                   <th className="col-6 text-white">Details</th>
-                  <th className="col-1 text-white">Select</th>
+                  <th className="col-1 text-white">
+                    {showAllScopes ? "Select" : ""}
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -262,8 +262,7 @@ const ScopeSelectorModal = ({ isOpen, onClose, formData, setFormData }) => {
                         className={`
                           ${dragItem.current === index ? "dragging" : ""}
                           ${draggingOver === index ? "drag-over" : ""}
-                        `}
-                      >
+                        `}>
                         <td className="text-wrap">
                           {editingIndex === index ? (
                             <input
@@ -318,8 +317,7 @@ const ScopeSelectorModal = ({ isOpen, onClose, formData, setFormData }) => {
                             <button
                               className="btn btn-success btn-sm"
                               onClick={handleEditSave}
-                              type="button"
-                            >
+                              type="button">
                               Save
                             </button>
                           ) : (
@@ -327,15 +325,13 @@ const ScopeSelectorModal = ({ isOpen, onClose, formData, setFormData }) => {
                               <button
                                 className="btn btn-warning btn-sm me-1"
                                 onClick={() => handleEdit(index)}
-                                type="button"
-                              >
+                                type="button">
                                 Edit
                               </button>
                               <button
                                 className="btn btn-danger btn-sm"
                                 onClick={() => removeItem(index)}
-                                type="button"
-                              >
+                                type="button">
                                 Delete
                               </button>
                             </>

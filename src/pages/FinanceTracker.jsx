@@ -2,12 +2,11 @@ import { useState, useEffect, useMemo } from "react";
 import {
   FinanceTrackerFilters,
   FinanceTable,
-  FinanceActionBar,
+  FinanceActionBar
 } from "../components/FinanceDashboard";
+import { Container } from "@mui/material";
 import useData from "hooks/useData";
-import useAuth from "hooks/useAuth";
 import useNotification from "hooks/useNotification";
-import { FaLinesLeaning } from "react-icons/fa6";
 import { ConfirmationModal } from "../components";
 import { NewPaymentModal } from "../components/FinanceDashboard/";
 
@@ -17,7 +16,7 @@ const initialFilters = {
   assignee: "",
   salesman: "",
   projectNumber: "",
-  paid: "",
+  paid: ""
 };
 
 const FinanceTracker = () => {
@@ -86,9 +85,9 @@ const FinanceTracker = () => {
     return filteredPayments.reduce(
       (total, payment) =>
         total +
-          (typeof payment.totalCost === "string"
-            ? parseFloat(payment.totalCost)
-            : payment.totalCost) || 0,
+        ((typeof payment.totalCost === "string"
+          ? parseFloat(payment.totalCost)
+          : payment.totalCost) || 0),
       0
     );
   }, [filteredPayments]);
@@ -96,6 +95,7 @@ const FinanceTracker = () => {
   const handlePageChange = (event, pageNumber) => setCurrentPage(pageNumber);
 
   const handleFilterChange = (name, value) => {
+    setCurrentPage(1);
     setFilters((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -121,14 +121,14 @@ const FinanceTracker = () => {
       const choices = [
         {
           label: `Create for All (${selectedRows.length} items)`,
-          value: "all",
-        },
+          value: "all"
+        }
       ];
 
       if (rowsWithoutExpenses.length > 0) {
         choices.push({
           label: `Create Only for New (${rowsWithoutExpenses.length} items)`,
-          value: "new",
+          value: "new"
         });
       }
       setModalChoices(choices);
@@ -155,7 +155,6 @@ const FinanceTracker = () => {
         .then(() => {
           setProcessedRowsCount((c) => c + 1);
           successCount++;
-          console.log(`successCount:` + successCount);
           if (index === rows.length - 1) {
             finishProcess();
           }
@@ -163,10 +162,9 @@ const FinanceTracker = () => {
         .catch((error) => {
           setProcessedRowsCount((c) => c + 1);
           failCount++;
-          console.log(`failCount:` + failCount);
           errors.push({
             projectNumber: row.projectNumber,
-            error: error.message,
+            error: error.message
           });
           if (index === rows.length - 1) {
             finishProcess();
@@ -178,7 +176,7 @@ const FinanceTracker = () => {
       if (successCount > 0) {
         addNotification({
           title: `Successfully created ${successCount} expense(s)`,
-          type: "success",
+          type: "success"
         });
       }
 
@@ -189,7 +187,7 @@ const FinanceTracker = () => {
         addNotification({
           title: `Failed to create ${failCount} expense(s)`,
           subtitle: errorMessage,
-          type: "alert",
+          type: "alert"
         });
       }
 
@@ -221,46 +219,44 @@ const FinanceTracker = () => {
   };
 
   return (
-    <>
-      <div className="right-content w-100">
-        <FinanceTrackerFilters
-          filters={filters}
-          onFilterChange={handleFilterChange}
-          onResetFilters={resetFilters}
-        />
+    <Container maxWidth={false} sx={{ py: 2, px: { xs: 1, sm: 2, md: 2 } }}>
+      <FinanceTrackerFilters
+        filters={filters}
+        onFilterChange={handleFilterChange}
+        onResetFilters={resetFilters}
+      />
 
-        <FinanceActionBar
-          selectedRows={selectedRows}
-          totalExpenses={totalExpenses}
-          loading={loading || justCompleted}
-          processedRowsCount={processedRowsCount}
-          justCompleted={justCompleted}
-          handleNewPayment={handleNewPayment}
-          onCreateFreshbooksExpense={handleCreateFbExpense}
-        />
+      <FinanceActionBar
+        selectedRows={selectedRows}
+        totalExpenses={totalExpenses}
+        loading={loading || justCompleted}
+        processedRowsCount={processedRowsCount}
+        justCompleted={justCompleted}
+        handleNewPayment={handleNewPayment}
+        onCreateFreshbooksExpense={handleCreateFbExpense}
+      />
 
-        <FinanceTable
-          pageNo={currentPage}
-          onPageChange={handlePageChange}
-          data={filteredPayments}
-          selectedRows={selectedRows}
-          onRowSelection={handleRowSelection}
-        />
+      <FinanceTable
+        pageNo={currentPage}
+        onPageChange={handlePageChange}
+        data={filteredPayments}
+        selectedRows={selectedRows}
+        onRowSelection={handleRowSelection}
+      />
 
-        <ConfirmationModal
-          isOpen={isModalOpen}
-          onClose={handleModalClose}
-          onConfirm={handleModalConfirm}
-          title={modalTitle}
-          message={modalMessage}
-          choices={modalChoices}
-        />
+      <ConfirmationModal
+        isOpen={isModalOpen}
+        onClose={handleModalClose}
+        onConfirm={handleModalConfirm}
+        title={modalTitle}
+        message={modalMessage}
+        choices={modalChoices}
+      />
 
-        {isNewPaymentModalOpen && (
-          <NewPaymentModal closeModal={() => setIsNewPaymentModalOpen(false)} />
-        )}
-      </div>
-    </>
+      {isNewPaymentModalOpen && (
+        <NewPaymentModal closeModal={() => setIsNewPaymentModalOpen(false)} />
+      )}
+    </Container>
   );
 };
 

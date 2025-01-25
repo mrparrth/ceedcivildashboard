@@ -14,7 +14,7 @@ import {
 import { SidenavTheme } from "../theme/SidenavTheme";
 import Layout1Sidenav from "./Layout1Sidenav";
 import Layout1Topbar from "./Layout1Topbar";
-import MatxSuspense from "../components/MatxSuspense";
+import Suspense from "../components/Suspense";
 
 // Styled components
 const Layout1Root = styled(Box)(({ theme }) => ({
@@ -118,9 +118,9 @@ const Layout1 = () => {
           )}
 
           <Box flexGrow={1} position="relative">
-            <MatxSuspense>
+            <Suspense>
               <Outlet />
-            </MatxSuspense>
+            </Suspense>
           </Box>
         </ContentBox>
       </LayoutContainer>

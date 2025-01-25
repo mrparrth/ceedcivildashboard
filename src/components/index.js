@@ -1,4 +1,4 @@
-export { default as MatxVerticalNav } from "./MatxVerticalNav/MatxVerticalNav";
-export { default as MatxMenu } from "./MatxMenu";
-export { default as MatxSearchBox } from "./MatxSearchBox";
+export { default as VerticalNav } from "./VerticalNav/VerticalNav";
+export { default as MatMenu } from "./MatMenu";
+export { default as SearchBox } from "./SearchBox";
 export { default as ConfirmationModal } from "./ConfirmationModal";

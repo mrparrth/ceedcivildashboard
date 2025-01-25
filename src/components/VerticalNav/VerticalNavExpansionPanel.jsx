@@ -8,26 +8,26 @@ import clsx from "clsx";
 const NavExpandRoot = styled("div")(({ theme }) => ({
   "& .expandIcon": {
     transition: "transform 0.3s cubic-bezier(0, 0, 0.2, 1) 0ms",
-    transform: "rotate(90deg)"
+    transform: "rotate(90deg)",
   },
   "& .collapseIcon": {
     transition: "transform 0.3s cubic-bezier(0, 0, 0.2, 1) 0ms",
-    transform: "rotate(0deg)"
+    transform: "rotate(0deg)",
   },
   "& .expansion-panel": {
     overflow: "hidden",
-    transition: "max-height 0.3s cubic-bezier(0, 0, 0.2, 1)"
+    transition: "max-height 0.3s cubic-bezier(0, 0, 0.2, 1)",
   },
   "& .highlight": {
-    background: theme.palette.primary.main
+    background: theme.palette.primary.main,
   },
   "&.compactNavItem": {
     width: 44,
     overflow: "hidden",
     justifyContent: "center !important",
     "& .itemText": { display: "none" },
-    "& .itemIcon": { display: "none" }
-  }
+    "& .itemIcon": { display: "none" },
+  },
 }));
 
 const BaseButton = styled(ButtonBase)(({ theme }) => ({
@@ -47,8 +47,8 @@ const BaseButton = styled(ButtonBase)(({ theme }) => ({
     fontSize: "18px",
     paddingLeft: "16px",
     paddingRight: "16px",
-    verticalAlign: "middle"
-  }
+    verticalAlign: "middle",
+  },
 }));
 
 const BulletIcon = styled("div")(({ theme }) => ({
@@ -60,22 +60,22 @@ const BulletIcon = styled("div")(({ theme }) => ({
   marginRight: "8px",
   borderRadius: "300px !important",
   // background: theme.palette.primary.contrastText,
-  background: theme.palette.text.primary
+  background: theme.palette.text.primary,
 }));
 
 const ItemText = styled("span")(() => ({
   fontSize: "0.875rem",
   paddingLeft: "0.8rem",
-  verticalAlign: "middle"
+  verticalAlign: "middle",
 }));
 
 const BadgeValue = styled("div")(() => ({
   padding: "1px 4px",
   overflow: "hidden",
-  borderRadius: "300px"
+  borderRadius: "300px",
 }));
 
-export default function MatxVerticalNavExpansionPanel({ item, children, mode }) {
+export default function VerticalNavExpansionPanel({ item, children, mode }) {
   const [collapsed, setCollapsed] = useState(true);
   const elementRef = useRef(null);
   const componentHeight = useRef(0);
@@ -119,23 +119,29 @@ export default function MatxVerticalNavExpansionPanel({ item, children, mode }) 
         className={clsx({
           "has-submenu compactNavItem": true,
           compactNavItem: mode === "compact",
-          open: !collapsed
+          open: !collapsed,
         })}
-        onClick={handleClick}>
+        onClick={handleClick}
+      >
         <Box display="flex" alignItems="center">
           {icon && <Icon className="icon">{icon}</Icon>}
           {iconText && <BulletIcon />}
           <ItemText className="sidenavHoverShow">{name}</ItemText>
         </Box>
 
-        {badge && <BadgeValue className="sidenavHoverShow itemIcon">{badge.value}</BadgeValue>}
+        {badge && (
+          <BadgeValue className="sidenavHoverShow itemIcon">
+            {badge.value}
+          </BadgeValue>
+        )}
 
         <div
           className={clsx({
             sidenavHoverShow: true,
             collapseIcon: collapsed,
-            expandIcon: !collapsed
-          })}>
+            expandIcon: !collapsed,
+          })}
+        >
           <ChevronRight fontSize="small" sx={{ verticalAlign: "middle" }} />
         </div>
       </BaseButton>
@@ -143,7 +149,12 @@ export default function MatxVerticalNavExpansionPanel({ item, children, mode }) 
       <div
         ref={elementRef}
         className="expansion-panel submenu"
-        style={collapsed ? { maxHeight: "0px" } : { maxHeight: componentHeight.current + "px" }}>
+        style={
+          collapsed
+            ? { maxHeight: "0px" }
+            : { maxHeight: componentHeight.current + "px" }
+        }
+      >
         {children}
       </div>
     </NavExpandRoot>
