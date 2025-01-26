@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import useContractMetadata from "hooks/useContractMetadata";
-
+import { MultiSelectDropdown } from "components/Fields";
 import ScopeSelectorModal from "../components/ScopeSelectorModal";
 import { runScriptFunction } from "../db";
 import {
@@ -17,155 +17,13 @@ import {
 import {
   CheckCircleOutline as SuccessIcon,
   ErrorOutline as ErrorIcon,
-  InfoOutlined as InfoIcon,
-  CoPresentOutlined
+  InfoOutlined as InfoIcon
 } from "@mui/icons-material";
 
 import useData from "hooks/useData";
 import useappData from "hooks/useAppData";
-
-const initialFormState = {
-  sameAsClient: false,
-  fbInvoiceId: "",
-  fbClientId: "",
-  fbProjectId: "",
-  date: "",
-  clientName: "",
-  clientStreet: "",
-  clientCity: "",
-  clientState: "",
-  clientZip: "",
-  clientCompany: "",
-  clientAddress: "",
-  clientEmail: "",
-  clientPhone: "",
-  siteAddress: "",
-  siteCity: "",
-  siteZip: "",
-  siteState: "",
-  retainerRemaining: "",
-  salesman: "",
-  deliveryDuration: "",
-  gap: 0,
-  siteStreet: "",
-  remainingBalance: "",
-  scopes: [],
-  favClients: "",
-  isUpworkJob: false,
-  retainerDeposit: "",
-  projectNumber: "",
-  deliverableFromClient: "",
-  projectName: "",
-  totalCost: "",
-  ratePerHour: 225,
-  documentUrl: "",
-  sendProjectEmail: true,
-  archFolder: true,
-  mepFolder: true,
-  structuralFolder: true
-};
-
-const trialForm = {
-  sameAsClient: true,
-  fbInvoiceId: "0001672",
-  date: "2024-09-14",
-  clientName: "test test",
-  clientStreet: "Test Test",
-  clientState: "California",
-  clientCompany: "Test test",
-  clientZip: "95112",
-  clientCity: "test",
-  clientEmail: "test@test.com",
-  clientAddress: "Test Test",
-  clientPhone: "(000)000-0000",
-  siteAddress: "Test Test",
-  siteCity: "San Jose",
-  siteState: "California",
-  siteZip: "95119",
-  retainerRemaining: 5600,
-  checkBox: "on",
-  salesman: "Ryan",
-  deliveryDuration: "1 - 2 Weeks",
-  siteStreet: "6373 San Igancio",
-  favClients: "",
-  gap: 0,
-  remainingBalance: 0,
-  isUpworkJob: false,
-  retainerDeposit: 9,
-  projectNumber: "999",
-  fbProjectId: "12518535",
-  fbClientId: "",
-  deliverableFromClient: "CAD and PDF files",
-  projectName: "Test",
-  totalCost: 9,
-  ratePerHour: 200,
-  documentUrl: "",
-  scopes: [
-    {
-      detail:
-        "Preparation of design computations and construction drawings for building plans. Soil assumed at 1500 PSF unless soil report provided. All loads as shown. Single use for address as shown",
-      description: "Building Plan Calculations Package",
-      rate: 5
-    },
-    {
-      rate: 2,
-      description: "Calculations Report",
-      detail: "Calculations report for the openings in the ceiling."
-    },
-    {
-      description: "Engineering Review, Stamp and Seal P.E.",
-      detail:
-        "Scope of work, reviewed, stamped, and sealed by state licensed P.E. CA",
-      rate: 2
-    }
-  ],
-  sendProjectEmail: true,
-  archFolder: true,
-  mepFolder: true,
-  structuralFolder: true
-};
-
-const blankProject = {
-  id: null,
-  projectNumber: "",
-  invoiceNumber: null,
-  projectName: "",
-  salesMan: "",
-  description: "",
-  overallProjectStatus: "",
-  state: "",
-  priority: "",
-  projectFilesFolder: "",
-  projectNotes: "",
-  clientProjectNameAddress: "",
-  assignedTo: [],
-  contractLink: "",
-  depositPaid: "",
-  estimatedBudget: "",
-  actualCost: "",
-  initialProjectStatus: "",
-  drafterNeeded: "",
-  drafterTaskedTo: "",
-  draftingStatus: "",
-  draftingDropboxLink: "",
-  draftingEstimatedDeliveryTime: "",
-  engineeringNeeded: "",
-  engineerTaskedTo: "",
-  engineeringStatus: "",
-  engineeringDropboxLink: "",
-  engineeringEstimatedDeliveryTime: "",
-  mepNeeded: "",
-  mepTaskedTo: "",
-  mepStatus: "",
-  mepDropboxLink: "",
-  mepEstimatedDeliveryTime: "",
-  civilNeeded: "",
-  civilEngineeringTaskedTo: "",
-  civilEngineeringStatus: "",
-  civilDropboxLink: "",
-  civilEstimatedDeliveryTime: "",
-  jobType: ""
-};
+import { BLANK_PROJECT, DEV_PREFILL_FORM, INITIAL_FORM } from "utils/constant";
+import { Civil } from "components/ExpandableSections";
 
 const CEEDCivilForm = () => {
   let { isLoading: isDataLoading, createProject } = useData();
@@ -173,7 +31,7 @@ const CEEDCivilForm = () => {
   let { contractMetadata, isLoading: isContractDataLoading } =
     useContractMetadata();
 
-  const [formData, setFormData] = useState(initialFormState);
+  const [formData, setFormData] = useState(INITIAL_FORM);
   const [loading, setLoading] = useState(false);
   const [isScopeModalOpen, setIsScopeModalOpen] = useState(false);
   const [modalState, setModalState] = useState({ isOpen: false, content: {} });
@@ -374,15 +232,14 @@ const CEEDCivilForm = () => {
         }));
 
         const folderOptions = {
-          sendProjectEmail: formData.sendProjectEmail,
-          archFolder: formData.archFolder,
-          mepFolder: formData.mepFolder,
-          structuralFolder: formData.structuralFolder
+          sendClientEmail: formData.sendClientEmail,
+          drafter: formData.drafterFolderNeeded,
+          engg: formData.enggFolderNeeded,
+          mep: formData.mepFolderNeeded,
+          civil: formData.civilFolderNeeded
         };
 
-        console.log({ ...blankProject, ...newProject, folderOptions });
-
-        createProject({ ...blankProject, ...newProject, folderOptions });
+        createProject({ ...BLANK_PROJECT, ...newProject, folderOptions });
 
         await showDialog(
           "Success",
@@ -419,9 +276,8 @@ const CEEDCivilForm = () => {
     );
 
     if (confirmed) {
-      setFormData(initialFormState);
       const today = new Date().toISOString().split("T")[0];
-      setFormData((prev) => ({ ...initialFormState, date: today }));
+      setFormData((prev) => ({ ...INITIAL_FORM, date: today }));
     }
   }, [
     formData.projectNumber,
@@ -820,7 +676,7 @@ const CEEDCivilForm = () => {
                 Folder Creation Options
               </label>
 
-              <div className="form-check mb-3">
+              <div className="form-check mb-1">
                 <input
                   type="checkbox"
                   className="form-check-input"
@@ -829,46 +685,28 @@ const CEEDCivilForm = () => {
                     marginRight: "12px",
                     marginLeft: "4px"
                   }}
-                  id="sendProjectEmail"
-                  name="sendProjectEmail"
-                  checked={formData.sendProjectEmail}
+                  id="sendClientEmail"
+                  name="sendClientEmail"
+                  checked={formData.sendClientEmail}
                   onChange={handleInputChange}
                 />
                 <label
                   className="form-check-label"
                   style={{ fontSize: "1.1rem" }}
-                  htmlFor="sendProjectEmail">
+                  htmlFor="sendClientEmail">
                   Send Document Upload Email To Client?
                 </label>
               </div>
 
               <div className="row g-4 mt-1">
-                <div className="col-md-4">
+                <div className="col-md-3">
                   <div className="form-check d-flex align-items-center">
-                    <input
-                      type="checkbox"
-                      className="form-check-input"
-                      style={{
-                        transform: "scale(1.5)",
-                        marginRight: "12px",
-                        marginLeft: "4px"
-                      }}
-                      id="archFolder"
-                      name="archFolder"
-                      checked={formData.archFolder}
-                      onChange={handleInputChange}
-                    />
                     <label
                       className="form-check-label"
                       style={{ fontSize: "1.1rem" }}
-                      htmlFor="archFolder">
+                      htmlFor="drafterFolderNeeded">
                       Arch
                     </label>
-                  </div>
-                </div>
-
-                <div className="col-md-4">
-                  <div className="form-check d-flex align-items-center">
                     <input
                       type="checkbox"
                       className="form-check-input"
@@ -877,22 +715,36 @@ const CEEDCivilForm = () => {
                         marginRight: "12px",
                         marginLeft: "4px"
                       }}
-                      id="mepFolder"
-                      name="mepFolder"
-                      checked={formData.mepFolder}
+                      id="drafterFolderNeeded"
+                      name="drafterFolderNeeded"
+                      checked={formData.drafterFolderNeeded}
                       onChange={handleInputChange}
                     />
-                    <label
-                      className="form-check-label"
-                      style={{ fontSize: "1.1rem" }}
-                      htmlFor="mepFolder">
-                      MEP
-                    </label>
+                    <MultiSelectDropdown
+                      options={appData.drafters}
+                      selectedOptions={[]}
+                      setSelectedOptions={(newSelectedOptions) => {
+                        handleInputChange(
+                          "drafterTaskedTo",
+                          newSelectedOptions
+                        );
+                        handleInputChange(
+                          "drafterNeeded",
+                          drafterTaskedTo !== ""
+                        );
+                      }}
+                    />
                   </div>
                 </div>
 
-                <div className="col-md-4">
+                <div className="col-md-3">
                   <div className="form-check d-flex align-items-center">
+                    <label
+                      className="form-check-label"
+                      style={{ fontSize: "1.1rem" }}
+                      htmlFor="enggFolderNeeded">
+                      Structural
+                    </label>
                     <input
                       type="checkbox"
                       className="form-check-input"
@@ -901,16 +753,58 @@ const CEEDCivilForm = () => {
                         marginRight: "12px",
                         marginLeft: "2px"
                       }}
-                      id="structuralFolder"
-                      name="structuralFolder"
-                      checked={formData.structuralFolder}
+                      id="enggFolderNeeded"
+                      name="enggFolderNeeded"
+                      checked={formData.enggFolderNeeded}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                </div>
+
+                <div className="col-md-3">
+                  <div className="form-check d-flex align-items-center">
+                    <input
+                      type="checkbox"
+                      className="form-check-input"
+                      style={{
+                        transform: "scale(1.5)",
+                        marginRight: "12px",
+                        marginLeft: "4px"
+                      }}
+                      id="mepFolderNeeded"
+                      name="mepFolderNeeded"
+                      checked={formData.mepFolderNeeded}
                       onChange={handleInputChange}
                     />
                     <label
                       className="form-check-label"
                       style={{ fontSize: "1.1rem" }}
-                      htmlFor="structuralFolder">
-                      Structural
+                      htmlFor="mepFolderNeeded">
+                      MEP
+                    </label>
+                  </div>
+                </div>
+
+                <div className="col-md-3">
+                  <div className="form-check d-flex align-items-center">
+                    <input
+                      type="checkbox"
+                      className="form-check-input"
+                      style={{
+                        transform: "scale(1.5)",
+                        marginRight: "12px",
+                        marginLeft: "4px"
+                      }}
+                      id="civilFolderNeeded"
+                      name="civilFolderNeeded"
+                      checked={formData.civilFolderNeeded}
+                      onChange={handleInputChange}
+                    />
+                    <label
+                      className="form-check-label"
+                      style={{ fontSize: "1.1rem" }}
+                      htmlFor="civilFolderNeeded">
+                      CIVIL
                     </label>
                   </div>
                 </div>

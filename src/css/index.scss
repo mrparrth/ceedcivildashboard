@@ -912,3 +912,8 @@ table td .info p {
   position: relative;
   z-index: 1;
 }
+
+.disabled-input {
+  background-color: #f0f0f0;
+  color: #888;
+}

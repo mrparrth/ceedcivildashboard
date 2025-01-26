@@ -107,3 +107,33 @@ export function getTimeDifference(date) {
     return `${Math.floor(difference / 86400 / 30)} mon`;
   else return `${(difference / 86400 / 30 / 12).toFixed(1)} y`;
 }
+
+export const getAssigneeByType = (assignedTo, type, appData) => {
+  const { drafters, engineers, mep, civil } = appData || {};
+
+  if (type === "Drafter")
+    return drafters.find((drafter) => assignedTo.includes(drafter)) || "";
+  if (type === "Engineer")
+    return engineers.find((engineer) => assignedTo.includes(engineer)) || "";
+  if (type === "MEP") return mep.find((mep) => assignedTo.includes(mep)) || "";
+  if (type === "Civil")
+    return civil.find((civil) => assignedTo.includes(civil)) || "";
+};
+
+export const getAssignedToBreakdown = (assignedTo, appData) => {
+  const { drafters, engineers, mep, civil } = appData || {};
+
+  const drafterTaskedTo =
+    drafters.find((drafter) => assignedTo.includes(drafter)) || "";
+  const engineerTaskedTo =
+    engineers.find((engineer) => assignedTo.includes(engineer)) || "";
+  const mepTaskedTo = mep.find((mep) => assignedTo.includes(mep)) || "";
+  const civilTaskedTo = civil.find((civil) => assignedTo.includes(civil)) || "";
+
+  return {
+    drafterTaskedTo,
+    engineerTaskedTo,
+    mepTaskedTo,
+    civilTaskedTo
+  };
+};

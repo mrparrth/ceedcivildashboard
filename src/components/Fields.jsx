@@ -18,7 +18,7 @@ const MultiSelectDropdown = forwardRef(
     const [isOpen, setIsOpen] = useState(false);
     const internalRef = useRef(null);
     const dropdownRef = ref || internalRef;
-
+    console.log(options);
     const handleOptionClick = (option) => {
       if (selectedOptions.includes(option)) {
         setSelectedOptions(selectedOptions.filter((item) => item !== option));

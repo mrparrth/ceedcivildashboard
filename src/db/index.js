@@ -66,8 +66,13 @@ async function handleDevEnvironment(functionName, data) {
     case "createFbExpense":
       await sleep(3000);
       return "fakeExpense";
-
+    case "createPayments":
+      await sleep(3000);
+      return null;
     case "updatePayment":
+      await sleep(3000);
+      return null;
+    case "updateProject":
       await sleep(3000);
       return null;
     case "createContract":

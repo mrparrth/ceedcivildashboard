@@ -3,40 +3,23 @@ import { SingleSelectDropdown, CheckBox } from "../Fields";
 import useData from "hooks/useData";
 import useAppData from "hooks/useAppData";
 import useAuth from "hooks/useAuth";
-
-const initialPayment = {
-  id: null,
-  assignee: "",
-  projectNumber: "",
-  projectName: "",
-  salesMan: "",
-  overallProjectStatus: "",
-  estimatedBudget: "",
-  actualCost: "",
-  paid: false,
-  datePaid: "",
-  revisionNeeded: false,
-  datePaid2: "",
-  revisionCost: "",
-  revisionsPaid: false,
-  notes: "",
-  totalCost: "",
-  expenseId: null
-};
+import { BLANK_PAYMENT } from "../../utils/constant";
 
 const NewPaymentModal = ({ closeModal }) => {
   const { createPayment, projects } = useData();
   const { appData } = useAppData();
   const { user } = useAuth();
 
-  const [payment, setPayment] = useState(initialPayment);
+  const isAdmin = user?.role?.toUpperCase() === "ADMIN";
+  const [payment, setPayment] = useState({
+    ...BLANK_PAYMENT,
+    assignee: isAdmin ? "" : user.name
+  });
+
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [suggestion, setSuggestion] = useState("");
   const projectNameRef = useRef(null);
-
-  const isAdmin = user?.role?.toUpperCase() === "ADMIN";
-  initialPayment.assignee = isAdmin ? "" : user.name;
 
   useEffect(() => {
     calculateTotal();

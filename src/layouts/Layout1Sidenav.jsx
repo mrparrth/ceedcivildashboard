@@ -31,15 +31,15 @@ const SidebarNavRoot = styled(Box)(({ theme, width, bg, image }) => ({
       width: "100%",
       maxWidth: "100%",
       "& .nav-bullet": { display: "block" },
-      "& .nav-bullet-text": { display: "none" },
-    },
-  },
+      "& .nav-bullet-text": { display: "none" }
+    }
+  }
 }));
 
 const NavListBox = styled(Box)({
   height: "100%",
   display: "flex",
-  flexDirection: "column",
+  flexDirection: "column"
 });
 const convertHexToRGB = (hex) => {
   // check if it's a rgba
@@ -80,7 +80,7 @@ const Layout1Sidenav = () => {
 
   const updateSidebarMode = (sidebarSettings) => {
     updateSettings({
-      layout1Settings: { leftSidebar: { ...sidebarSettings } },
+      layout1Settings: { leftSidebar: { ...sidebarSettings } }
     });
   };
 

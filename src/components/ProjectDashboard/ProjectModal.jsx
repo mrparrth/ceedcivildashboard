@@ -4,53 +4,12 @@ import { SingleSelectDropdown, MultiSelectDropdown, CheckBox } from "../Fields";
 import ConfirmationModal from "components/ConfirmationModal";
 import useData from "hooks/useData";
 import useappData from "hooks/useAppData";
-import { BLANK_PROJECT } from "../../db/defaults";
+import { BLANK_PROJECT } from "../../utils/constant";
+import { getAssignedToBreakdown } from "utils/utils";
 
 const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
   let { updateProject, createProject, projects } = useData();
   let { appData } = useappData();
-
-  const defaultProject = {
-    projectNumber: "",
-    invoiceNumber: "",
-    projectName: "",
-    salesMan: "",
-    description: "",
-    overallProjectStatus: "",
-    state: "",
-    priority: "",
-    projectFilesFolder: "",
-    projectNotes: "",
-    clientProjectNameAddress: "",
-    assignedTo: [], // Array
-    contractLink: "",
-    depositPaid: false, // Boolean
-    estimatedBudget: "",
-    actualCost: "",
-    initialProjectStatus: "",
-    drafterNeeded: false, // Boolean
-    drafterTaskedTo: "",
-    draftingStatus: "",
-    draftingDropboxLink: "",
-    draftingEstimatedDeliveryTime: "",
-    engineeringNeeded: false, // Boolean
-    engineerTaskedTo: "",
-    engineeringStatus: "",
-    engineeringDropboxLink: "",
-    engineeringEstimatedDeliveryTime: "",
-    mepNeeded: false, // Boolean
-    mepTaskedTo: "",
-    mepStatus: "",
-    mepDropboxLink: "",
-    mepEstimatedDeliveryTime: "",
-    civilNeeded: false, // Boolean
-    civilEngineeringTaskedTo: "",
-    civilEngineeringStatus: "",
-    civilDropboxLink: "",
-    civilEstimatedDeliveryTime: "",
-    jobType: "",
-    isArchived: false
-  };
 
   let initProject;
   if (projectKey)
@@ -75,7 +34,28 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
       return;
     }
 
-    setProject((prev) => ({ ...prev, [key]: value }));
+    if (key == "") return;
+
+    if (
+      [
+        "draftingEstimate",
+        "engineeringEstimate",
+        "mepEstimate",
+        "civilEstimate"
+      ].includes(key)
+    ) {
+      estimatedBudget = parseFloat(project.draftingEstimate) || 0;
+      estimatedBudget += parseFloat(project.engineeringEstimate) || 0;
+      estimatedBudget += parseFloat(project.mepEstimate) || 0;
+      estimatedBudget += parseFloat(project.civilEstimate) || 0;
+      estimatedBudget -= parseFloat(project[key]) || 0;
+      estimatedBudget += parseFloat(value) || 0;
+
+      setProject((prev) => ({ ...prev, [key]: value, estimatedBudget }));
+    } else {
+      setProject((prev) => ({ ...prev, [key]: value }));
+    }
+
     setErrors((prev) => ({ ...prev, [key]: "" }));
   };
 
@@ -165,7 +145,10 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
     {
       label: "Estimated Budget",
       key: "estimatedBudget",
-      ref: fieldRefs.estimatedBudget
+      ref: fieldRefs.estimatedBudget,
+      disabled: true,
+      placeholder:
+        "Autocalculated: Enter estimates For Engg, MEP, Drafting, Civil"
     },
     {
       label: "Initial Status",
@@ -214,9 +197,24 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
           {...commonProps}
           options={item.options}
           selectedOptions={project[item.key]}
-          setSelectedOptions={(newSelectedOptions) =>
-            handleInputChange(item.key, newSelectedOptions)
-          }
+          setSelectedOptions={(newSelectedOptions) => {
+            const {
+              drafterTaskedTo,
+              engineerTaskedTo,
+              mepTaskedTo,
+              civilTaskedTo
+            } = getAssignedToBreakdown(newSelectedOptions, appData);
+
+            handleInputChange(item.key, newSelectedOptions);
+            handleInputChange("drafterTaskedTo", drafterTaskedTo);
+            handleInputChange("drafterNeeded", drafterTaskedTo !== "");
+            handleInputChange("engineerTaskedTo", engineerTaskedTo);
+            handleInputChange("engineeringNeeded", engineerTaskedTo !== "");
+            handleInputChange("mepTaskedTo", mepTaskedTo);
+            handleInputChange("mepNeeded", mepTaskedTo !== "");
+            handleInputChange("civilTaskedTo", civilTaskedTo);
+            handleInputChange("civilNeeded", civilTaskedTo !== "");
+          }}
           viewOnly={viewOnly}
         />
       );
@@ -247,6 +245,7 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
         />
       );
     }
+
     return (
       <input
         {...commonProps}
@@ -255,7 +254,10 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
         value={project[item.key]}
         onChange={(e) => handleInputChange(item.key, e.target.value)}
         readOnly={item.isEditable === false || viewOnly}
-        className="form-input text-wrap"
+        className={`form-input text-wrap ${
+          item.disabled ? "disabled-input" : ""
+        }`}
+        disabled={item.disabled}
         style={{
           minWidth: item.key == "projectName" ? "25em" : ""
         }}
@@ -276,10 +278,6 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
       newErrors.description = "Description is required";
       firstErrorField = "description";
     }
-    // if (!project.estimatedBudget && !firstErrorField) {
-    //   newErrors.estimatedBudget = "Estimated Budget is required";
-    //   firstErrorField = "estimatedBudget";
-    // }
 
     setErrors(newErrors);
 
@@ -389,7 +387,22 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
             )}
           </form>
 
-          <div className="form-footer">
+          <div
+            className="form-footer"
+            style={{
+              display: "flex",
+              gap: "1rem",
+              justifyContent: "center"
+            }}>
+            <button
+              onClick={closeModal}
+              type="button"
+              className="submit-button"
+              style={{
+                backgroundColor: "#dc3545"
+              }}>
+              Cancel
+            </button>
             <button
               onClick={handleSubmit}
               disabled={loading || viewOnly}

@@ -8,6 +8,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
+import { getAssignedToBreakdown } from "utils/utils";
 
 import useAppData from "hooks/useAppData";
 import useData from "hooks/useData";
@@ -65,9 +66,27 @@ const ProjectRow = ({ project, viewRow, editRow }) => {
           <MultiSelectDropdown
             options={appData.assignTo}
             selectedOptions={project.assignedTo}
-            setSelectedOptions={(newSelectedOptions) =>
-              updateProject({ id: project.id, assignedTo: newSelectedOptions })
-            }
+            setSelectedOptions={(newSelectedOptions) => {
+              const {
+                drafterTaskedTo,
+                engineerTaskedTo,
+                mepTaskedTo,
+                civilTaskedTo
+              } = getAssignedToBreakdown(newSelectedOptions, appData);
+
+              updateProject({
+                id: project.id,
+                assignedTo: newSelectedOptions,
+                drafterTaskedTo,
+                engineerTaskedTo,
+                mepTaskedTo,
+                civilTaskedTo,
+                drafterNeeded: drafterTaskedTo !== "",
+                engineeringNeeded: engineerTaskedTo !== "",
+                mepNeeded: mepTaskedTo !== "",
+                civilNeeded: civilTaskedTo !== ""
+              });
+            }}
             positionRelative={true}
           />
         </td>

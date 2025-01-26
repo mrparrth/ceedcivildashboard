@@ -26,7 +26,7 @@ export const getNavigations = (appData) => [
     path: appData.contractTemplate,
     auth: authRoles.admin
   },
-  { type: "divider" },
+  { type: "divider", auth: authRoles.admin },
   { label: "External", type: "label" },
   {
     name: "Pole Barn Form",

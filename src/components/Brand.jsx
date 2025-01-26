@@ -13,6 +13,17 @@ const BrandRoot = styled(Box)(() => ({
   margin: "5px 0px"
 }));
 
+const LogoWrapper = styled(Box)(() => ({
+  width: "60px", // Set your desired width
+  height: "60px", // Set your desired height
+  display: "flex",
+  alignItems: "center",
+  "& > *": {
+    width: "100%",
+    height: "100%"
+  }
+}));
+
 const StyledSpan = styled(Span)(({ mode }) => ({
   fontSize: 18,
   marginLeft: ".5rem",
@@ -25,13 +36,14 @@ export default function Brand({ children }) {
   const { mode } = leftSidebar;
 
   return (
-    <BrandRoot>
-      <Box display="flex" alignItems="center">
+    <BrandRoot display="flex" alignItems="center">
+      <Box></Box>
+      <LogoWrapper>
         <Logo />
         {/* <StyledSpan mode={mode} className="sidenavHoverShow">
           Ceed Civil
         </StyledSpan> */}
-      </Box>
+      </LogoWrapper>
 
       <Box
         className="sidenavHoverShow"

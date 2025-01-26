@@ -33,13 +33,14 @@ export const INITIAL_FORM = {
   totalCost: "",
   ratePerHour: 225,
   documentUrl: "",
-  sendProjectEmail: true,
-  archFolder: true,
-  mepFolder: true,
-  structuralFolder: true
+  sendClientEmail: true,
+  drafterFolderNeeded: true,
+  enggFolderNeeded: true,
+  mepFolderNeeded: true,
+  civilFolderNeeded: true
 };
 
-export const TRIAL_FORM = {
+export const DEV_PREFILL_FORM = {
   sameAsClient: true,
   fbInvoiceId: "0001672",
   date: "2024-09-14",
@@ -93,10 +94,11 @@ export const TRIAL_FORM = {
       rate: 2
     }
   ],
-  sendProjectEmail: true,
-  archFolder: true,
-  mepFolder: true,
-  structuralFolder: true
+  sendClientEmail: true,
+  drafterFolderNeeded: true,
+  enggFolderNeeded: true,
+  mepFolderNeeded: true,
+  civilFolderNeeded: true
 };
 
 export const BLANK_PROJECT = {
@@ -119,31 +121,52 @@ export const BLANK_PROJECT = {
   actualCost: "",
   initialProjectStatus: "",
   drafterNeeded: false,
-  drafterTaskedTo: "",
+  drafterTaskedTo: [],
   draftingStatus: "",
   draftingDropboxLink: "",
   draftingEstimatedDeliveryTime: "",
   engineeringNeeded: false,
-  engineerTaskedTo: "",
+  engineerTaskedTo: [],
   engineeringStatus: "",
   engineeringDropboxLink: "",
   engineeringEstimatedDeliveryTime: "",
   mepNeeded: false,
-  mepTaskedTo: "",
+  mepTaskedTo: [],
   mepStatus: "",
   mepDropboxLink: "",
   mepEstimatedDeliveryTime: "",
   civilNeeded: false,
-  civilEngineeringTaskedTo: "",
-  civilEngineeringStatus: "",
+  civilTaskedTo: [],
+  civilStatus: "",
   civilDropboxLink: "",
   civilEstimatedDeliveryTime: "",
   jobType: "",
   isArchived: false,
   folderOptions: {
-    sendProjectEmail: true,
-    archFolder: true,
-    mepFolder: true,
-    structuralFolder: true
+    sendClientEmail: true,
+    drafter: true,
+    engg: true,
+    mep: true,
+    civil: true
   }
+};
+
+export const BLANK_PAYMENT = {
+  id: null,
+  assignee: "",
+  projectNumber: "",
+  projectName: "",
+  salesMan: "",
+  overallProjectStatus: "",
+  estimatedBudget: "",
+  actualCost: "",
+  paid: false,
+  datePaid: "",
+  revisionNeeded: false,
+  datePaid2: "",
+  revisionCost: "",
+  revisionsPaid: false,
+  notes: "",
+  totalCost: "",
+  expenseId: null
 };
