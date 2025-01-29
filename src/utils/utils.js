@@ -123,16 +123,17 @@ export const getAssigneeByType = (assignedTo, type, appData) => {
 export const getAssignedToBreakdown = (assignedTo, appData) => {
   const { drafters, engineers, mep, civil } = appData || {};
 
-  const drafterTaskedTo =
-    drafters.find((drafter) => assignedTo.includes(drafter)) || "";
-  const engineerTaskedTo =
-    engineers.find((engineer) => assignedTo.includes(engineer)) || "";
-  const mepTaskedTo = mep.find((mep) => assignedTo.includes(mep)) || "";
-  const civilTaskedTo = civil.find((civil) => assignedTo.includes(civil)) || "";
+  const draftingTaskedTo =
+    drafters.filter((drafter) => assignedTo.includes(drafter)) || [];
+  const engineeringTaskedTo =
+    engineers.filter((engineer) => assignedTo.includes(engineer)) || [];
+  const mepTaskedTo = mep.filter((mep) => assignedTo.includes(mep)) || [];
+  const civilTaskedTo =
+    civil.filter((civil) => assignedTo.includes(civil)) || [];
 
   return {
-    drafterTaskedTo,
-    engineerTaskedTo,
+    draftingTaskedTo,
+    engineeringTaskedTo,
     mepTaskedTo,
     civilTaskedTo
   };

@@ -14,25 +14,17 @@
     "start": "parcel ./src/index.html --dist-dir ./apps-script",
     "build": "parcel build ./src/index.html --dist-dir ./apps-script",
     "buildnpush": "npm run build && npm run gpush",
-    "dev": "vite",
-    "vbuild": "vite build",
-    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0"
   },
   "dependencies": {
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
     "@mui/icons-material": "^5.15.14",
     "@mui/material": "^5.15.14",
-    "@mui/x-date-pickers": "^7.19.0",
     "@parcel/resolver-glob": "^2.12.0",
-    "axios": "^1.7.2",
-    "bootstrap-icons": "^1.11.3",
     "date-fns": "^4.1.0",
     "lodash": "^4.17.21",
-    "prop-types": "^15.8.1",
     "react": "^18.3.1",
-    "react-datepicker": "^7.4.0",
     "react-dom": "^18.3.1",
     "react-icons": "^5.3.0",
     "react-perfect-scrollbar": "^1.5.8",
@@ -51,9 +43,8 @@
     "parcel-resolver-ts-base-url": "^1.3.1",
     "postcss": "^8.4.40",
     "postcss-custom-properties": "^14.0.1",
+    "postcss-import": "^16.1.0",
     "postcss-url": "^10.1.3",
-    "process": "^0.11.10",
-    "tailwindcss": "^3.4.7",
-    "vite": "^5.3.4"
+    "process": "^0.11.10"
   }
 }

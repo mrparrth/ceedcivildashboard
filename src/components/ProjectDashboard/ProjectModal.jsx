@@ -3,13 +3,14 @@ import { Drafter, Engineering, MEP, Civil } from "../ExpandableSections";
 import { SingleSelectDropdown, MultiSelectDropdown, CheckBox } from "../Fields";
 import ConfirmationModal from "components/ConfirmationModal";
 import useData from "hooks/useData";
-import useappData from "hooks/useAppData";
+import useAppData from "hooks/useAppData";
 import { BLANK_PROJECT } from "../../utils/constant";
 import { getAssignedToBreakdown } from "utils/utils";
+import URLInput from "components/UrlInput";
 
 const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
   let { updateProject, createProject, projects } = useData();
-  let { appData } = useappData();
+  let { appData } = useAppData();
 
   let initProject;
   if (projectKey)
@@ -33,7 +34,6 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
       setShowConfirmation(true);
       return;
     }
-
     if (key == "") return;
 
     if (
@@ -44,7 +44,7 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
         "civilEstimate"
       ].includes(key)
     ) {
-      estimatedBudget = parseFloat(project.draftingEstimate) || 0;
+      let estimatedBudget = parseFloat(project.draftingEstimate) || 0;
       estimatedBudget += parseFloat(project.engineeringEstimate) || 0;
       estimatedBudget += parseFloat(project.mepEstimate) || 0;
       estimatedBudget += parseFloat(project.civilEstimate) || 0;
@@ -134,7 +134,7 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
       isSingleSelect: true,
       options: appData.priority
     },
-    { label: "Project Files Folder", key: "projectFilesFolder" },
+    { label: "Project Files Folder", key: "projectFilesFolder", isUrl: true },
     { label: "Project Notes", key: "projectNotes", isTextarea: true },
     { label: "Contract Link", key: "contractLink" },
     {
@@ -169,79 +169,123 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
     }
   ];
 
-  const getInputElement = (item) => {
+  const getInputElement = (formField) => {
     const commonProps = {
-      id: item.key,
-      ref: item.ref,
-      className: `${item.baseClassName || ""} ${
-        errors[item.key] ? "error" : ""
+      id: formField.key,
+      ref: formField.ref,
+      className: `${formField.baseClassName || ""} ${
+        errors[formField.key] ? "error" : ""
       }`
     };
 
-    if (item.isSingleSelect) {
+    if (formField.isSingleSelect) {
       return (
         <SingleSelectDropdown
           {...commonProps}
-          options={item.options}
-          selectedOption={project[item.key]}
+          options={formField.options}
+          selectedOption={project[formField.key]}
           onChange={handleInputChange}
-          label={item.label}
+          label={formField.label}
           viewOnly={viewOnly}
         />
       );
     }
 
-    if (item.isMultiSelect) {
+    if (formField.isMultiSelect) {
       return (
         <MultiSelectDropdown
           {...commonProps}
-          options={item.options}
-          selectedOptions={project[item.key]}
+          options={formField.options}
+          selectedOptions={project[formField.key]}
           setSelectedOptions={(newSelectedOptions) => {
-            const {
-              drafterTaskedTo,
-              engineerTaskedTo,
-              mepTaskedTo,
-              civilTaskedTo
-            } = getAssignedToBreakdown(newSelectedOptions, appData);
+            if (formField.key == "assignedTo") {
+              const {
+                draftingTaskedTo,
+                engineeringTaskedTo,
+                mepTaskedTo,
+                civilTaskedTo
+              } = getAssignedToBreakdown(newSelectedOptions, appData);
 
-            handleInputChange(item.key, newSelectedOptions);
-            handleInputChange("drafterTaskedTo", drafterTaskedTo);
-            handleInputChange("drafterNeeded", drafterTaskedTo !== "");
-            handleInputChange("engineerTaskedTo", engineerTaskedTo);
-            handleInputChange("engineeringNeeded", engineerTaskedTo !== "");
-            handleInputChange("mepTaskedTo", mepTaskedTo);
-            handleInputChange("mepNeeded", mepTaskedTo !== "");
-            handleInputChange("civilTaskedTo", civilTaskedTo);
-            handleInputChange("civilNeeded", civilTaskedTo !== "");
+              handleInputChange(formField.key, newSelectedOptions);
+              handleInputChange("draftingTaskedTo", draftingTaskedTo);
+              handleInputChange("draftingNeeded", draftingTaskedTo !== "");
+              handleInputChange("engineeringTaskedTo", engineeringTaskedTo);
+              handleInputChange(
+                "engineeringNeeded",
+                engineeringTaskedTo !== ""
+              );
+              handleInputChange("mepTaskedTo", mepTaskedTo);
+              handleInputChange("mepNeeded", mepTaskedTo !== "");
+              handleInputChange("civilTaskedTo", civilTaskedTo);
+              handleInputChange("civilNeeded", civilTaskedTo !== "");
+            } else if (
+              [
+                "draftingTaskedTo",
+                "engineeringTaskedTo",
+                "mepTaskedTo",
+                "civilTaskedTo"
+              ].includes(formField.key)
+            ) {
+              let section = formField.key.replace("TaskedTo", "");
+              let neededField = section + "Needed";
+              handleInputChange(neededField, newSelectedOptions.length > 0);
+
+              let oldSelOptions = project[formField.key];
+              handleInputChange("assignedTo", [
+                ...project["assignedTo"].filter(
+                  (u) => !oldSelOptions.includes(u)
+                ),
+                ...newSelectedOptions
+              ]);
+            }
           }}
           viewOnly={viewOnly}
         />
       );
     }
 
-    if (item.isTextarea) {
+    if (formField.isTextarea) {
       return (
         <textarea
           {...commonProps}
-          id={item.key}
-          value={project[item.key]}
-          onChange={(e) => handleInputChange(item.key, e.target.value)}
+          id={formField.key}
+          value={project[formField.key]}
+          onChange={(e) => handleInputChange(formField.key, e.target.value)}
           className="form-textarea"
           disabled={viewOnly}
         />
       );
     }
 
-    if (item.isCheckbox) {
+    if (formField.isCheckbox) {
       return (
         <CheckBox
           {...commonProps}
-          id={item.key}
-          checked={project[item.key]}
-          onChange={(value) => handleInputChange(item.key, value)}
-          label={item.label}
+          id={formField.key}
+          checked={project[formField.key]}
+          onChange={(value) => handleInputChange(formField.key, value)}
+          label={formField.label}
           viewOnly={viewOnly}
+        />
+      );
+    }
+
+    if (formField.isUrl) {
+      return (
+        <URLInput
+          {...commonProps}
+          id={formField.key}
+          value={project[formField.key]}
+          onChange={(e) => handleInputChange(formField.key, e.target.value)}
+          readOnly={formField.isEditable === false || viewOnly}
+          className={`form-input text-wrap ${
+            formField.disabled ? "disabled-input" : ""
+          }`}
+          disabled={formField.disabled}
+          style={{
+            minWidth: formField.key == "projectName" ? "25em" : ""
+          }}
+          placeholder={formField.placeholder}
         />
       );
     }
@@ -249,19 +293,19 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
     return (
       <input
         {...commonProps}
-        id={item.key}
+        id={formField.key}
         type="text"
-        value={project[item.key]}
-        onChange={(e) => handleInputChange(item.key, e.target.value)}
-        readOnly={item.isEditable === false || viewOnly}
+        value={project[formField.key]}
+        onChange={(e) => handleInputChange(formField.key, e.target.value)}
+        readOnly={formField.isEditable === false || viewOnly}
         className={`form-input text-wrap ${
-          item.disabled ? "disabled-input" : ""
+          formField.disabled ? "disabled-input" : ""
         }`}
-        disabled={item.disabled}
+        disabled={formField.disabled}
         style={{
-          minWidth: item.key == "projectName" ? "25em" : ""
+          minWidth: formField.key == "projectName" ? "25em" : ""
         }}
-        placeholder={item.placeholder}
+        placeholder={formField.placeholder}
       />
     );
   };
@@ -303,15 +347,15 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
             {isNewProject ? "Create New Project" : "Project Details"}
           </h2>
           <form className="project-form">
-            {formFields.map((item) => (
-              <div key={item.key} className="form-row">
-                <label htmlFor={item.key} className="form-label">
-                  {item.label}
+            {formFields.map((formField) => (
+              <div key={formField.key} className="form-row">
+                <label htmlFor={formField.key} className="form-label">
+                  {formField.label}
                 </label>
                 <div className="form-field">
-                  {getInputElement(item)}
-                  {errors[item.key] && (
-                    <div className="error-message">{errors[item.key]}</div>
+                  {getInputElement(formField)}
+                  {errors[formField.key] && (
+                    <div className="error-message">{errors[formField.key]}</div>
                   )}
                 </div>
               </div>

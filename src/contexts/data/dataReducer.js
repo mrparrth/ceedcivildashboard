@@ -21,7 +21,18 @@ export const dataReducer = (state, action) => {
             ? { ...project, ...action.payload }
             : project
         ),
-        payments: [...action.newPayments, ...state.payments]
+        payments: [
+          ...action.newPayments,
+          ...state.payments.map((payment) => {
+            const updateInfo = action.updatedPayments?.find(
+              (update) => update.id === payment.id
+            );
+            if (updateInfo) {
+              return updateInfo;
+            }
+            return payment;
+          })
+        ]
       };
     case "ARCHIVE_PROJECTS":
       return {

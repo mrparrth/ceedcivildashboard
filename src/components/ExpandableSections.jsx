@@ -1,9 +1,16 @@
-import { CheckBox, SingleSelectDropdown } from "./Fields";
-import useappData from "hooks/useAppData";
+import { CheckBox, SingleSelectDropdown, MultiSelectDropdown } from "./Fields";
+import useAppData from "hooks/useAppData";
+import URLInput from "components/UrlInput";
 
 const FormGenerator = ({ data, setter, fields, bgcolor, viewOnly }) => {
-  const handleInputChange = (name, value) => {
-    setter(name, value);
+  const handleInputChange = (name, value, type) => {
+    console.log("Entered value ", value);
+    if (type === "number") {
+      const numValue = value === "" ? null : parseFloat(value);
+      setter(name, numValue);
+    } else {
+      setter(name, value);
+    }
   };
 
   return (
@@ -24,6 +31,22 @@ const FormGenerator = ({ data, setter, fields, bgcolor, viewOnly }) => {
                 label={label}
                 viewOnly={viewOnly}
               />
+            ) : type == "multiselect" ? (
+              <MultiSelectDropdown
+                options={options}
+                selectedOptions={data[name]}
+                setSelectedOptions={(newSelectedOptions) => {
+                  handleInputChange(name, newSelectedOptions);
+                  handleInputChange("assignedTo", [
+                    ...data.assignedTo.filter(
+                      (user) => !options.includes(user)
+                    ),
+                    ...newSelectedOptions
+                  ]);
+                }}
+                positionRelative={true}
+                className={"bg-white"}
+              />
             ) : type === "checkbox" ? (
               <CheckBox
                 id={name}
@@ -32,14 +55,23 @@ const FormGenerator = ({ data, setter, fields, bgcolor, viewOnly }) => {
                 label={label}
                 viewOnly={viewOnly}
               />
+            ) : type === "url" ? (
+              <URLInput
+                id={name}
+                value={data[name]}
+                onChange={(e) => handleInputChange(name, e.target.value)}
+                readOnly={viewOnly}
+                className={`form-input text-wrap`}
+              />
             ) : (
               <input
                 type={type}
                 name={name}
-                value={data[name] || ""}
-                onChange={(e) => handleInputChange(name, e.target.value)}
+                value={data[name] ?? ""}
+                onChange={(e) => handleInputChange(name, e.target.value, type)}
                 className="form-input"
                 disabled={viewOnly}
+                step={type === "number" ? "any" : undefined}
               />
             )}
           </div>
@@ -50,14 +82,14 @@ const FormGenerator = ({ data, setter, fields, bgcolor, viewOnly }) => {
 };
 
 const Drafter = ({ data, setter, viewOnly }) => {
-  const { drafters, draftingStatus } = useappData().appData || {};
+  const { drafters, draftingStatus } = useAppData().appData || {};
 
   const fields = [
-    { label: "Drafter Needed", name: "drafterNeeded", type: "checkbox" },
+    { label: "Drafter Needed", name: "draftingNeeded", type: "checkbox" },
     {
       label: "Drafter Tasked To",
-      name: "drafterTaskedTo",
-      type: "select",
+      name: "draftingTaskedTo",
+      type: "multiselect",
       options: drafters
     },
     {
@@ -71,7 +103,11 @@ const Drafter = ({ data, setter, viewOnly }) => {
       name: "draftingEstimate",
       type: "number"
     },
-    { label: "Drafting Dropbox Link", name: "draftingDropboxLink" },
+    {
+      label: "Drafting Dropbox Link",
+      name: "draftingDropboxLink",
+      type: "url"
+    },
     {
       label: "Drafting Estimated Delivery Time",
       name: "draftingEstimatedDeliveryTime",
@@ -91,7 +127,7 @@ const Drafter = ({ data, setter, viewOnly }) => {
 };
 
 const Engineering = ({ data, setter, viewOnly }) => {
-  const { engineers, draftingStatus } = useappData().appData || {};
+  const { engineers, draftingStatus } = useAppData().appData || {};
 
   const fields = [
     {
@@ -101,8 +137,8 @@ const Engineering = ({ data, setter, viewOnly }) => {
     },
     {
       label: "Engineer Tasked To",
-      name: "engineerTaskedTo",
-      type: "select",
+      name: "engineeringTaskedTo",
+      type: "multiselect",
       options: engineers
     },
     {
@@ -116,7 +152,11 @@ const Engineering = ({ data, setter, viewOnly }) => {
       name: "engineeringEstimate",
       type: "number"
     },
-    { label: "Engineering Dropbox Link", name: "engineeringDropboxLink" },
+    {
+      label: "Engineering Dropbox Link",
+      name: "engineeringDropboxLink",
+      type: "url"
+    },
     {
       label: "Engineering Estimated Delivery Time",
       name: "engineeringEstimatedDeliveryTime",
@@ -136,14 +176,14 @@ const Engineering = ({ data, setter, viewOnly }) => {
 };
 
 const MEP = ({ data, setter, viewOnly }) => {
-  const { mep, draftingStatus } = useappData().appData || {};
+  const { mep, draftingStatus } = useAppData().appData || {};
 
   const fields = [
     { label: "MEP Needed", name: "mepNeeded", type: "checkbox" },
     {
       label: "MEP Tasked To",
       name: "mepTaskedTo",
-      type: "select",
+      type: "multiselect",
       options: mep
     },
     {
@@ -157,7 +197,7 @@ const MEP = ({ data, setter, viewOnly }) => {
       name: "mepEstimate",
       type: "number"
     },
-    { label: "MEP Dropbox Link", name: "mepDropboxLink" },
+    { label: "MEP Dropbox Link", name: "mepDropboxLink", type: "url" },
     {
       label: "MEP Estimated Delivery Time",
       name: "mepEstimatedDeliveryTime",
@@ -177,14 +217,14 @@ const MEP = ({ data, setter, viewOnly }) => {
 };
 
 const Civil = ({ data, setter, viewOnly }) => {
-  const { civil, draftingStatus } = useappData().appData || {};
+  const { civil, draftingStatus } = useAppData().appData || {};
 
   const fields = [
     { label: "Civil Needed", name: "civilNeeded", type: "checkbox" },
     {
       label: "Civil Tasked To",
       name: "civilTaskedTo",
-      type: "select",
+      type: "multiselect",
       options: civil
     },
     {
@@ -198,7 +238,7 @@ const Civil = ({ data, setter, viewOnly }) => {
       name: "civilEstimate",
       type: "number"
     },
-    { label: "Civil Dropbox Link", name: "civilDropboxLink" },
+    { label: "Civil Dropbox Link", name: "civilDropboxLink", type: "url" },
     {
       label: "Civil Estimated Delivery Time",
       name: "civilEstimatedDeliveryTime",

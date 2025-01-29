@@ -1,30 +1,59 @@
 import { runScriptFunction } from "../../db/index";
 
+const findNewItemsInArray = (oldArray, newArray) =>
+  oldArray.filter((item) => !newArray.includes(item)) || [];
+
 export const createProject =
   (dispatch, addToQueue, user, addNotification) => (newProject) => {
+    const newPayments = [];
+
+    const processTask = (taskField, estimateField) => {
+      const assignees = newProject[taskField] || [];
+      const estimate = newProject[estimateField] || 0;
+
+      assignees.forEach((assignee) => {
+        const payment = createPaymentForAssignment(newProject, assignee, user);
+
+        // If there's an estimate, add it to the payment
+        if (estimate > 0) {
+          payment.estimatedBudget = estimate;
+        }
+
+        newPayments.push(payment);
+      });
+    };
+
+    // Process each type of task
+    processTask("draftingTaskedTo", "draftingEstimate");
+    processTask("engineeringTaskedTo", "engineeringEstimate");
+    processTask("mepTaskedTo", "mepEstimate");
+    processTask("civilTaskedTo", "civilEstimate");
+
     const projectWithDates = {
       ...newProject,
       id: crypto.randomUUID(),
       dateCreated: new Date().toISOString(),
       dateModified: new Date().toISOString(),
       createdBy: user?.name,
-      modifiedBy: user?.name
+      modifiedBy: user?.name,
+      payments: newPayments.map((payment) => ({
+        assignedTo: payment.assignee,
+        paymentId: payment.id
+      }))
     };
 
     addNotification({
       title: `Creating project ${projectWithDates.projectName}`
     });
+
     runScriptFunction("createProject", projectWithDates)
       .then((project) => {
         addNotification({ title: `Project ${project.projectNumber} created` });
-
-        const newPayments =
-          project.assignedTo?.map((assignee) =>
-            createPaymentForAssignment(project, assignee, user)
-          ) || [];
-
         dispatch({ type: "ADD_PROJECT", payload: project, newPayments });
-        if (newPayments.length > 0) addToQueue("createPayments", newPayments);
+
+        if (newPayments.length > 0) {
+          addToQueue("createPayments", newPayments);
+        }
       })
       .catch((e) => {
         addNotification({
@@ -35,22 +64,91 @@ export const createProject =
   };
 
 export const updateProject =
-  (dispatch, projects, addToQueue) => (updatedProject) => {
+  (dispatch, projects, payments, addToQueue, user) => (updatedProject) => {
+    //if there is a new assignee, creates a new payment
+    //if payment already exists, then updates the estimate if there is a new estimate
     const originalProject =
       projects.find((p) => p.id === updatedProject.id) || {};
-    const newAssignees =
-      updatedProject.assignedTo?.filter(
-        (assignee) => !originalProject.assignedTo?.includes(assignee)
-      ) || [];
-    const newPayments = newAssignees.map((assignee) =>
-      createPaymentForAssignment(originalProject, assignee, {
-        name: updatedProject.modifiedBy
-      })
-    );
 
-    dispatch({ type: "UPDATE_PROJECT", payload: updatedProject, newPayments });
+    const newPayments = [];
+    const updatedPayments = [];
+
+    const processTask = (taskField, estimateField) => {
+      const newAssignees = findNewItemsInArray(
+        updatedProject[taskField],
+        originalProject[taskField]
+      );
+
+      newAssignees.forEach((assignee) => {
+        const hasExistingPayment = originalProject.payments?.some(
+          (exp) => exp.assignedTo === assignee
+        );
+
+        if (!hasExistingPayment) {
+          const payment = createPaymentForAssignment(
+            originalProject,
+            assignee,
+            user
+          );
+
+          payment.estimatedBudget = updateProject[estimateField];
+
+          newPayments.push(payment);
+        }
+      });
+
+      const oldEstimate = originalProject[estimateField] || 0;
+      const newEstimate = updatedProject[estimateField] || 0;
+
+      if (oldEstimate <= 0) {
+        originalProject.payments?.forEach((originalProjectPayment) => {
+          if (
+            updatedProject[taskField]?.includes(
+              originalProjectPayment.assignedTo
+            )
+          ) {
+            const existingPaymentInfo = payments.find(
+              (payment) => payment.id == originalProjectPayment.paymentId
+            );
+
+            updatedPayments.push({
+              ...existingPaymentInfo,
+              estimatedBudget: newEstimate
+            });
+          }
+        });
+      }
+    };
+
+    processTask("draftingTaskedTo", "draftingEstimate");
+    processTask("engineeringTaskedTo", "engineeringEstimate");
+    processTask("mepTaskedTo", "mepEstimate");
+    processTask("civilTaskedTo", "civilEstimate");
+
+    const updatedProjectWithPayments = {
+      ...updatedProject,
+      payments: [
+        ...originalProject.payments,
+        ...newPayments.map((payment) => ({
+          assignedTo: payment.assignee,
+          paymentId: payment.id
+        }))
+      ]
+    };
+
+    dispatch({
+      type: "UPDATE_PROJECT",
+      payload: updatedProjectWithPayments,
+      newPayments,
+      updatedPayments
+    });
+
     addToQueue("updateProject", updatedProject);
     if (newPayments.length > 0) addToQueue("createPayments", newPayments);
+    if (updatedPayments.length > 0)
+      updatedPayments.forEach((updatedPayment) =>
+        addToQueue("updatePayment", updatedPayment)
+      );
   };
 
 export const deleteProject = (dispatch, addToQueue) => (projectId) => {

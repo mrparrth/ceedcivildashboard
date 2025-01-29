@@ -68,8 +68,8 @@ const ProjectRow = ({ project, viewRow, editRow }) => {
             selectedOptions={project.assignedTo}
             setSelectedOptions={(newSelectedOptions) => {
               const {
-                drafterTaskedTo,
-                engineerTaskedTo,
+                draftingTaskedTo,
+                engineeringTaskedTo,
                 mepTaskedTo,
                 civilTaskedTo
               } = getAssignedToBreakdown(newSelectedOptions, appData);
@@ -77,12 +77,12 @@ const ProjectRow = ({ project, viewRow, editRow }) => {
               updateProject({
                 id: project.id,
                 assignedTo: newSelectedOptions,
-                drafterTaskedTo,
-                engineerTaskedTo,
+                draftingTaskedTo,
+                engineeringTaskedTo,
                 mepTaskedTo,
                 civilTaskedTo,
-                drafterNeeded: drafterTaskedTo !== "",
-                engineeringNeeded: engineerTaskedTo !== "",
+                draftingNeeded: draftingTaskedTo !== "",
+                engineeringNeeded: engineeringTaskedTo !== "",
                 mepNeeded: mepTaskedTo !== "",
                 civilNeeded: civilTaskedTo !== ""
               });

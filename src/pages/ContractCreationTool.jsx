@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import useContractMetadata from "hooks/useContractMetadata";
 import { MultiSelectDropdown } from "components/Fields";
-import ScopeSelectorModal from "../components/ScopeSelectorModal";
+import ScopeSelectorModal from "components/ScopeSelectorModal";
 import { runScriptFunction } from "../db";
 import {
   Button,
@@ -21,17 +21,16 @@ import {
 } from "@mui/icons-material";
 
 import useData from "hooks/useData";
-import useappData from "hooks/useAppData";
+import useAppData from "hooks/useAppData";
 import { BLANK_PROJECT, DEV_PREFILL_FORM, INITIAL_FORM } from "utils/constant";
-import { Civil } from "components/ExpandableSections";
 
 const CEEDCivilForm = () => {
   let { isLoading: isDataLoading, createProject } = useData();
-  let { appData } = useappData();
+  let { appData } = useAppData();
   let { contractMetadata, isLoading: isContractDataLoading } =
     useContractMetadata();
 
-  const [formData, setFormData] = useState(INITIAL_FORM);
+  const [formData, setFormData] = useState(DEV_PREFILL_FORM);
   const [loading, setLoading] = useState(false);
   const [isScopeModalOpen, setIsScopeModalOpen] = useState(false);
   const [modalState, setModalState] = useState({ isOpen: false, content: {} });
@@ -76,6 +75,13 @@ const CEEDCivilForm = () => {
       setFormData((prevData) => ({ ...prevData, ...mappedClientData }));
     }
   }, [formData.favClient]);
+
+  const handleSectionAssigneeChange = useCallback((updatedValues) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      ...updatedValues
+    }));
+  }, []);
 
   const handleInputChange = useCallback((e) => {
     const { name, value, type, checked } = e.target;
@@ -225,6 +231,23 @@ const CEEDCivilForm = () => {
 
       try {
         let newProject = await runScriptFunction("createContract", formData);
+        const {
+          draftingTaskedTo,
+          engineeringTaskedTo,
+          mepTaskedTo,
+          civilTaskedTo
+        } = formData;
+        newProject.draftingTaskedTo = draftingTaskedTo;
+        newProject.engineeringTaskedTo = engineeringTaskedTo;
+        newProject.mepTaskedTo = mepTaskedTo;
+        newProject.civilTaskedTo = civilTaskedTo;
+        newProject.assignedTo = [
+          ...draftingTaskedTo,
+          ...engineeringTaskedTo,
+          ...mepTaskedTo,
+          ...civilTaskedTo
+        ];
+
         setFormData((prevData) => ({
           ...prevData,
           showDocumentLink: true,
@@ -277,7 +300,7 @@ const CEEDCivilForm = () => {
 
     if (confirmed) {
       const today = new Date().toISOString().split("T")[0];
-      setFormData((prev) => ({ ...INITIAL_FORM, date: today }));
+      setFormData((prev) => ({ ...DEV_PREFILL_FORM, date: today }));
     }
   }, [
     formData.projectNumber,
@@ -299,6 +322,37 @@ const CEEDCivilForm = () => {
   const handleOpenScopeModal = () => {
     setIsScopeModalOpen(true);
   };
+
+  const sectionFields = [
+    {
+      label: "Arch",
+      checkboxId: "drafterFolderNeeded",
+      options: appData.drafters,
+      taskedTo: "draftingTaskedTo",
+      needed: "draftingNeeded"
+    },
+    {
+      label: "Structural",
+      checkboxId: "enggFolderNeeded",
+      options: appData.engineers || [],
+      taskedTo: "engineeringTaskedTo",
+      needed: "engineerNeeded"
+    },
+    {
+      label: "MEP",
+      checkboxId: "mepFolderNeeded",
+      options: appData.mep || [],
+      taskedTo: "mepTaskedTo",
+      needed: "mepNeeded"
+    },
+    {
+      label: "Civil",
+      checkboxId: "civilFolderNeeded",
+      options: appData.civil || [],
+      taskedTo: "civilTaskedTo",
+      needed: "civilNeeded"
+    }
+  ];
 
   return isDataLoading || isContractDataLoading ? (
     <>
@@ -671,12 +725,13 @@ const CEEDCivilForm = () => {
             </div>
 
             <hr className="my-4" />
+
             <div className="mb-4">
               <label className="form-label fw-bold mb-3">
                 Folder Creation Options
               </label>
 
-              <div className="form-check mb-1">
+              <div className="form-check mb-3">
                 <input
                   type="checkbox"
                   className="form-check-input"
@@ -698,118 +753,54 @@ const CEEDCivilForm = () => {
                 </label>
               </div>
 
-              <div className="row g-4 mt-1">
-                <div className="col-md-3">
-                  <div className="form-check d-flex align-items-center">
-                    <label
-                      className="form-check-label"
-                      style={{ fontSize: "1.1rem" }}
-                      htmlFor="drafterFolderNeeded">
-                      Arch
-                    </label>
-                    <input
-                      type="checkbox"
-                      className="form-check-input"
-                      style={{
-                        transform: "scale(1.5)",
-                        marginRight: "12px",
-                        marginLeft: "4px"
-                      }}
-                      id="drafterFolderNeeded"
-                      name="drafterFolderNeeded"
-                      checked={formData.drafterFolderNeeded}
-                      onChange={handleInputChange}
-                    />
-                    <MultiSelectDropdown
-                      options={appData.drafters}
-                      selectedOptions={[]}
-                      setSelectedOptions={(newSelectedOptions) => {
-                        handleInputChange(
-                          "drafterTaskedTo",
-                          newSelectedOptions
-                        );
-                        handleInputChange(
-                          "drafterNeeded",
-                          drafterTaskedTo !== ""
-                        );
-                      }}
-                    />
-                  </div>
+              <div className="row mb-2">
+                <div className="col-md-2">
+                  <div className="text-center fw-bold">Folder/Section</div>
                 </div>
-
                 <div className="col-md-3">
-                  <div className="form-check d-flex align-items-center">
-                    <label
-                      className="form-check-label"
-                      style={{ fontSize: "1.1rem" }}
-                      htmlFor="enggFolderNeeded">
-                      Structural
-                    </label>
-                    <input
-                      type="checkbox"
-                      className="form-check-input"
-                      style={{
-                        transform: "scale(1.5)",
-                        marginRight: "12px",
-                        marginLeft: "2px"
-                      }}
-                      id="enggFolderNeeded"
-                      name="enggFolderNeeded"
-                      checked={formData.enggFolderNeeded}
-                      onChange={handleInputChange}
-                    />
-                  </div>
+                  <div className="text-center fw-bold">Create Folder</div>
                 </div>
-
-                <div className="col-md-3">
-                  <div className="form-check d-flex align-items-center">
-                    <input
-                      type="checkbox"
-                      className="form-check-input"
-                      style={{
-                        transform: "scale(1.5)",
-                        marginRight: "12px",
-                        marginLeft: "4px"
-                      }}
-                      id="mepFolderNeeded"
-                      name="mepFolderNeeded"
-                      checked={formData.mepFolderNeeded}
-                      onChange={handleInputChange}
-                    />
-                    <label
-                      className="form-check-label"
-                      style={{ fontSize: "1.1rem" }}
-                      htmlFor="mepFolderNeeded">
-                      MEP
-                    </label>
-                  </div>
-                </div>
-
-                <div className="col-md-3">
-                  <div className="form-check d-flex align-items-center">
-                    <input
-                      type="checkbox"
-                      className="form-check-input"
-                      style={{
-                        transform: "scale(1.5)",
-                        marginRight: "12px",
-                        marginLeft: "4px"
-                      }}
-                      id="civilFolderNeeded"
-                      name="civilFolderNeeded"
-                      checked={formData.civilFolderNeeded}
-                      onChange={handleInputChange}
-                    />
-                    <label
-                      className="form-check-label"
-                      style={{ fontSize: "1.1rem" }}
-                      htmlFor="civilFolderNeeded">
-                      CIVIL
-                    </label>
-                  </div>
+                <div className="col-md-4">
+                  <div className="text-center fw-bold">Assign To</div>
                 </div>
               </div>
+
+              {sectionFields.map((item) => (
+                <div
+                  className="row mb-2 d-flex align-items-center"
+                  key={item.checkboxId}>
+                  <div className="col-md-2">
+                    <div className="text-center">{item.label}</div>
+                  </div>
+                  <div className="col-md-3 text-center">
+                    <input
+                      type="checkbox"
+                      className="form-check-input"
+                      style={{ transform: "scale(1.5)" }}
+                      id={item.checkboxId}
+                      name={item.checkboxId}
+                      checked={formData[item.checkboxId]}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  <div className="col-md-4">
+                    <MultiSelectDropdown
+                      options={item.options}
+                      selectedOptions={formData[item.taskedTo] || []}
+                      setSelectedOptions={(newSelectedOptions) => {
+                        let updates = {
+                          [item.needed]: !!newSelectedOptions.length,
+                          [item.taskedTo]: newSelectedOptions
+                        };
+
+                        handleSectionAssigneeChange(updates);
+                      }}
+                    />
+                  </div>
+                </div>
+              ))}
             </div>
+
             <hr className="my-4" />
             <button
               type="button"

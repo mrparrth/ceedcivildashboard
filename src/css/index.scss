@@ -33,11 +33,6 @@ input[type="number"]::-webkit-outer-spin-button {
   margin: 0;
 }
 
-/* Remove spinner for Firefox */
-input[type="number"] {
-  -moz-appearance: textfield;
-}
-
 h1,
 h2,
 h3,
@@ -520,7 +515,7 @@ table td .info p {
 }
 .modal-overlay {
   position: fixed;
-  inset: 60px 0 0 0;
+  inset: 66px 0 0 0;
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
@@ -531,7 +526,7 @@ table td .info p {
   background-color: #f8f9fa;
   padding: 20px;
   border-radius: 12px;
-  max-width: 900px;
+  max-width: 65%;
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
@@ -554,7 +549,7 @@ table td .info p {
 }
 .modal-title {
   margin-top: 0;
-  margin-bottom: 20px;
+  margin-bottom: 5px;
   font-size: 28px;
   color: #343a40;
   text-align: center;
@@ -562,9 +557,9 @@ table td .info p {
 }
 .project-form {
   display: grid;
-  gap: 5px;
+  gap: 3px;
   background-color: #ffffff;
-  padding: 30px;
+  padding: 20px 25px;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
@@ -587,11 +582,12 @@ table td .info p {
 .form-textarea,
 .dropdown-toggle {
   width: 100%;
-  padding: 12px 16px;
+  padding: 8px 16px;
   border: 1px solid #ced4da;
   border-radius: 6px;
   font-size: 16px;
   transition: border-color 0.3s, box-shadow 0.3s;
+  background-color: #fff;
 }
 .form-input:focus,
 .form-select:focus,
@@ -602,8 +598,9 @@ table td .info p {
   box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
 }
 .form-textarea {
-  min-height: 120px;
+  min-height: 90px;
   resize: vertical;
+  field-sizing: normal;
 }
 .dropdown {
   position: relative;
@@ -713,7 +710,8 @@ table td .info p {
 .multi-select-dropdown {
   border: 1px solid #ccc;
   border-radius: 8px;
-  padding: 12px 16px;
+  padding: 8px 16px;
+  min-width: 230px;
   position: relative;
   cursor: pointer;
   .dropdown-header {
@@ -721,6 +719,7 @@ table td .info p {
     justify-content: space-between;
     align-items: center;
     font-size: 16px;
+    text-wrap: auto;
   }
   .dropdown-arrow {
     font-size: 14px;
@@ -738,7 +737,7 @@ table td .info p {
     left: 0; /* Add this line */
     top: 100%; /* Add this line */
     li {
-      padding: 8px 10px;
+      padding: 8px 16px;
       list-style: none;
       display: flex;
       align-items: center;
@@ -891,7 +890,7 @@ table td .info p {
   display: flex;
   align-items: center;
   pointer-events: none;
-  padding: 12px 16px; /* Adjust this to match your input padding */
+  padding: 8px 10px; /* Adjust this to match your input padding */
   font-family: inherit; /* Ensure the font matches your input */
   font-size: inherit;
   line-height: inherit;
@@ -908,7 +907,6 @@ table td .info p {
 
 .form-input {
   width: 100%;
-  background: transparent;
   position: relative;
   z-index: 1;
 }

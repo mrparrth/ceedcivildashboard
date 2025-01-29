@@ -1,14 +1,7 @@
 import React, { useState, useEffect } from "react";
 import useAuth from "hooks/useAuth";
 import { useNavigate, useLocation } from "react-router-dom";
-import {
-  Box,
-  TextField,
-  Button,
-  Typography,
-  InputAdornment,
-  Grid
-} from "@mui/material";
+import { Box, Button, Typography, InputAdornment, Grid } from "@mui/material";
 import { styled } from "@mui/system";
 import EmailIcon from "@mui/icons-material/Email";
 import LockIcon from "@mui/icons-material/Lock";

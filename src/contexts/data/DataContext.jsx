@@ -86,7 +86,13 @@ export default function DataProvider({ children }) {
     refreshData,
     toggleProjectSelection: toggleProjectSelection(dispatch),
     createProject: createProject(dispatch, addToQueue, user, addNotification),
-    updateProject: updateProject(dispatch, state.projects, addToQueue),
+    updateProject: updateProject(
+      dispatch,
+      state.projects,
+      state.payments,
+      addToQueue,
+      user
+    ),
     deleteProject: deleteProject(dispatch, addToQueue),
     archiveProjects: archiveProjects(dispatch, addToQueue),
     unarchiveProjects: unarchiveProjects(dispatch, addToQueue),

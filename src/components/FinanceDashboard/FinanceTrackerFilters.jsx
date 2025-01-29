@@ -9,10 +9,10 @@ import {
   useTheme,
   useMediaQuery
 } from "@mui/material";
-import useappData from "hooks/useAppData";
+import useAppData from "hooks/useAppData";
 
 const FinanceTrackerFilters = ({ filters, onFilterChange, onResetFilters }) => {
-  let { appData } = useappData();
+  let { appData } = useAppData();
 
   return (
     <Paper elevation={3}>

@@ -18,7 +18,7 @@ const MultiSelectDropdown = forwardRef(
     const [isOpen, setIsOpen] = useState(false);
     const internalRef = useRef(null);
     const dropdownRef = ref || internalRef;
-    console.log(options);
+
     const handleOptionClick = (option) => {
       if (selectedOptions.includes(option)) {
         setSelectedOptions(selectedOptions.filter((item) => item !== option));
@@ -29,7 +29,11 @@ const MultiSelectDropdown = forwardRef(
 
     const isSelected = (option) => selectedOptions.includes(option);
 
-    const handleDropdownToggle = () => setIsOpen(!viewOnly && !isOpen);
+    const handleDropdownToggle = (e) => {
+      if (!e.target.closest(".dropdown-list")) {
+        setIsOpen(!viewOnly && !isOpen);
+      }
+    };
 
     const handleOutsideClick = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -62,11 +66,14 @@ const MultiSelectDropdown = forwardRef(
               positionRelative ? "position-relative" : "position-absolute"
             }`}>
             {options.map((option, index) => (
-              <li key={index} onClick={() => handleOptionClick(option)}>
+              <li key={index} onClick={(e) => handleOptionClick(option)}>
                 <input
                   type="checkbox"
                   checked={isSelected(option)}
-                  onChange={() => handleOptionClick(option)}
+                  onChange={(e) => {
+                    e.stopPropagation();
+                    handleOptionClick(option);
+                  }}
                   className="me-2"
                 />
                 {option}
