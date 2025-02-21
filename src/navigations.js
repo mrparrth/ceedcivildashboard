@@ -39,6 +39,19 @@ export const getNavigations = (appData) => [
     icon: "launch",
     type: "extLink",
     path: "https://script.google.com/macros/s/AKfycbx4Gx__TTGsrecDH2O8567811P72n942pRPlLrYbbMXK3Ng7HXzqKdqenUxdGsb6tOGGg/exec"
+  },
+  {
+    name: "New Request/ Bug Report",
+    icon: "launch",
+    type: "extLink",
+    path: "https://forms.blue.cc/f/jj548m56r5o5iy0c73j8haay"
+  },
+  {
+    name: "Backend Google Sheet",
+    icon: "launch",
+    type: "extLink",
+    path: "https://docs.google.com/spreadsheets/d/1URKG0G1KP9YqlR6DX4kyQ18Jgd1yIRDdGmPdzcTjWpc/edit?gid=1757567131#gid=1757567131",
+    auth: authRoles.admin
   }
 ];
 

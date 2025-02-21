@@ -5,7 +5,7 @@ let cachedContractMetadata = null;
 
 export default function useContractMetadata() {
   const [contractMetadata, setContractMetadata] = useState(
-    cachedContractMetadata
+    cachedContractMetadata || {}
   );
   const [isLoading, setIsLoading] = useState(!cachedContractMetadata);
   const [error, setError] = useState(null);

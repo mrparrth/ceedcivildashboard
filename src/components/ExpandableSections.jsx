@@ -4,7 +4,6 @@ import URLInput from "components/UrlInput";
 
 const FormGenerator = ({ data, setter, fields, bgcolor, viewOnly }) => {
   const handleInputChange = (name, value, type) => {
-    console.log("Entered value ", value);
     if (type === "number") {
       const numValue = value === "" ? null : parseFloat(value);
       setter(name, numValue);
@@ -46,6 +45,7 @@ const FormGenerator = ({ data, setter, fields, bgcolor, viewOnly }) => {
                 }}
                 positionRelative={true}
                 className={"bg-white"}
+                viewOnly={viewOnly}
               />
             ) : type === "checkbox" ? (
               <CheckBox
