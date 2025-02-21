@@ -22,6 +22,7 @@ import {
 
 import useData from "hooks/useData";
 import useAppData from "hooks/useAppData";
+import useContractMetadata from "hooks/useContractMetadata";
 import { BLANK_PROJECT, DEV_PREFILL_FORM, INITIAL_FORM } from "utils/constant";
 
 const CEEDCivilForm = () => {
@@ -30,10 +31,16 @@ const CEEDCivilForm = () => {
   let { contractMetadata, isLoading: isContractDataLoading } =
     useContractMetadata();
 
-  const [formData, setFormData] = useState(DEV_PREFILL_FORM);
+  const [formData, setFormData] = useState(INITIAL_FORM);
+  const [isCreatingFreshbooks, setIsCreatingFreshbooks] = useState(false);
+  const [isCreatingContract, setIsCreatingContract] = useState(false);
+
   const [loading, setLoading] = useState(false);
+
   const [isScopeModalOpen, setIsScopeModalOpen] = useState(false);
   const [modalState, setModalState] = useState({ isOpen: false, content: {} });
+  const [projectScopes, setProjectScopes] = useState([]);
+  const [allScopes, setAllScopes] = useState(contractMetadata.scopes);
 
   useEffect(() => {
     const today = new Date().toISOString().split("T")[0];
@@ -48,6 +55,14 @@ const CEEDCivilForm = () => {
         siteCity: prevData.clientCity,
         siteState: prevData.clientState,
         siteZip: prevData.clientZip
+      }));
+    } else {
+      setFormData((prevData) => ({
+        ...prevData,
+        siteStreet: "",
+        siteCity: "",
+        siteState: "",
+        siteZip: ""
       }));
     }
   }, [
@@ -121,7 +136,7 @@ const CEEDCivilForm = () => {
   );
 
   const createClientInvoiceProject = useCallback(async () => {
-    setLoading(true);
+    setIsCreatingFreshbooks(true);
     try {
       // Initial checks
       if (!formData.projectName) {
@@ -203,14 +218,16 @@ const CEEDCivilForm = () => {
       console.error(error);
       await showDialog("Error", error.message, "error");
     } finally {
-      setLoading(false);
+      setIsCreatingFreshbooks(false);
     }
   }, [formData, showDialog, setFormData]);
 
   const handleSubmit = useCallback(
     async (e) => {
+      console.log(formData);
+
       e.preventDefault();
-      setLoading(true);
+      setIsCreatingContract(true);
 
       let error;
       if (!formData.fbInvoiceId || !formData.fbProjectId) {
@@ -224,7 +241,7 @@ const CEEDCivilForm = () => {
           "confirm"
         );
         if (!confirmed) {
-          setLoading(false);
+          setIsCreatingContract(false);
           return;
         }
       }
@@ -273,7 +290,7 @@ const CEEDCivilForm = () => {
         console.error(error);
         await showDialog("Error", error.message, "error");
       } finally {
-        setLoading(false);
+        setIsCreatingContract(false);
       }
     },
     [formData, showDialog, setFormData]
@@ -300,7 +317,10 @@ const CEEDCivilForm = () => {
 
     if (confirmed) {
       const today = new Date().toISOString().split("T")[0];
-      setFormData((prev) => ({ ...DEV_PREFILL_FORM, date: today }));
+
+      setFormData((prev) => ({ ...INITIAL_FORM, date: today }));
+      setProjectScopes([]);
+      setAllScopes(allScopes.map((scope) => ({ ...scope, selected: false })));
     }
   }, [
     formData.projectNumber,
@@ -517,19 +537,19 @@ const CEEDCivilForm = () => {
                 />
               </div>
               <div className="col-md-6">
-                <label htmlFor="salesman" className="form-label">
+                <label htmlFor="salesMan" className="form-label">
                   Sales Man
                 </label>
                 <select
                   className="form-select"
-                  id="salesman"
-                  name="salesman"
-                  value={formData.salesman}
+                  id="salesMan"
+                  name="salesMan"
+                  value={formData.salesMan}
                   onChange={handleInputChange}>
                   <option value="">Select the sales person</option>
-                  {appData.salesmen.map((salesman) => (
-                    <option value={salesman} key={salesman}>
-                      {salesman}
+                  {appData.salesmen.map((salesMan) => (
+                    <option value={salesMan} key={salesMan}>
+                      {salesMan}
                     </option>
                   ))}
                 </select>
@@ -546,6 +566,9 @@ const CEEDCivilForm = () => {
                 name="sameAsClient"
                 checked={formData.sameAsClient}
                 onChange={handleInputChange}
+                style={{
+                  transform: "scale(1.5)"
+                }}
               />
               <label className="form-check-label" htmlFor="sameAsClient">
                 Same as client
@@ -805,8 +828,9 @@ const CEEDCivilForm = () => {
             <button
               type="button"
               className="btn btn-primary w-100 mb-3  py-2"
+              disabled={isCreatingContract}
               onClick={createClientInvoiceProject}>
-              {loading ? (
+              {isCreatingFreshbooks ? (
                 <CircularProgress size={24} color="inherit" />
               ) : (
                 <>
@@ -834,8 +858,11 @@ const CEEDCivilForm = () => {
                 </button>
               </div>
               <div className="col-md-4">
-                <button type="submit" className="btn btn-success w-100 py-2">
-                  {loading ? (
+                <button
+                  type="submit"
+                  className="btn btn-success w-100 py-2"
+                  disabled={isCreatingFreshbooks}>
+                  {isCreatingContract ? (
                     <CircularProgress size={24} color="inherit" />
                   ) : (
                     <>
@@ -915,6 +942,10 @@ const CEEDCivilForm = () => {
               onClose={() => setIsScopeModalOpen(false)}
               formData={formData}
               setFormData={setFormData}
+              allScopes={allScopes}
+              setAllScopes={setAllScopes}
+              projectScopes={projectScopes}
+              setProjectScopes={setProjectScopes}
             />
           </form>
         </div>

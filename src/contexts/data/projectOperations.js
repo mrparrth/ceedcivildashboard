@@ -1,10 +1,11 @@
 import { runScriptFunction } from "../../db/index";
 
 const findNewItemsInArray = (oldArray, newArray) =>
-  oldArray.filter((item) => !newArray.includes(item)) || [];
+  (newArray || []).filter((item) => !(oldArray || []).includes(item)) || [];
 
 export const createProject =
   (dispatch, addToQueue, user, addNotification) => (newProject) => {
+    console.log("newProject", newProject);
     const newPayments = [];
 
     const processTask = (taskField, estimateField) => {
@@ -46,21 +47,23 @@ export const createProject =
       title: `Creating project ${projectWithDates.projectName}`
     });
 
-    runScriptFunction("createProject", projectWithDates)
-      .then((project) => {
+    addToQueue("createProject", projectWithDates, {
+      immediate: true, // This will bypass debounce
+      onSuccess: (project) => {
         addNotification({ title: `Project ${project.projectNumber} created` });
         dispatch({ type: "ADD_PROJECT", payload: project, newPayments });
 
         if (newPayments.length > 0) {
           addToQueue("createPayments", newPayments);
         }
-      })
-      .catch((e) => {
+      },
+      onError: (error) => {
         addNotification({
           title: `Unfortunately failed to create ${newProject.projectName}`,
           type: "alert"
         });
-      });
+      }
+    });
   };
 
 export const updateProject =
@@ -70,16 +73,24 @@ export const updateProject =
     const originalProject =
       projects.find((p) => p.id === updatedProject.id) || {};
 
+    const newlyAddedUsers = findNewItemsInArray(
+      originalProject.assignedTo,
+      updatedProject.assignedTo
+    );
+
+    console.log("newlyAddedUsers", newlyAddedUsers);
+
     const newPayments = [];
     const updatedPayments = [];
 
     const processTask = (taskField, estimateField) => {
       const newAssignees = findNewItemsInArray(
-        updatedProject[taskField],
-        originalProject[taskField]
+        originalProject[taskField],
+        updatedProject[taskField]
       );
 
       newAssignees.forEach((assignee) => {
+        if (!newlyAddedUsers.includes(assignee)) return;
         const hasExistingPayment = originalProject.payments?.some(
           (exp) => exp.assignedTo === assignee
         );
@@ -100,7 +111,7 @@ export const updateProject =
       const oldEstimate = originalProject[estimateField] || 0;
       const newEstimate = updatedProject[estimateField] || 0;
 
-      if (oldEstimate <= 0) {
+      if (oldEstimate !== newEstimate) {
         originalProject.payments?.forEach((originalProjectPayment) => {
           if (
             updatedProject[taskField]?.includes(
@@ -125,6 +136,7 @@ export const updateProject =
     processTask("mepTaskedTo", "mepEstimate");
     processTask("civilTaskedTo", "civilEstimate");
 
+    console.log("updatedPayment", updatedPayments, "newPayments", newPayments);
     const updatedProjectWithPayments = {
       ...updatedProject,
       payments: [
@@ -178,6 +190,7 @@ export const unarchiveProjects = (dispatch, addToQueue) => (ids) => {
   addToQueue("unarchiveProjects", ids);
 };
 
+//create dropbox folder is unused
 export const createDropboxFolder =
   (dispatch, addNotification) => async (project) => {
     runScriptFunction("createDropboxFolder", project)

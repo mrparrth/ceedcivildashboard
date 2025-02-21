@@ -1,6 +1,7 @@
 {
-  "scriptId": "1JQaFM1xETjKpvDloZIaoEmP75yXCgbdjHre8xT1vAI4zQ7hqVzM-Wlsy",
-  "devScriptId": "1JQaFM1xETjKpvDloZIaoEmP75yXCgbdjHre8xT1vAI4zQ7hqVzM-Wlsy",
+  "scriptId": "1XiynCoHBNOnwS3ethrt8eE2ysxk6BfLWwdEMwoFXFdo-xXNQQSUDMmcf",
+  "devScriptId": "1Qko0SqaMfr2VNL-V5xp6gQjH-R5YyqzFqiy8eLseMZ7CXs9JlH4dF79e",
   "prodScriptId": "1XiynCoHBNOnwS3ethrt8eE2ysxk6BfLWwdEMwoFXFdo-xXNQQSUDMmcf",
-  "rootDir": "./apps-script"
+  "rootDir": "./apps-script",
+  "devFileUrl": "https://docs.google.com/spreadsheets/d/1nYAtayAg6phvToktY0rSjBoABbQzBgy05OlErinPLrI/edit?gid=1376674923#gid=1376674923"
 }

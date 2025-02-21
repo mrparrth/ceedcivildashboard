@@ -1,11 +1,17 @@
 import React, { useState, useRef, useEffect } from "react";
-import useContractMetadata from "hooks/useContractMetadata";
 
-const ScopeSelectorModal = ({ isOpen, onClose, formData, setFormData }) => {
-  const { contractMetadata } = useContractMetadata();
+const ScopeSelectorModal = ({
+  isOpen,
+  onClose,
+  formData,
+  setFormData,
+  allScopes,
+  setAllScopes,
+  projectScopes,
+  setProjectScopes
+}) => {
   const [showAllScopes, setShowAllScopes] = useState(true);
-  const [allScopes, setAllScopes] = useState(contractMetadata.scopes);
-  const [projectScopes, setProjectScopes] = useState(formData.scopes);
+  // const [projectScopes, setProjectScopes] = useState(formData.scopes);
   const [editingIndex, setEditingIndex] = useState(null);
   const [draggingOver, setDraggingOver] = useState(null);
   const dragItem = useRef();

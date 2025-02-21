@@ -1,3 +1,4 @@
+//DataContext.jsx
 import React, {
   createContext,
   useReducer,
@@ -26,6 +27,7 @@ import {
 
 import useNotification from "hooks/useNotification";
 import useAuth from "hooks/useAuth";
+import useAppData from "hooks/useAppData";
 
 export const DataContext = createContext(initialState);
 
@@ -35,9 +37,25 @@ export default function DataProvider({ children }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [state, dispatch] = useReducer(dataReducer, initialState);
+  const { showGlobalError } = useAppData();
 
-  const { addToQueue, processQueue, requestQueue } =
-    useQueueManager(addNotification);
+  const handleGlobalError = useCallback(
+    (error) => {
+      console.error("Global Error:", error, error.type);
+      if (error.type === "credentials") {
+        showGlobalError(
+          error.message || "Your session has expired. Please login again.",
+          "credentials"
+        );
+      }
+    },
+    [showGlobalError]
+  );
+
+  const { addToQueue, processQueue, requestQueue } = useQueueManager(
+    addNotification,
+    handleGlobalError
+  );
 
   const initializeData = useCallback(async () => {
     if (isAuthenticated) {
@@ -62,9 +80,10 @@ export default function DataProvider({ children }) {
 
   useEffect(() => {
     if (requestQueue.length > 0) {
+      console.log("Request queue changed, processing queue", requestQueue);
       processQueue();
     }
-  }, [requestQueue, processQueue]);
+  }, [requestQueue]);
 
   useEffect(() => {
     if (error) {
@@ -100,7 +119,7 @@ export default function DataProvider({ children }) {
     createPayment: createPayment(dispatch, addToQueue),
     updatePayment: updatePayment(dispatch, addToQueue),
     deletePayment: deletePayment(dispatch, addToQueue),
-    createFbExpense: createFbExpense(dispatch)
+    createFbExpense: createFbExpense(dispatch, addToQueue)
   };
 
   return (
