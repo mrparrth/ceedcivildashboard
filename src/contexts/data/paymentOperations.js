@@ -21,20 +21,12 @@ export const deletePayment = (dispatch, addToQueue) => (paymentId) => {
   addToQueue("deletePayment", paymentId);
 };
 
-export const createFbExpense = (dispatch, addToQueue) => async (payment) => {
-  return new Promise((resolve, reject) => {
-    addToQueue("createFBExpense", payment, {
-      immediate: true,
-      onSuccess: (expenseId) => {
-        dispatch({
-          type: "CREATE_EXPENSE",
-          payload: { ...payment, expenseId }
-        });
-        resolve(expenseId);
-      },
-      onError: (error) => {
-        reject(new Error("Error creating expense: " + error));
-      }
-    });
-  });
+export const createFbExpense = (dispatch) => async (payment) => {
+  try {
+    let expenseId = await runScriptFunction("createFBExpense", payment);
+    dispatch({ type: "CREATE_EXPENSE", payload: { ...payment, expenseId } });
+    return expenseId;
+  } catch (error) {
+    throw new Error("Error creating expense: " + error);
+  }
 };

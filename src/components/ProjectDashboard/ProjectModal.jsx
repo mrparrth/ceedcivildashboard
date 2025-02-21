@@ -7,7 +7,6 @@ import useAppData from "hooks/useAppData";
 import { BLANK_PROJECT } from "../../utils/constant";
 import { getAssignedToBreakdown } from "utils/utils";
 import URLInput from "components/UrlInput";
-import CustomTextArea from "components/CustomTextArea";
 
 const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
   let { updateProject, createProject, projects } = useData();
@@ -30,13 +29,7 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
   const isNewProject = !projectKey;
 
   const handleInputChange = (key, value) => {
-    console.log(isNewProject, "isNewProject");
-    if (
-      key === "projectNumber" &&
-      value &&
-      !hasShownConfirmation.current &&
-      isNewProject
-    ) {
+    if (key === "projectNumber" && value && !hasShownConfirmation.current) {
       setPendingProjectNumber(value);
       setShowConfirmation(true);
       return;
@@ -253,7 +246,7 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
 
     if (formField.isTextarea) {
       return (
-        <CustomTextArea
+        <textarea
           {...commonProps}
           id={formField.key}
           value={project[formField.key]}
@@ -262,17 +255,6 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
           disabled={viewOnly}
         />
       );
-
-      // <textarea
-      //   {...commonProps}
-      //   id={formField.key}
-      //   value={project[formField.key]}
-      //   onChange={(e) =>
-      //     handleInputChange(formField.key, e.target.value)
-      //   }
-      //   className="form-textarea"
-      //   disabled={viewOnly}
-      // />;
     }
 
     if (formField.isCheckbox) {
@@ -301,7 +283,7 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
           }`}
           disabled={formField.disabled}
           style={{
-            minWidth: formField.key == "projectName" ? "20em" : ""
+            minWidth: formField.key == "projectName" ? "25em" : ""
           }}
           placeholder={formField.placeholder}
         />
@@ -320,6 +302,9 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
           formField.disabled ? "disabled-input" : ""
         }`}
         disabled={formField.disabled}
+        style={{
+          minWidth: formField.key == "projectName" ? "25em" : ""
+        }}
         placeholder={formField.placeholder}
       />
     );
@@ -354,122 +339,98 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
   return (
     <>
       <div className="modal-overlay">
-        <div className="modal-content container-fluid">
+        <div className="modal-content">
           <button onClick={closeModal} className="close-button">
             ×
           </button>
           <h2 className="modal-title">
-            {isNewProject
-              ? "Create New Project"
-              : `Project Details${viewOnly ? " (READ MODE)" : ""}`}
+            {isNewProject ? "Create New Project" : "Project Details"}
           </h2>
-          <div className="row flex-column flex-lg-row justify-content-center mt-6">
-            <div className="col-12 col-lg-6 mb-4 mb-lg-0">
-              <div className="project-form">
-                {formFields.map((formField) => (
-                  <div key={formField.key} className="form-row">
-                    <label htmlFor={formField.key} className="form-label">
-                      {formField.label}
-                    </label>
-                    <div className="form-field">
-                      {getInputElement(formField)}
-                      {errors[formField.key] && (
-                        <div className="error-message">
-                          {errors[formField.key]}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ))}
+          <form className="project-form">
+            {formFields.map((formField) => (
+              <div key={formField.key} className="form-row">
+                <label htmlFor={formField.key} className="form-label">
+                  {formField.label}
+                </label>
+                <div className="form-field">
+                  {getInputElement(formField)}
+                  {errors[formField.key] && (
+                    <div className="error-message">{errors[formField.key]}</div>
+                  )}
+                </div>
               </div>
-            </div>
-            <div className="col-auto px-4 d-none d-lg-block">
-              <div className="vr h-100"></div>
-            </div>
-            <div className="col-12 col-lg-5">
-              <div className="d-flex flex-column gap-2">
-                <button
-                  onClick={() => setDrafterToggle(!drafterToggle)}
-                  className="drafter-toggle bg-success text-white"
-                  type="button">
-                  Drafter Details
-                  <span
-                    className={`dropdown-arrow ${drafterToggle ? "open" : ""}`}>
-                    ▼
-                  </span>
-                </button>
-                {drafterToggle && (
-                  <Drafter
-                    data={project}
-                    setter={(itemKey, value) =>
-                      handleInputChange(itemKey, value)
-                    }
-                    viewOnly={viewOnly}
-                  />
-                )}
+            ))}
 
-                <button
-                  onClick={() => setEnggToggle(!enggToggle)}
-                  className="drafter-toggle bg-warning text-dark"
-                  type="button">
-                  Engineering Details
-                  <span
-                    className={`dropdown-arrow ${enggToggle ? "open" : ""}`}>
-                    ▼
-                  </span>
-                </button>
-                {enggToggle && (
-                  <Engineering
-                    data={project}
-                    setter={(itemKey, value) =>
-                      handleInputChange(itemKey, value)
-                    }
-                    viewOnly={viewOnly}
-                  />
-                )}
+            <button
+              onClick={() => setDrafterToggle(!drafterToggle)}
+              className="drafter-toggle bg-success text-white"
+              type="button">
+              Drafter Details
+              <span className={`dropdown-arrow ${drafterToggle ? "open" : ""}`}>
+                ▼
+              </span>
+            </button>
+            {drafterToggle && (
+              <Drafter
+                data={project}
+                setter={(itemKey, value) => handleInputChange(itemKey, value)}
+                viewOnly={viewOnly}
+              />
+            )}
 
-                <button
-                  onClick={() => setMepToggle(!mepToggle)}
-                  className="drafter-toggle bg-dark text-light"
-                  type="button">
-                  MEP Details
-                  <span className={`dropdown-arrow ${mepToggle ? "open" : ""}`}>
-                    ▼
-                  </span>
-                </button>
-                {mepToggle && (
-                  <MEP
-                    data={project}
-                    setter={(itemKey, value) =>
-                      handleInputChange(itemKey, value)
-                    }
-                    viewOnly={viewOnly}
-                  />
-                )}
+            <button
+              onClick={() => setEnggToggle(!enggToggle)}
+              className="drafter-toggle bg-warning text-dark"
+              type="button">
+              Engineering Details
+              <span className={`dropdown-arrow ${enggToggle ? "open" : ""}`}>
+                ▼
+              </span>
+            </button>
+            {enggToggle && (
+              <Engineering
+                data={project}
+                setter={(itemKey, value) => handleInputChange(itemKey, value)}
+                viewOnly={viewOnly}
+              />
+            )}
 
-                <button
-                  onClick={() => setCivilToggle(!civilToggle)}
-                  className="drafter-toggle text-light"
-                  style={{ backgroundColor: "#5378e4" }}
-                  type="button">
-                  CIVIL Details
-                  <span
-                    className={`dropdown-arrow ${civilToggle ? "open" : ""}`}>
-                    ▼
-                  </span>
-                </button>
-                {civilToggle && (
-                  <Civil
-                    data={project}
-                    setter={(itemKey, value) =>
-                      handleInputChange(itemKey, value)
-                    }
-                    viewOnly={viewOnly}
-                  />
-                )}
-              </div>
-            </div>
-          </div>
+            <button
+              onClick={() => setMepToggle(!mepToggle)}
+              className="drafter-toggle bg-dark text-light"
+              type="button">
+              MEP Details
+              <span className={`dropdown-arrow ${mepToggle ? "open" : ""}`}>
+                ▼
+              </span>
+            </button>
+            {mepToggle && (
+              <MEP
+                data={project}
+                setter={(itemKey, value) => handleInputChange(itemKey, value)}
+                viewOnly={viewOnly}
+              />
+            )}
+
+            <button
+              onClick={() => setCivilToggle(!civilToggle)}
+              className="drafter-toggle text-light"
+              style={{ backgroundColor: "#5378e4" }}
+              type="button">
+              CIVIL Details
+              <span className={`dropdown-arrow ${civilToggle ? "open" : ""}`}>
+                ▼
+              </span>
+            </button>
+            {civilToggle && (
+              <Civil
+                data={project}
+                setter={(itemKey, value) => handleInputChange(itemKey, value)}
+                viewOnly={viewOnly}
+              />
+            )}
+          </form>
+
           <div
             className="form-footer"
             style={{

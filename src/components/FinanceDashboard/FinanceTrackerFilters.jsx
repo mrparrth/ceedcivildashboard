@@ -47,12 +47,12 @@ const FinanceTrackerFilters = ({ filters, onFilterChange, onResetFilters }) => {
         <div className="col-md flex-grow-1">
           <select
             className="form-select form-select-lg"
-            value={filters.salesMan}
-            onChange={(e) => onFilterChange("salesMan", e.target.value)}>
+            value={filters.salesman}
+            onChange={(e) => onFilterChange("salesman", e.target.value)}>
             <option value="">Salesman (All)</option>
-            {(appData.salesmen || []).map((salesMan) => (
-              <option key={salesMan} value={salesMan}>
-                {salesMan}
+            {(appData.salesmen || []).map((salesman) => (
+              <option key={salesman} value={salesman}>
+                {salesman}
               </option>
             ))}
           </select>

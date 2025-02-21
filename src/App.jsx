@@ -10,15 +10,15 @@ import routes from "./routes";
 function App() {
   const content = useRoutes(routes);
   return (
-    <SettingsProvider>
-      <AuthProvider>
-        <GlobalProvider>
+    <GlobalProvider>
+      <SettingsProvider>
+        <AuthProvider>
           <NotificationProvider>
             <DataProvider>{content}</DataProvider>
           </NotificationProvider>
-        </GlobalProvider>
-      </AuthProvider>
-    </SettingsProvider>
+        </AuthProvider>
+      </SettingsProvider>
+    </GlobalProvider>
   );
 }
 

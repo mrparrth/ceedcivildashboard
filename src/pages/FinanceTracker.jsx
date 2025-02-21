@@ -14,7 +14,7 @@ const initialFilters = {
   startDate: null,
   endDate: null,
   assignee: "",
-  salesMan: "",
+  salesman: "",
   projectNumber: "",
   paid: ""
 };
@@ -59,8 +59,8 @@ const FinanceTracker = () => {
         ? payment.assignee?.toLowerCase() == filters.assignee.toLowerCase()
         : true;
 
-      const salesManFilter = filters.salesMan
-        ? payment.salesMan?.toLowerCase() == filters.salesMan.toLowerCase()
+      const salesmanFilter = filters.salesman
+        ? payment.salesMan?.toLowerCase() == filters.salesman.toLowerCase()
         : true;
 
       const projectNumberFilter = filters.projectNumber
@@ -74,7 +74,7 @@ const FinanceTracker = () => {
       return (
         dateFilter &&
         assigneeFilter &&
-        salesManFilter &&
+        salesmanFilter &&
         projectNumberFilter &&
         paidFilter
       );

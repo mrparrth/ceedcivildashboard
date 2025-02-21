@@ -17,7 +17,7 @@ const FAKE_USER = {
 };
 
 function runScriptFunction(functionName, inputData = {}) {
-  if (inputData && Object.keys(inputData).length > 0) {
+  if (inputData) {
     inputData = {
       data: inputData,
       token: getTokenFromLocalStorage()
@@ -29,32 +29,22 @@ function runScriptFunction(functionName, inputData = {}) {
   }
 
   return new Promise((resolve, reject) => {
-    const handleSuccess = (result) => {
-      console.log(`Success: ${functionName} returned`, result);
-      resolve(result);
-    };
-
-    const handleFailure = (error) => {
-      console.error(`Failure: ${functionName} encountered an error`, error);
-
-      if (isCredentialError(error) && functionName !== "login") {
-        error.type = "credentials";
-        reject(error);
-      } else {
-        reject(error);
-      }
-    };
-
     if (ge) {
       google.script.run
-        .withSuccessHandler(handleSuccess)
-        .withFailureHandler(handleFailure)
+        .withSuccessHandler((result) => {
+          console.log(`Google Success: ${functionName} returned`, result);
+          resolve(result);
+        })
+        .withFailureHandler((error) => {
+          console.error(
+            `Google Failure: ${functionName} encountered an error`,
+            error
+          );
+          reject(error); // Pass the error to the calling function
+        })
         [functionName](inputData);
     } else {
-      // Handle dev environment with the same error handling
-      handleDevEnvironment(functionName, inputData)
-        .then(handleSuccess)
-        .catch(handleFailure);
+      return resolve(handleDevEnvironment(functionName, inputData));
     }
   });
 }
@@ -81,24 +71,12 @@ async function handleDevEnvironment(functionName, data) {
       return null;
     case "updatePayment":
       await sleep(3000);
+      return null;
     case "updateProject":
-      console.log("updateProject");
       await sleep(3000);
-      // throw new Error("Invalid credentials!");
       return null;
     case "createContract":
       await sleep(1000);
-      return projectsInit[0];
-    case "getNewProjectNumber":
-      return "123456789";
-    case "getFBClient":
-      return "123456789";
-    case "createFBInvoice":
-      return "123456789";
-    case "createFBProject":
-      return "123456789";
-    case "createProject":
-      await sleep(3000);
       return projectsInit[0];
     default:
       throw new Error(
@@ -183,19 +161,6 @@ function getTokenFromLocalStorage() {
 
 function trashToken() {
   localStorage.removeItem("ceedCivil_jwtToken");
-}
-
-function isCredentialError(error) {
-  const errorMessages = [
-    "User is deactivated. Contact the admin",
-    "Invalid credentials!",
-    "User not found in the database.",
-    "Invalid login. Login again."
-  ];
-
-  return errorMessages
-    .map((message) => message.toLowerCase())
-    .includes(error.message?.toLowerCase());
 }
 
 export {

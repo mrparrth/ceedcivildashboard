@@ -57,7 +57,7 @@ const ProjectRow = ({ project, viewRow, editRow }) => {
             onChange={(e) => toggleProjectSelection(project.id)}
           />
         </td>
-        <td className="text-start text-wrap" style={{ minWidth: "20em" }}>
+        <td className="text-start w-25 text-wrap" style={{ minWidth: "25em" }}>
           {project.projectName}
         </td>
         <td>{project.projectNumber}</td>
@@ -88,7 +88,6 @@ const ProjectRow = ({ project, viewRow, editRow }) => {
               });
             }}
             positionRelative={true}
-            style={{ minWidth: "230px" }}
           />
         </td>
         <td>

@@ -526,8 +526,8 @@ table td .info p {
   background-color: #f8f9fa;
   padding: 20px;
   border-radius: 12px;
-  min-width: 65%;
-  max-width: 85%;
+  max-width: 65%;
+  width: 100%;
   max-height: 90vh;
   overflow-y: auto;
   position: relative;
@@ -549,7 +549,7 @@ table td .info p {
 }
 .modal-title {
   margin-top: 0;
-  margin-bottom: 20px;
+  margin-bottom: 5px;
   font-size: 28px;
   color: #343a40;
   text-align: center;
@@ -565,8 +565,8 @@ table td .info p {
 }
 .form-row {
   display: grid;
-  grid-template-columns: 1fr 2fr;
-  gap: 8px;
+  grid-template-columns: 220px 1fr;
+  gap: 20px;
   align-items: center;
 }
 .form-label {
@@ -711,6 +711,7 @@ table td .info p {
   border: 1px solid #ccc;
   border-radius: 8px;
   padding: 8px 16px;
+  min-width: 230px;
   position: relative;
   cursor: pointer;
   .dropdown-header {
@@ -750,9 +751,8 @@ table td .info p {
 .accredion-row {
   border: none;
   border-radius: 6px;
-  margin: 3px;
-  padding: 2px 4px;
-  min-height: 55px;
+  margin: 6px;
+  padding: 5px;
 }
 
 .login-container {
