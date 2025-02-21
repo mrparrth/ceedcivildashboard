@@ -126,6 +126,7 @@ export default function VerticalNav({ items }) {
   const { logout, user } = useAuth();
 
   const renderLevels = (data) => {
+    console.log(data);
     return data.map((item, index) => {
       if (item.type === "label")
         return (
