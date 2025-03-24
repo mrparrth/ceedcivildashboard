@@ -5,15 +5,15 @@ import useAppData from "hooks/useAppData";
 import useAuth from "hooks/useAuth";
 import { BLANK_PAYMENT } from "../../utils/constant";
 
-const NewPaymentModal = ({ closeModal }) => {
-  const { createPayment, projects } = useData();
+const NewPaymentModal = ({ closeModal, payment: existingPayment }) => {
+  const { createPayment, updatePayment, projects } = useData();
   const { appData } = useAppData();
   const { user } = useAuth();
-
+  const isEditing = !!existingPayment?.id;
   const isAdmin = user?.role?.toUpperCase() === "ADMIN";
   const [payment, setPayment] = useState({
-    ...BLANK_PAYMENT,
-    assignee: isAdmin ? "" : user.name
+    ...(isEditing ? existingPayment : BLANK_PAYMENT),
+    assignee: isEditing ? existingPayment.assignee : isAdmin ? "" : user.name
   });
 
   const [loading, setLoading] = useState(false);
@@ -22,35 +22,109 @@ const NewPaymentModal = ({ closeModal }) => {
   const projectNameRef = useRef(null);
 
   useEffect(() => {
-    calculateTotal();
-  }, [payment.estimatedBudget, payment.actualCost, payment.revisionCost]);
+    payment.revisionNeeded
+      ? setPayment((prev) => ({
+          ...prev,
+          actualCost: "",
+          datePaid: "",
+          paid: false
+        }))
+      : setPayment((prev) => ({
+          ...prev,
+          revisionCost: "",
+          datePaid2: "",
+          revisionsPaid: false
+        }));
+  }, [payment.revisionNeeded]);
 
-  const handleInputChange = (key, value) => {
-    setPayment((prev) => ({ ...prev, [key]: value }));
-    setErrors((prev) => ({ ...prev, [key]: "" }));
+  useEffect(() => {
+    const { projectNumber, projectName, assignee } = payment;
+    if ((projectNumber || projectName) && assignee) {
+      updateEstimate();
+    }
 
-    if (["projectNumber", "projectName"].includes(key) && !value)
-      setSuggestion("");
-    else {
-      if (key === "projectNumber") {
-        populateProjectDetails(value, "number");
-      } else if (key === "projectName") {
-        handleProjectNameChange(value);
-        populateProjectDetails(value, "name");
+    if (projectNumber || projectName) {
+      const matchingProject = findMatchingProject();
+
+      if (matchingProject) {
+        setPayment((prev) => ({
+          ...prev,
+          projectNumber: matchingProject.projectNumber,
+          projectName: matchingProject.projectName,
+          salesMan: matchingProject.salesMan,
+          overallProjectStatus: matchingProject.overallProjectStatus
+        }));
+        setSuggestion("");
       }
+    }
+  }, [payment.projectNumber, payment.projectName, payment.assignee]);
+
+  const findMatchingProject = () => {
+    return projects.find(
+      (project) =>
+        (project.projectNumber &&
+          project.projectNumber === payment.projectNumber) ||
+        (project.projectName &&
+          project.projectName.toLowerCase() ===
+            payment.projectName.toLowerCase())
+    );
+  };
+
+  const updateEstimate = () => {
+    const matchingProject = findMatchingProject();
+    if (!matchingProject || !payment.assignee) return;
+
+    const estimateMap = {
+      drafting: {
+        team: matchingProject.draftingTaskedTo,
+        value: matchingProject.draftingEstimate
+      },
+      mep: {
+        team: matchingProject.mepTaskedTo,
+        value: matchingProject.mepEstimate
+      },
+      civil: {
+        team: matchingProject.civilTaskedTo,
+        value: matchingProject.civilEstimate
+      },
+      engineering: {
+        team: matchingProject.engineeringTaskedTo,
+        value: matchingProject.engineeringEstimate
+      }
+    };
+
+    const assigneeEstimate =
+      Object.values(estimateMap).find(({ team }) =>
+        team.includes(payment.assignee)
+      )?.value || matchingProject.estimatedBudget;
+
+    setPayment((prev) => ({
+      ...prev,
+      estimatedBudget: assigneeEstimate
+    }));
+  };
+
+  const handleInputChange = (field, value) => {
+    setPayment((prev) => ({ ...prev, [field]: value }));
+    setErrors((prev) => ({ ...prev, [field]: "" }));
+
+    if (field === "projectName") {
+      handleProjectNameSuggestion(value);
     }
   };
 
-  const handleProjectNameChange = (value) => {
+  const handleProjectNameSuggestion = (value) => {
+    if (value?.length < 3) {
+      setSuggestion("");
+      return;
+    }
+
     const matchingProject = projects.find((project) =>
       project.projectName.toLowerCase().startsWith(value.toLowerCase())
     );
 
     if (matchingProject && value !== matchingProject.projectName) {
-      const remainingSuggestion = matchingProject.projectName.slice(
-        value.length
-      );
-      setSuggestion(remainingSuggestion.replace(/^ /, "\u00A0"));
+      setSuggestion(matchingProject.projectName + " - Press TAB to select");
     } else {
       setSuggestion("");
     }
@@ -63,14 +137,15 @@ const NewPaymentModal = ({ closeModal }) => {
         : project.projectName.toLowerCase() === value.toLowerCase()
     );
 
+    if (!projectDetails) return;
+
     if (projectDetails) {
       setPayment((prev) => ({
         ...prev,
         projectNumber: projectDetails.projectNumber,
         projectName: projectDetails.projectName,
         salesMan: projectDetails.salesMan,
-        overallProjectStatus: projectDetails.overallProjectStatus,
-        estimatedBudget: projectDetails.estimatedBudget || ""
+        overallProjectStatus: projectDetails.overallProjectStatus
       }));
       setSuggestion("");
     } else {
@@ -85,27 +160,20 @@ const NewPaymentModal = ({ closeModal }) => {
   const handleProjectNameKeyDown = (e) => {
     if (e.key === "Tab" && suggestion) {
       e.preventDefault();
-      const fullProjectName =
-        payment.projectName + suggestion.replace(/^[\u00A0 ]/, " ");
+      const matchingProject = projects.find((project) =>
+        project.projectName
+          .toLowerCase()
+          .startsWith(payment.projectName.toLowerCase())
+      );
+      const remainingSuggestion = matchingProject.projectName.slice(
+        payment.projectName.length
+      );
+
+      const fullProjectName = payment.projectName + remainingSuggestion;
       setPayment((prev) => ({ ...prev, projectName: fullProjectName }));
       setSuggestion("");
       populateProjectDetails(fullProjectName, "name");
     }
-  };
-
-  const calculateTotal = () => {
-    const estimatedBudget = parseFloat(payment.estimatedBudget) || 0;
-
-    let total;
-    if (payment.actualCost == "" && payment.revisionCost == "") {
-      total = "";
-    } else {
-      const actualCost = parseFloat(payment.actualCost) || 0;
-      const revisionCost = parseFloat(payment.revisionCost) || 0;
-      total = (actualCost + revisionCost).toFixed(2);
-    }
-
-    setPayment((prev) => ({ ...prev, totalCost: total }));
   };
 
   const validateForm = () => {
@@ -126,13 +194,17 @@ const NewPaymentModal = ({ closeModal }) => {
     if (validateForm()) {
       setLoading(true);
       try {
-        await createPayment(payment);
+        isEditing ? await updatePayment(payment) : await createPayment(payment);
         closeModal();
       } catch (error) {
-        console.error("Error creating payment:", error);
+        console.error(
+          `Error ${isEditing ? "updating" : "creating"} payment:`,
+          error
+        );
         setErrors({
-          submit:
-            "An error occurred while creating the payment. Please try again."
+          submit: `An error occurred while ${
+            isEditing ? "updating" : "creating"
+          } the payment. Please try again.`
         });
       } finally {
         setLoading(false);
@@ -156,32 +228,53 @@ const NewPaymentModal = ({ closeModal }) => {
       placeHolder: "Type to search"
     },
     {
-      label: "Sales Man",
-      key: "salesMan",
-      isSingleSelect: true,
-      options: appData.salesmen
-    },
-    {
-      label: "Status",
-      key: "overallProjectStatus",
-      isSingleSelect: true,
-      options: appData.status
-    },
-    { label: "Estimated Budget", key: "estimatedBudget" },
-    { label: "Actual Cost", key: "actualCost" },
-    { label: "Paid?", key: "paid", isCheckbox: true },
-    { label: "Date Paid", key: "datePaid", isDate: true },
-    { label: "Revision Needed?", key: "revisionNeeded", isCheckbox: true },
-    { label: "Date Paid", key: "datePaid2", isDate: true },
-    { label: "Revision Cost", key: "revisionCost" },
-    { label: "Revisions Paid?", key: "revisionsPaid", isCheckbox: true },
-    { label: "Notes/Remarks", key: "notes", isTextarea: true },
-    {
-      label: "Total Project Cost",
-      key: "totalCost",
+      label: "Estimated Budget",
+      key: "estimatedBudget",
       isDisabled: true,
-      placeHolder: "Autocalculated: Enter actual cost or revision cost."
-    }
+      placeHolder: "Estimated budget is auto populated using project number"
+    },
+    {
+      label: "Actual Cost",
+      key: "actualCost",
+      isDisabled: payment.revisionNeeded,
+      placeHolder: payment.revisionNeeded
+        ? "Uncheck revision needed to enter actual cost"
+        : ""
+    },
+    {
+      label: "Paid?",
+      key: "paid",
+      isCheckbox: true,
+      isDisabled: payment.revisionNeeded
+    },
+    {
+      label: "Date Paid",
+      key: "datePaid",
+      isDate: true,
+      isDisabled: payment.revisionNeeded
+    },
+    { label: "Revision Needed?", key: "revisionNeeded", isCheckbox: true },
+    {
+      label: "Date Paid",
+      key: "datePaid2",
+      isDate: true,
+      isDisabled: !payment.revisionNeeded
+    },
+    {
+      label: "Revision Cost",
+      key: "revisionCost",
+      isDisabled: !payment.revisionNeeded,
+      placeHolder: !payment.revisionNeeded
+        ? "Check revision needed to enter revision cost"
+        : ""
+    },
+    {
+      label: "Revisions Paid?",
+      key: "revisionsPaid",
+      isCheckbox: true,
+      isDisabled: !payment.revisionNeeded
+    },
+    { label: "Notes/Remarks", key: "notes", isTextarea: true }
   ];
 
   return (
@@ -190,7 +283,9 @@ const NewPaymentModal = ({ closeModal }) => {
         <button onClick={closeModal} className="close-button">
           ×
         </button>
-        <h2 className="modal-title">Create New Payment</h2>
+        <h2 className="modal-title">
+          {isEditing ? "Update Payment" : "Create New Payment"}
+        </h2>
         <form className="project-form">
           {formFields.map((field) => (
             <div key={field.key} className="form-row">
@@ -199,25 +294,28 @@ const NewPaymentModal = ({ closeModal }) => {
               </label>
               <div className="form-field">
                 {field.isShadowAutocomplete ? (
-                  <div className="inline-autocomplete-container">
-                    <input
-                      ref={projectNameRef}
-                      type="text"
-                      value={payment.projectName}
-                      onChange={(e) =>
-                        handleInputChange("projectName", e.target.value)
-                      }
-                      onKeyDown={handleProjectNameKeyDown}
-                      className="form-input"
-                      placeholder={field.placeHolder}
-                    />
-                    {suggestion && (
-                      <div className="inline-suggestion">
-                        <span className="invisible">{payment.projectName}</span>
+                  <>
+                    <div className="inline-autocomplete-container">
+                      <input
+                        ref={projectNameRef}
+                        type="text"
+                        value={payment.projectName}
+                        onChange={(e) =>
+                          handleInputChange("projectName", e.target.value)
+                        }
+                        onKeyDown={handleProjectNameKeyDown}
+                        className="form-input"
+                        placeholder={field.placeHolder}
+                        disabled={field.isDisabled}
+                      />
+                    </div>
+
+                    <div className="inline-suggestion">
+                      {suggestion && (
                         <span className="suggestion-text">{suggestion}</span>
-                      </div>
-                    )}
-                  </div>
+                      )}
+                    </div>
+                  </>
                 ) : field.isSingleSelect ? (
                   <SingleSelectDropdown
                     id={field.key}
@@ -233,6 +331,7 @@ const NewPaymentModal = ({ closeModal }) => {
                     checked={payment[field.key]}
                     onChange={(value) => handleInputChange(field.key, value)}
                     label={field.label}
+                    disabled={field.isDisabled}
                   />
                 ) : field.isDate ? (
                   <input
@@ -243,6 +342,7 @@ const NewPaymentModal = ({ closeModal }) => {
                       handleInputChange(field.key, e.target.value)
                     }
                     className="form-input"
+                    disabled={field.isDisabled}
                   />
                 ) : field.isTextarea ? (
                   <textarea
@@ -282,10 +382,10 @@ const NewPaymentModal = ({ closeModal }) => {
             {loading ? (
               <>
                 <span className="spinner"></span>
-                Creating...
+                {isEditing ? "Updating" : "Creating..."}
               </>
             ) : (
-              "Create Payment"
+              <>{isEditing ? "Update Payment" : "Create Payment"}</>
             )}
           </button>
         </div>

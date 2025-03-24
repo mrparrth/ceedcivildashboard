@@ -5,7 +5,6 @@ const findNewItemsInArray = (oldArray, newArray) =>
 
 export const createProject =
   (dispatch, addToQueue, user, addNotification) => (newProject) => {
-    console.log("newProject", newProject);
     const newPayments = [];
 
     const processTask = (taskField, estimateField) => {
@@ -241,6 +240,7 @@ const createPaymentForAssignment = (project, assignee, user) => ({
   revisionPaid: false,
   notes: "",
   totalCost: 0,
+  expenseId: "",
   createdBy: user?.name,
   modifiedBy: user?.name,
   dateCreated: new Date().toISOString(),

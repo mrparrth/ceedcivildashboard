@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   Button,
   Checkbox,
@@ -11,16 +11,22 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
-  InputAdornment
+  InputAdornment,
+  Tooltip
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
+import MdEditOff from "@mui/icons-material/EditOff";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import LockIcon from "@mui/icons-material/Lock";
+import LockOpenIcon from "@mui/icons-material/LockOpen";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 
 import useData from "hooks/useData";
 import useNotification from "hooks/useNotification";
+import { createPayment } from "contexts/data/paymentOperations";
 
 const displayFormatDate = (dateString) => {
   if (!dateString) return "";
@@ -53,13 +59,20 @@ const parseCurrency = (value) => {
   return isNaN(number) ? "" : number;
 };
 
-const FinanceRow = ({ row, isAdmin, onSelectRow, isSelected }) => {
-  const { updatePayment, deletePayment, createFbExpense } = useData();
+const FinanceRow = ({ row, isAdmin, onSelectRow, isSelected, onEditRow }) => {
+  const { updatePayment, deletePayment, createFbExpense, createPayment } =
+    useData();
   const [isEditing, setIsEditing] = useState(false);
-  const [editedRow, setEditedRow] = useState(row);
+  const [editedRow, setEditedRow] = useState({
+    ...row,
+    disabledEditing:
+      row.disabledEditing === undefined ? false : row.disabledEditing
+  });
+
   const [loading, setLoading] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const { addNotification } = useNotification();
+  const tempSavedData = useRef({});
 
   const handleEdit = () => {
     setEditedRow(row);
@@ -69,6 +82,25 @@ const FinanceRow = ({ row, isAdmin, onSelectRow, isSelected }) => {
   const handleSave = () => {
     updatePayment(editedRow);
     setIsEditing(false);
+  };
+
+  const duplicatePayment = () => {
+    const newPayment = { ...editedRow };
+    newPayment.id = "";
+    newPayment.expenseId = "";
+
+    createPayment(newPayment);
+  };
+
+  const handleDisableEditing = (id) => {
+    const updatedRow = {
+      ...editedRow,
+      disabledEditing: !editedRow.disabledEditing
+    };
+
+    setEditedRow(updatedRow);
+
+    updatePayment(updatedRow);
   };
 
   const handleCancel = () => {
@@ -93,15 +125,37 @@ const FinanceRow = ({ row, isAdmin, onSelectRow, isSelected }) => {
     setEditedRow((prev) => {
       const updatedRow = { ...prev, [field]: value };
 
-      // Recalculate total cost if actualCost or revisionCost changed
-      if (field === "actualCost" || field === "revisionCost") {
-        const actualCost = parseFloat(updatedRow.actualCost) || 0;
-        const revisionCost = parseFloat(updatedRow.revisionCost) || 0;
-
-        updatedRow.totalCost = parseFloat(
-          (actualCost + revisionCost).toFixed(2)
-        );
+      //add revision needed condition
+      if (field === "revisionNeeded") {
+        if (updatedRow.revisionNeeded) {
+          tempSavedData.current.actualCost = updatedRow.actualCost;
+          tempSavedData.current.datePaid = updatedRow.datePaid;
+          updatedRow.actualCost = "";
+          updatedRow.datePaid = "";
+          updatedRow.revisionCost =
+            updatedRow.revisionCost || tempSavedData.current.revisionCost;
+          updatedRow.datePaid2 =
+            updatedRow.datePaid2 || tempSavedData.current.datePaid2;
+        } else {
+          tempSavedData.current.revisionCost = updatedRow.revisionCost;
+          tempSavedData.current.datePaid2 = updatedRow.datePaid2;
+          updatedRow.revisionCost = "";
+          updatedRow.datePaid2 = "";
+          updatedRow.actualCost =
+            updatedRow.actualCost || tempSavedData.current.actualCost;
+          updatedRow.datePaid =
+            updatedRow.datePaid || tempSavedData.current.datePaid;
+        }
       }
+      // Recalculate total cost if actualCost or revisionCost changed
+      // if (field === "actualCost" || field === "revisionCost") {
+      //   const actualCost = parseFloat(updatedRow.actualCost) || 0;
+      //   const revisionCost = parseFloat(updatedRow.revisionCost) || 0;
+
+      //   updatedRow.totalCost = parseFloat(
+      //     (actualCost + revisionCost).toFixed(2)
+      //   );
+      // }
 
       return updatedRow;
     });
@@ -120,7 +174,7 @@ const FinanceRow = ({ row, isAdmin, onSelectRow, isSelected }) => {
   };
 
   const renderCell = (field, type = "text", isDisabled = false) => {
-    const value = isEditing ? editedRow[field] : row[field];
+    const value = (isEditing ? editedRow[field] : row[field]) ?? "";
 
     const centeredFieldStyle = {
       "& .MuiInputBase-input": {
@@ -138,7 +192,7 @@ const FinanceRow = ({ row, isAdmin, onSelectRow, isSelected }) => {
           />
         );
       case "date":
-        return isEditing ? (
+        return isEditing && !isDisabled ? (
           <TextField
             type="date"
             value={value}
@@ -151,7 +205,7 @@ const FinanceRow = ({ row, isAdmin, onSelectRow, isSelected }) => {
           displayFormatDate(value)
         );
       case "number":
-        return isEditing ? (
+        return isEditing && !isDisabled ? (
           <TextField
             type="number"
             value={value || ""}
@@ -227,29 +281,97 @@ const FinanceRow = ({ row, isAdmin, onSelectRow, isSelected }) => {
             </>
           ) : (
             <>
-              <IconButton onClick={handleEdit} color="primary">
-                <EditIcon />
-              </IconButton>
-              <IconButton onClick={handleDelete} color="secondary">
-                <DeleteIcon />
-              </IconButton>
+              {/* Edit Button - Show if editing is not disabled */}
+              <Tooltip
+                title={editedRow.disabledEditing ? "Editing disabled" : "Edit"}
+                arrow
+                placement="top">
+                <span>
+                  {" "}
+                  {/* Wrap in span to handle disabled state properly */}
+                  <IconButton
+                    onClick={onEditRow}
+                    disabled={editedRow.disabledEditing}>
+                    {editedRow.disabledEditing ? <MdEditOff /> : <EditIcon />}
+                  </IconButton>
+                </span>
+              </Tooltip>{" "}
+              {/* Delete Button */}
+              <Tooltip title="Delete" arrow placement="top">
+                <IconButton onClick={handleDelete}>
+                  <DeleteIcon />
+                </IconButton>
+              </Tooltip>
+              {/* Toggle Editing Button */}
+              {isAdmin && (
+                <Tooltip
+                  title={
+                    editedRow.disabledEditing
+                      ? "Click to Enable Editing"
+                      : "Click to Lock and Disable Editing"
+                  }
+                  arrow
+                  placement="top">
+                  <IconButton
+                    onClick={() => handleDisableEditing(editedRow.id)}>
+                    {editedRow.disabledEditing ? (
+                      <LockIcon />
+                    ) : (
+                      <LockOpenIcon />
+                    )}
+                  </IconButton>
+                </Tooltip>
+              )}
+              <Tooltip title="Duplicate Expense" arrow placement="top">
+                <IconButton onClick={duplicatePayment}>
+                  <ContentCopyIcon />
+                </IconButton>
+              </Tooltip>
             </>
           )}
         </td>
         <td>{row.assignee}</td>
         <td>{row.projectNumber}</td>
         <td>{row.projectName}</td>
-        <td>{row.salesMan}</td>
-        <td>{row.projectStatus}</td>
         <td>{formatCurrency(row.estimatedBudget)}</td>
-        <td>{renderCell("actualCost", "currency")}</td>
-        <td>{renderCell("paid", "checkbox")}</td>
-        <td>{renderCell("datePaid", "date")}</td>
+        <td>
+          {renderCell(
+            "actualCost",
+            "currency",
+            isEditing ? editedRow.revisionNeeded : row.revisionNeeded
+          )}
+        </td>
+        <td>
+          {renderCell(
+            "paid",
+            "checkbox",
+            isEditing ? editedRow.revisionNeeded : row.revisionNeeded
+          )}
+        </td>
+        <td>
+          {renderCell(
+            "datePaid",
+            "date",
+            isEditing ? editedRow.revisionNeeded : row.revisionNeeded
+          )}
+        </td>
         <td>{renderCell("revisionNeeded", "checkbox")}</td>
-        <td>{renderCell("datePaid2", "date")}</td>
-        <td>{renderCell("revisionCost", "currency")}</td>
+        <td>
+          {renderCell(
+            "datePaid2",
+            "date",
+            isEditing ? !editedRow.revisionNeeded : !row.revisionNeeded
+          )}
+        </td>
+        <td>
+          {renderCell(
+            "revisionCost",
+            "currency",
+            isEditing ? !editedRow.revisionNeeded : !row.revisionNeeded
+          )}
+        </td>
         <td>{renderCell("notes", "multiline")}</td>
-        <td>{renderCell("totalCost", "currency", true)}</td>
+        {/* <td>{renderCell("totalCost", "currency", true)}</td> */}
         {isAdmin && (
           <td>
             {row.expenseId ? (

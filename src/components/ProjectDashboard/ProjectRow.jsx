@@ -9,11 +9,13 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { getAssignedToBreakdown } from "utils/utils";
+import ArchiveIcon from "@mui/icons-material/Archive";
+import { Tooltip } from "@mui/material";
 
 import useAppData from "hooks/useAppData";
 import useData from "hooks/useData";
 
-const ProjectRow = ({ project, viewRow, editRow }) => {
+const ProjectRow = ({ project, viewRow, editRow, showArchivedIcon }) => {
   const { updateProject, deleteProject, toggleProjectSelection } = useData();
   const { appData } = useAppData();
 
@@ -58,6 +60,13 @@ const ProjectRow = ({ project, viewRow, editRow }) => {
           />
         </td>
         <td className="text-start text-wrap" style={{ minWidth: "20em" }}>
+          {showArchivedIcon && project.isArchived && (
+            <Tooltip title="Archived">
+              <ArchiveIcon
+                sx={{ mr: 1, fontSize: "1.2rem", color: "text.secondary" }}
+              />
+            </Tooltip>
+          )}
           {project.projectName}
         </td>
         <td>{project.projectNumber}</td>

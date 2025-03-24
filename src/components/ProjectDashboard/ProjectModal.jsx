@@ -388,85 +388,90 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
             </div>
             <div className="col-12 col-lg-5">
               <div className="d-flex flex-column gap-2">
-                <button
-                  onClick={() => setDrafterToggle(!drafterToggle)}
-                  className="drafter-toggle bg-success text-white"
-                  type="button">
-                  Drafter Details
-                  <span
-                    className={`dropdown-arrow ${drafterToggle ? "open" : ""}`}>
-                    ▼
-                  </span>
-                </button>
-                {drafterToggle && (
-                  <Drafter
-                    data={project}
-                    setter={(itemKey, value) =>
-                      handleInputChange(itemKey, value)
-                    }
-                    viewOnly={viewOnly}
-                  />
-                )}
+                <div className="d-flex flex-column gap-1">
+                  <button
+                    onClick={() => setDrafterToggle(!drafterToggle)}
+                    className="drafter-toggle bg-success text-white"
+                    type="button">
+                    Drafter Details
+                    <span
+                      className={`dropdown-arrow ${
+                        drafterToggle ? "open" : ""
+                      }`}>
+                      ▼
+                    </span>
+                  </button>
+                  {drafterToggle && (
+                    <Drafter
+                      data={project}
+                      setter={(itemKey, value) =>
+                        handleInputChange(itemKey, value)
+                      }
+                      viewOnly={viewOnly}
+                    />
+                  )}
 
-                <button
-                  onClick={() => setEnggToggle(!enggToggle)}
-                  className="drafter-toggle bg-warning text-dark"
-                  type="button">
-                  Engineering Details
-                  <span
-                    className={`dropdown-arrow ${enggToggle ? "open" : ""}`}>
-                    ▼
-                  </span>
-                </button>
-                {enggToggle && (
-                  <Engineering
-                    data={project}
-                    setter={(itemKey, value) =>
-                      handleInputChange(itemKey, value)
-                    }
-                    viewOnly={viewOnly}
-                  />
-                )}
+                  <button
+                    onClick={() => setEnggToggle(!enggToggle)}
+                    className="drafter-toggle bg-warning text-dark"
+                    type="button">
+                    Engineering Details
+                    <span
+                      className={`dropdown-arrow ${enggToggle ? "open" : ""}`}>
+                      ▼
+                    </span>
+                  </button>
+                  {enggToggle && (
+                    <Engineering
+                      data={project}
+                      setter={(itemKey, value) =>
+                        handleInputChange(itemKey, value)
+                      }
+                      viewOnly={viewOnly}
+                    />
+                  )}
 
-                <button
-                  onClick={() => setMepToggle(!mepToggle)}
-                  className="drafter-toggle bg-dark text-light"
-                  type="button">
-                  MEP Details
-                  <span className={`dropdown-arrow ${mepToggle ? "open" : ""}`}>
-                    ▼
-                  </span>
-                </button>
-                {mepToggle && (
-                  <MEP
-                    data={project}
-                    setter={(itemKey, value) =>
-                      handleInputChange(itemKey, value)
-                    }
-                    viewOnly={viewOnly}
-                  />
-                )}
+                  <button
+                    onClick={() => setMepToggle(!mepToggle)}
+                    className="drafter-toggle bg-dark text-light"
+                    type="button">
+                    MEP Details
+                    <span
+                      className={`dropdown-arrow ${mepToggle ? "open" : ""}`}>
+                      ▼
+                    </span>
+                  </button>
+                  {mepToggle && (
+                    <MEP
+                      data={project}
+                      setter={(itemKey, value) =>
+                        handleInputChange(itemKey, value)
+                      }
+                      viewOnly={viewOnly}
+                    />
+                  )}
 
-                <button
-                  onClick={() => setCivilToggle(!civilToggle)}
-                  className="drafter-toggle text-light"
-                  style={{ backgroundColor: "#5378e4" }}
-                  type="button">
-                  CIVIL Details
-                  <span
-                    className={`dropdown-arrow ${civilToggle ? "open" : ""}`}>
-                    ▼
-                  </span>
-                </button>
-                {civilToggle && (
-                  <Civil
-                    data={project}
-                    setter={(itemKey, value) =>
-                      handleInputChange(itemKey, value)
-                    }
-                    viewOnly={viewOnly}
-                  />
-                )}
+                  <button
+                    onClick={() => setCivilToggle(!civilToggle)}
+                    className="drafter-toggle text-light"
+                    style={{ backgroundColor: "#5378e4" }}
+                    type="button">
+                    CIVIL Details
+                    <span
+                      className={`dropdown-arrow ${civilToggle ? "open" : ""}`}>
+                      ▼
+                    </span>
+                  </button>
+                  {civilToggle && (
+                    <Civil
+                      data={project}
+                      setter={(itemKey, value) =>
+                        handleInputChange(itemKey, value)
+                      }
+                      viewOnly={viewOnly}
+                    />
+                  )}
+                </div>
               </div>
             </div>
           </div>

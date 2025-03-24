@@ -100,6 +100,15 @@ async function handleDevEnvironment(functionName, data) {
     case "createProject":
       await sleep(3000);
       return projectsInit[0];
+    case "createFBExpense":
+      await sleep(3000);
+      if (!data.datePaid) {
+        throw "Date is required";
+      }
+      if (Math.random() > 0.7) {
+        throw "Invoice must be created first for the project";
+      }
+      return "123456789";
     default:
       throw new Error(
         "Unhandled Fake Google Function " +

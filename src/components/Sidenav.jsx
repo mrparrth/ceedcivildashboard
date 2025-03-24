@@ -1,5 +1,6 @@
 import useSettings from "hooks/useSettings";
 import useAppData from "../hooks/useAppData";
+import { authRoles } from "../contexts/auth/authRoles";
 
 import { Fragment } from "react";
 import { styled } from "@mui/material/styles";
@@ -47,6 +48,23 @@ export default function Sidenav({ children }) {
   };
 
   const navigationItems = getNavigations(appData);
+
+  if (appData.adminUrls?.length > 0)
+    navigationItems.push({ label: "External", type: "label" });
+
+  appData.adminUrls.forEach(({ name, url, showToAdminOnly }) => {
+    let navItem = {
+      name,
+      icon: "launch",
+      type: "extLink",
+      path: url
+    };
+    if (showToAdminOnly) {
+      navItem.auth = authRoles.admin;
+    }
+
+    navigationItems.push(navItem);
+  });
 
   return (
     <Fragment>

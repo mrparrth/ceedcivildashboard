@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import FinanceRow from "./FinanceRow";
 import PaginationCustom from "../PaginationCustom";
 import Loader from "../LoaderCustom";
@@ -13,7 +13,8 @@ const FinanceTable = ({
   onPageChange,
   data,
   selectedRows,
-  onRowSelection
+  onRowSelection,
+  onEditRow
 }) => {
   const { isLoading } = useData();
   const { user } = useAuth();
@@ -22,8 +23,7 @@ const FinanceTable = ({
     key: null,
     direction: "asc"
   });
-
-  const rowsPerPage = 50;
+  const [rowsPerPage, setRowsPerPage] = useState(50);
   const maxAllowedSelection = 7;
 
   const fixedHeaderStyle = {
@@ -59,49 +59,15 @@ const FinanceTable = ({
     fontSize: "16px"
   };
 
-  // Sorting logic
-  const sortData = useCallback(
-    (data) => {
-      if (!sortConfig.key) return data;
-
-      return [...data].sort((a, b) => {
-        let aValue = a[sortConfig.key];
-        let bValue = b[sortConfig.key];
-
-        // Handle special cases
-        if (
-          sortConfig.key === "estimatedBudget" ||
-          sortConfig.key === "actualCost" ||
-          sortConfig.key === "paid" ||
-          sortConfig.key === "revisionCost" ||
-          sortConfig.key === "totalProjectCost"
-        ) {
-          aValue = parseFloat(aValue) || 0;
-          bValue = parseFloat(bValue) || 0;
-        }
-
-        if (aValue === null || aValue === undefined) return 1;
-        if (bValue === null || bValue === undefined) return -1;
-
-        if (aValue < bValue) {
-          return sortConfig.direction === "asc" ? -1 : 1;
-        }
-        if (aValue > bValue) {
-          return sortConfig.direction === "asc" ? 1 : -1;
-        }
-        return 0;
-      });
-    },
-    [sortConfig]
-  );
-
-  const requestSort = (key) => {
-    let direction = "asc";
-    if (sortConfig.key === key && sortConfig.direction === "asc") {
-      direction = "desc";
-    }
-    setSortConfig({ key, direction });
-  };
+  const requestSort = useCallback((key) => {
+    setSortConfig((prevConfig) => ({
+      key,
+      direction:
+        prevConfig.key === key && prevConfig.direction === "asc"
+          ? "desc"
+          : "asc"
+    }));
+  }, []);
 
   const SortIcon = ({ columnKey }) => {
     if (sortConfig.key !== columnKey) return null;
@@ -127,13 +93,40 @@ const FinanceTable = ({
 
   const isAdmin = user?.role?.toUpperCase() === "ADMIN";
 
-  const sortedData = sortData(data);
+  const sortedData = useMemo(() => {
+    if (!sortConfig.key) return data;
 
-  const currentPageData = sortedData.slice(
-    (pageNo - 1) * rowsPerPage,
-    pageNo * rowsPerPage
-  );
+    return [...data].sort((a, b) => {
+      let aValue = a[sortConfig.key];
+      let bValue = b[sortConfig.key];
 
+      // Handle numeric fields
+      const numericFields = [
+        "estimatedBudget",
+        "actualCost",
+        "paid",
+        "revisionCost",
+        "totalProjectCost"
+      ];
+
+      if (numericFields.includes(sortConfig.key)) {
+        aValue = parseFloat(aValue) || 0;
+        bValue = parseFloat(bValue) || 0;
+      }
+
+      // Handle null/undefined values
+      if (aValue === null || aValue === undefined) return 1;
+      if (bValue === null || bValue === undefined) return -1;
+
+      // Compare values
+      const comparison = aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
+      return sortConfig.direction === "asc" ? comparison : -comparison;
+    });
+  }, [data, sortConfig]);
+
+  const currentPageData = useMemo(() => {
+    return sortedData.slice((pageNo - 1) * rowsPerPage, pageNo * rowsPerPage);
+  }, [sortedData, pageNo]);
 
   const handleSelectAll = useCallback(
     (event) => {
@@ -151,14 +144,15 @@ const FinanceTable = ({
     [currentPageData]
   );
 
+  const handleRowsPerPageChange = (event) => {
+    setRowsPerPage(parseInt(event.target.value));
+  };
   const renderTableHeaders = () => {
     const headers = [
       { title: "Actions", key: null, style: fixedHeaderStyle },
       { title: "Assignee", key: "assignee", style: fixedHeaderStyle },
       { title: "Project #", key: "projectNumber", style: fixedHeaderStyle },
       { title: "Project", key: "projectName", style: fixedHeaderStyle },
-      { title: "Sales Man", key: "salesMan", style: fixedHeaderStyle },
-      { title: "Status", key: "status", style: fixedHeaderStyle },
       {
         title: "Estimated Budget",
         key: "estimatedBudget",
@@ -182,14 +176,14 @@ const FinanceTable = ({
         key: "revisionCost",
         style: editableHeaderStyle
       },
-      { title: "Notes/Remarks", key: "notes", style: editableHeaderStyle },
-      {
-        title: "Total Project Cost",
-        key: "totalProjectCost",
-        style: editableHeaderStyle
-      }
+      { title: "Notes/Remarks", key: "notes", style: editableHeaderStyle }
     ];
-
+    // { title: "Sales Man", key: "salesMan", style: fixedHeaderStyle },
+    // {
+    //   title: "Total Project Cost",
+    //   key: "totalProjectCost",
+    //   style: editableHeaderStyle
+    // }
     if (isAdmin) {
       headers.unshift({
         title: (
@@ -248,6 +242,7 @@ const FinanceTable = ({
                       (selectedRow) => selectedRow.id === financeRow.id
                     )}
                     onSelectRow={handleSelectRow}
+                    onEditRow={() => onEditRow(financeRow)}
                   />
                 ))}
             </tbody>
@@ -262,6 +257,7 @@ const FinanceTable = ({
               rowsPerPage={rowsPerPage}
               isLoading={isLoading}
               onPageChange={onPageChange}
+              handleRowsPerPageChange={handleRowsPerPageChange}
             />
           )}
         </div>

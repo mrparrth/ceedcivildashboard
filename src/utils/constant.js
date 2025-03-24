@@ -170,7 +170,7 @@ export const BLANK_PROJECT = {
 };
 
 export const BLANK_PAYMENT = {
-  id: null,
+  id: "",
   assignee: "",
   projectNumber: "",
   projectName: "",
@@ -186,5 +186,5 @@ export const BLANK_PAYMENT = {
   revisionsPaid: false,
   notes: "",
   totalCost: "",
-  expenseId: null
+  expenseId: ""
 };

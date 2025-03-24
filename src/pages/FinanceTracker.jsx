@@ -31,6 +31,7 @@ const FinanceTracker = () => {
   const [modalChoices, setModalChoices] = useState([]);
   const [justCompleted, setJustCompleted] = useState(false);
   const [isNewPaymentModalOpen, setIsNewPaymentModalOpen] = useState(false);
+  const [editingPayment, setEditingPayment] = useState({});
 
   const { addNotification } = useNotification();
 
@@ -85,9 +86,12 @@ const FinanceTracker = () => {
     return filteredPayments.reduce(
       (total, payment) =>
         total +
-        ((typeof payment.totalCost === "string"
-          ? parseFloat(payment.totalCost)
-          : payment.totalCost) || 0),
+        ((typeof payment.actualCost === "string"
+          ? parseFloat(payment.actualCost)
+          : payment.actualCost) || 0) +
+        ((typeof payment.revisionCost === "string"
+          ? parseFloat(payment.revisionCost)
+          : payment.revisionCost) || 0),
       0
     );
   }, [filteredPayments]);
@@ -106,6 +110,11 @@ const FinanceTracker = () => {
 
   const handleRowSelection = (rows) => {
     setSelectedRows(rows);
+  };
+
+  const handleEditRow = (row) => {
+    setEditingPayment(row);
+    setIsNewPaymentModalOpen(true);
   };
 
   const handleCreateFbExpense = () => {
@@ -140,37 +149,33 @@ const FinanceTracker = () => {
   };
 
   const handleNewPayment = () => {
+    setEditingPayment(null);
     setIsNewPaymentModalOpen(true);
   };
 
-  const processExpenseCreation = (rows) => {
+  const processExpenseCreation = async (rows) => {
     setLoading(true);
     setProcessedRowsCount(0);
     let successCount = 0;
     let failCount = 0;
     const errors = [];
 
-    rows.forEach((row, index) => {
-      createFbExpense(row)
-        .then(() => {
-          setProcessedRowsCount((c) => c + 1);
+    await Promise.all(
+      rows.map(async (row) => {
+        try {
+          const result = await createFbExpense(row);
+          setProcessedRowsCount((prev) => prev + 1);
           successCount++;
-          if (index === rows.length - 1) {
-            finishProcess();
-          }
-        })
-        .catch((error) => {
-          setProcessedRowsCount((c) => c + 1);
+        } catch (error) {
+          setProcessedRowsCount((prev) => prev + 1);
           failCount++;
           errors.push({
             projectNumber: row.projectNumber,
             error: error.message
           });
-          if (index === rows.length - 1) {
-            finishProcess();
-          }
-        });
-    });
+        }
+      })
+    );
 
     const finishProcess = async () => {
       if (successCount > 0) {
@@ -201,6 +206,9 @@ const FinanceTracker = () => {
         setJustCompleted(false);
       }, 3000);
     };
+
+    // Solution 2: finishProcess called only once after all promises are resolved
+    finishProcess(successCount, failCount, errors);
   };
 
   const handleModalConfirm = (choice) => {
@@ -242,6 +250,7 @@ const FinanceTracker = () => {
         data={filteredPayments}
         selectedRows={selectedRows}
         onRowSelection={handleRowSelection}
+        onEditRow={handleEditRow}
       />
 
       <ConfirmationModal
@@ -254,7 +263,10 @@ const FinanceTracker = () => {
       />
 
       {isNewPaymentModalOpen && (
-        <NewPaymentModal closeModal={() => setIsNewPaymentModalOpen(false)} />
+        <NewPaymentModal
+          closeModal={() => setIsNewPaymentModalOpen(false)}
+          payment={editingPayment}
+        />
       )}
     </Container>
   );
