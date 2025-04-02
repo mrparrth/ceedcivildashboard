@@ -180,11 +180,6 @@ function _getServiceIdByName_(serviceData, scopeDesc) {
   if (service) return service.id
 }
 
-
-function testFB() {
-  createFBExpenseForFinanceRow(250)
-}
-
 function _getClientIdFromInvoiceDesc_(invoiceDesc) {
   const url = `https://api.freshbooks.com/accounting/account/${ACCOUNT_ID}/invoices/invoices?search[item_description]=${invoiceDesc}`
   const result = fbGetRequest_(url)
@@ -202,8 +197,55 @@ function _getClientIdFromInvoiceDesc_(invoiceDesc) {
   return invoice.customerid
 }
 
+function getExpenses() {
+
+  const shPayments = _getSheetById_(1407472227)
+  const isRecent = dateStr => dateStr.includes('2024') || dateStr.includes('2025')
+  let payments = _getParsedDataFromSheet_(shPayments, payment => !!payment.expenseId && (isRecent(payment.datePaid) || isRecent(payment.datePaid2)))
+  // payments = payments.filter(payment=>payment.actualCost==363)
+  //get expenses
+  const url = `https://api.freshbooks.com/accounting/account/${ACCOUNT_ID}/expenses/expenses?search[date_min]=2024-06-01&search[date_max]=2025-03-07`
+  const expenses = fbGetAll_(url).expenses
+
+  for (let payment of payments) {
+    let foundExpenseInFb = expenses.find(expense => expense.id == payment.expenseId)
+    if (foundExpenseInFb) {
+      if (parseFloat(foundExpenseInFb.amount.amount) !== parseFloat(payment.totalCost) && parseFloat(foundExpenseInFb.amount.amount) !== parseFloat(payment.actualCost)) {
+        console.error(`Check ${foundExpenseInFb.id}. Mismatch in amount`)
+      }
+      let expenseUrl = `https://api.freshbooks.com/accounting/account/${ACCOUNT_ID}/expenses/expenses/${foundExpenseInFb.id}`
+
+      let existingNote = foundExpenseInFb.notes.replace(payment.notes.trim(), '')
+      let textMustHave = `${payment.projectNumber} - ${payment.projectName}`
+      if (existingNote.includes(textMustHave)) {
+        console.log(`Skipping ${textMustHave}`)
+        continue
+      }
+
+      let newNote
+      if (existingNote) {
+        newNote = `${textMustHave}\n${existingNote}`
+      } else {
+        newNote = `${textMustHave}`
+      }
+      let data = {
+        "expense": {
+          notes: newNote
+        }
+      }
+      console.info(`${payment._rowIndex} - Updating expense ${foundExpenseInFb.id} with note ${newNote}`)
+      let response = fbPutRequest_(expenseUrl, data)
+
+    } else {
+      console.log(`Skipping ${payment._rowIndex} ${payment.projectNumber} - ${payment.projectName}`)
+    }
+  }
+
+  // console.log(analyzedExpenses)
+}
+
 function _createFBExpense_(payment, user) {
-  let { projectNumber, totalCost, actualCost, notes, datePaid } = payment
+  let { projectNumber, projectName, actualCost, revisionCost, revisionNeeded, notes, datePaid, datePaid2 } = payment
   let { merchantName, categoryName } = user
 
   try {
@@ -216,12 +258,12 @@ function _createFBExpense_(payment, user) {
   let body = {
     "expense": {
       "amount": {
-        "amount": totalCost || actualCost,
+        "amount": revisionNeeded ? revisionCost : actualCost,
         "code": "USD"
       },
-      notes,
+      notes: `${projectNumber} - ${projectName}`,
       "vendor": merchantName,
-      "date": datePaid,
+      "date": revisionNeeded ? datePaid2 : datePaid,
       "clientid": clientId,
       "staffid": 1,
       "category_name": categoryName,
@@ -239,4 +281,40 @@ function _createFBExpense_(payment, user) {
   else {
     return result.response.result.expense.expenseid
   }
+}
+
+function getFbVendors() {
+  let url = `https://api.freshbooks.com/accounting/account/${ACCOUNT_ID}/expenses/vendors`
+  let response = fbGetAll_(url)?.vendors
+  let vendors = response.map(vendor => vendor.vendor)
+  console.log(vendors)
+  return vendors
+}
+
+function getFbCategories() {
+  let url = `https://api.freshbooks.com/accounting/account/${ACCOUNT_ID}/expenses/categories`
+  let response = fbGetAll_(url)
+  let categories = response?.categories
+  let contractorIds = categories.filter(category => category.category == 'Contractors').map(category => category.id)
+  let contractorCategories = categories.filter(category => contractorIds.includes(category.parentid)).map(category => category.category)
+  console.log(Array.from(new Set(contractorCategories)))
+  return Array.from(new Set(contractorCategories))
+}
+
+function createFbCategory(fbCategory) {
+  let url = `https://api.freshbooks.com/accounting/account/${ACCOUNT_ID}/expenses/categories`
+  let getResponse = fbGetAll_(url)
+  let categories = getResponse?.categories
+  let contractorId = categories.filter(category => category.category == 'Contractors').map(category => category.id)[0]
+
+  let params = {
+    "category": {
+      "category": fbCategory,
+      "is_cogs": false,
+      "is_editable": true,
+      "parentid": contractorId,
+    }
+  }
+  let response = fbPostRequest_(url, params)
+  if (!response.result) console.log(response)
 }

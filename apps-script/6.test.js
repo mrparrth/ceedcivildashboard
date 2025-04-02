@@ -1,78 +1,19 @@
 
-const test = () => {
+const testCreateDriveUrl = () => {
   let adminToken =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjhjNjI4OWJlLWQxODQtNDg3Zi05NTllLTVhOTllYmFiNzg3MiIsImNyZWF0ZWRBdCI6IjIwMjQtMTEtMTdUMTk6MDE6NDUuNTE4WiIsIm1vZGlmaWVkQXQiOiIyMDI0LTExLTE3VDE5OjAxOjQ1LjUxOFoiLCJuYW1lIjoiVGVzdEVtcGxveWVlIiwiZW1haWwiOiJlbXBsb3llZUBjZWVkY2l2aWwuY29tIiwicm9sZSI6IkFkbWluIiwic3RhdHVzIjoiQWN0aXZlIiwibWVyY2hhbnROYW1lIjoiQWRtaW4iLCJjYXRlZ29yeU5hbWUiOiJEcmFmdGVyIC0gQ29udHJhY3RvciIsInRlc3RVc2VyPyI6dHJ1ZSwiX3Jvd0luZGV4IjoxMH0=.k3AK51d9WuV03O0qWmyNFrSiHxNejbw8V+lHp8YAtIE=";
   let empToken =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImVjY2I1N2EwLWM0OTItNDlkOS04NmMwLTRmYzBjNTYyMGI3YSIsImNyZWF0ZWRBdCI6IjIwMjQtMTAtMDFUMTQ6MzA6MDAuNjU4WiIsIm1vZGlmaWVkQXQiOiIyMDI0LTEwLTAxVDE0OjMwOjAwLjY1OFoiLCJuYW1lIjoiQXJuZWwiLCJlbWFpbCI6ImlhbXBhcnJ0aEBnbWFpbC5jb20iLCJyb2xlIjoiRW1wbG95ZWUiLCJzdGF0dXMiOiJBY3RpdmUiLCJfcm93SW5kZXgiOjJ9.fUo9EAvFMb+BBYJPKEgmSVZWlGnXej3Mr2FRRjbvxiU=";
 
-  let project = { draftingEstimatedDeliveryTime: '',
-  estimatedBudget: '',
-  projectName: 'Test',
-  mepNeeded: false,
-  civilTaskedTo: [ 'Civil Engineer' ],
-  engineeringStatus: '',
-  projectFilesFolder: '',
-  draftingDropboxLink: '',
-  payments: 
-   [ { paymentId: '6eacd899-4416-4156-a715-4684a01c5481',
-       assignedTo: 'Arnel' },
-     { paymentId: '675c9781-da4d-4d82-a05b-f390810b633c',
-       assignedTo: 'VSC -ENG' },
-     { assignedTo: 'Nicko',
-       paymentId: '6a5ba276-acaa-4661-aa0c-652297a75de6' },
-     { paymentId: 'd73d9137-5342-4701-a7f9-06ced5926627',
-       assignedTo: 'Civil Engineer' } ],
-  dateModified: '2025-01-30T06:29:21.104Z',
-  mepStatus: '',
-  createdBy: 'TestEmployee',
-  invoiceNumber: '0001672',
-  mepEstimatedDeliveryTime: '',
-  isArchived: false,
-  salesMan: '',
-  engineeringEstimate: '',
-  civilStatus: '',
-  initialProjectStatus: '',
-  engineeringTaskedTo: [ 'VSC -ENG' ],
-  mepTaskedTo: [ 'Nicko' ],
-  clientProjectNameAddress: 'test test\nTest Test,test,California 95112\ntest@test.com\n(000)000-0000',
-  engineeringDropboxLink: '',
-  draftingNeeded: false,
-  assignedTo: [ 'Arnel', 'VSC -ENG', 'Nicko', 'Civil Engineer' ],
-  contractDocumentUrl: 'https://docs.google.com/open?id=13q91hOIwjurdxonJk_y7wYnJvfOAk_pwj2AgjbhyKpU',
-  engineeringEstimatedDeliveryTime: '',
-  clientEmail: 'test@test.com',
-  depositPaid: false,
-  civilEstimatedDeliveryTime: '',
-  civilNeeded: false,
-  draftingStatus: '',
-  id: '071276f7-8d5a-4d73-bbee-5d7b7acaddc3',
-  civilEstimate: '',
-  state: 'California',
-  civilDropboxLink: '',
-  actualCost: '',
-  description: '',
-  jobType: '',
-  projectNumber: '999',
-  modifiedBy: 'TestEmployee',
-  mepDropboxLink: '',
-  contractLink: '',
-  draftingEstimate: '',
-  mepEstimate: '',
-  folderOptions: 
-   { drafter: true,
-     civil: true,
-     sendClientEmail: true,
-     mep: true,
-     engg: true },
-  salesman: 'Ryan',
-  dateCreated: '2025-01-30T06:29:21.104Z',
-  overallProjectStatus: '',
-  engineeringNeeded: false,
-  draftingTaskedTo: [ 'Arnel' ],
-  priority: '',
-  projectNotes: '' }
+  let project = { "clientProjectNameAddress": "James Craft\nBackwoods Pole Barns - FL\n\n", "projectNotes": "", "mepTaskedTo": [], "civilStatus": "", "draftingEstimate": "", "createdBy": "Admin", "mepNeeded": false, "contractDocumentUrl": "https://docs.google.com/open?id=1V4jx1zWG9JgkUDWGaU9MgHv4crvz_csM8GSva9P8k3s", "jobType": "", "engineeringNeeded": false, "engineeringEstimatedDeliveryTime": "", "isArchived": false, "draftingStatus": "", "clientEmail": "", "contractLink": "", "civilNeeded": false, "mepStatus": "", "expenses": [], "description": "Utilize the documents provided and run calcs for all sizing and welds and holes and bolts needed for 450 pole barns to utilize this system. PLEASE note the system is ONLY the backet and rebar and shown on the last page. The idea is to put the rebar and bracket into the wet concrete. ", "engineeringDropboxLink": "https://drive.google.com/drive/folders/1ta-K5PFNu5Hx61DdHrvlXiicOFO6q7zX", "draftingNeeded": false, "id": "adc2b093-3594-45ba-9604-64bb1e71bc48", "salesMan": "", "overallProjectStatus": "For Ryan Review", "payments": [{ "paymentId": "a8af0e3a-f57a-474c-a444-0c744284cbc0", "assignedTo": "VSC - ENG" }], "invoiceNumber": "0001904", "chats": [], "actualCost": "", "assignedTo": ["Erparthas", "Partha.s", "TestTestTest"], "depositPaid": false, "mepEstimate": "", "projectNumber": 704, "civilEstimate": "", "engineeringStatus": "", "draftingEstimatedDeliveryTime": "", "folderOptions": { "sendClientEmail": false, "drafter": false, "engg": true, "mep": false, "civil": false }, "engineeringEstimate": "", "projectName": "450 - Pole Barn Attachment - Open and Enclosed", "civilTaskedTo": [], "draftingTaskedTo": [], "mepEstimatedDeliveryTime": "", "dateCreated": "2025-03-20T17:37:40.995Z", "estimatedBudget": "", "dateModified": "2025-03-24T14:45:59.626Z", "initialProjectStatus": "", "projectFilesFolder": "https://drive.google.com/drive/folders/1lk-qAm87nNNBEQ_Dlee2pM3Chgy6OyTT", "state": "Florida", "priority": "Urgent", "engineeringTaskedTo": ["VSC - ENG"], "modifiedBy": "VSC - ENG", "civilEstimatedDeliveryTime": "", "clientProjectFolder": "https://drive.google.com/drive/folders/1A42s8Bk6VXmqic2_zo1qzlsJ2e1Dfw4V", "_rowIndex": 3, "draftingDropboxLink": null, "mepDropboxLink": null, "civilDropboxLink": null, "slackChannelId": "C08LJMRF5A8" }
 
-  console.log(new SecureApp(adminToken).createProject(project));
+
+  // createSlackChannel(project)
+  // console.log('here')
+  // console.log(new SecureApp(adminToken).createDriveFolderStructure(project));
+
+
+  console.log(new SecureApp(adminToken).updateProject(project));
   // this.settings = _getSettings_(CONFIG.SETTINGS)
   // console.log(this.settings.projectsRootFolder)
   // let folderName = `Project ${project.projectNumber} - ${project.projectName}`
@@ -149,4 +90,43 @@ const testModifyProjects = () => {
   }
 
   ss.getSheetByName('Projects').getRange(2, 2, output.length, 1).setValues(output)
+}
+
+const testUpdateStatus = () => {
+  const auth = {
+    email: undefined,
+    password: undefined,
+    token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjhjNjI4OWJlLWQxODQtNDg3Zi05NTllLTVhOTllYmFiNzg3MiIsImNyZWF0ZWRBdCI6IjIwMjQtMTEtMTdUMTk6MDE6NDUuNTE4WiIsIm1vZGlmaWVkQXQiOiIyMDI0LTExLTE3VDE5OjAxOjQ1LjUxOFoiLCJuYW1lIjoiVGVzdEVtcGxveWVlIiwiZW1haWwiOiJlbXBsb3llZUBjZWVkY2l2aWwuY29tIiwicm9sZSI6IkFkbWluIiwic3RhdHVzIjoiQWN0aXZlIiwibWVyY2hhbnROYW1lIjoiQWRtaW4iLCJjYXRlZ29yeU5hbWUiOiJEcmFmdGVyIC0gQ29udHJhY3RvciIsInVzZXJUeXBlIjoiIiwidGVzdFVzZXI/Ijp0cnVlLCJfcm93SW5kZXgiOjEwfQ==.kIeCLPy5EPJsz3Eiv4I2QNWMg8lDfrK49kElvtnFTGU='
+  }
+
+  let update = {
+    id: 'b78cafb9-737a-417d-a172-77fc8964dd6b',
+    overallProjectStatus: 'Pending Start1'
+  }
+
+  updateProject({ token: auth.token, data: update })
+}
+
+const testNewUser = () => {
+  let user = {
+    isNewMerchant: false,
+    email: 'erparthas@gmail.com',
+    categoryName: 'Calcualtions - Contractor',
+    isNewCategory: false,
+    name: 'Partha Sarathi Sahoo',
+    userType: 'Drafter',
+    merchantName: 'Bren Navarro - MEP',
+    role: 'Employee'
+  }
+
+  processForm(user)
+}
+
+const testCreateExpense = () => {
+  let expense = { "dateModified": "2025-02-02T18:38:53.814Z", "revisionPaid": false, "notes": "", "id": "4ffc2279-637d-4c3a-bd1e-af2ab0150aa2", "createdBy": "Tika Koirala", "actualCost": 0, "projectId": "127a5455-5a41-4ef2-8fb3-70456108e0ce", "paid": false, "modifiedBy": "Tika Koirala", "revisionCost": 0, "projectNumber": 632, "datePaid": "2025-03-04", "dateCreated": "2025-02-02T18:38:53.812Z", "revisionNeeded": false, "projectName": "VA - Gym Addition Site Plan", "totalCost": 0, "salesMan": "", "datePaid2": null, "assignee": "Arnel", "projectStatus": "Pending Start" }
+
+  let userSh = _getSheetById_(350989579)
+  let user = _getItemsFromSheet_(userSh, row => row.email == 'erparthas@gmail.com')[0]
+
+  _createFBExpense_(expense, user)
 }

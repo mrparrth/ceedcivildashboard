@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Registration</title>
+  <style>
+    body {
+      font-family: 'Roboto', Arial, sans-serif;
+      /* background-color: #f5f5f7; */
+      margin: 0;
+      padding: 10px;
+      color: #333;
+    }
+    
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+    }
+    
+    h1 {
+      text-align: center;
+      color: #1a73e8;
+      margin-bottom: 25px;
+      font-weight: 500;
+    }
+    
+    h2 {
+      color: #555;
+      font-size: 14px;
+      margin-top: 30px;
+      margin-bottom: 15px;
+      padding-bottom: 5px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .form-group {
+      margin-bottom: 25px;
+      position: relative;
+    }
+    
+    /* Floating label styling */
+    .form-field {
+      position: relative;
+      margin-bottom: 18px;
+      display: flex;  /* Add this */
+      align-items: center;  /* Add this */
+      gap: 10px;  /* Add this */
+    }
+    
+    .form-field input,
+    .form-field select {
+        flex: 1;
+      width: 100%;
+      height: 50px;
+      padding: 12px 16px 0 16px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      box-sizing: border-box;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      background-color: transparent;
+    }
+    
+    .form-field label {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      font-size: 16px;
+      color: #777;
+      pointer-events: none;
+      transition: all 0.3s ease;
+    }
+    
+    .form-field input:focus,
+    .form-field select:focus {
+      border-color: #1a73e8;
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
+    }
+    
+    .form-field input:focus + label,
+    .form-field select:focus + label,
+    .form-field input:not(:placeholder-shown) + label,
+    .form-field select:not([value=""]):not([value="undefined"]) + label {
+      top: 4px;
+      left: 16px;
+      font-size: 11px;
+      color: #1a73e8;
+      font-weight: 500;
+    }
+    
+    /* For browsers where the above selector doesn't work */
+    .form-field input:not(:placeholder-shown) + label {
+      top: 4px;
+      left: 16px;
+      font-size: 11px;
+      color: #1a73e8;
+      font-weight: 500;
+    }
+    
+    .checkbox-container {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    input[type="checkbox"] {
+      width: 24px;
+      height: 24px;
+      margin-right: 10px;
+    }
+    
+    .checkbox-label {
+      display: inline;
+      font-weight: normal;
+    }
+    
+    button {
+      width: 100%;
+      background-color: #1a73e8;
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 500;
+      transition: background-color 0.3s;
+    }
+    
+    button:hover {
+      background-color: #0d62c9;
+    }
+    
+    .required:after {
+      content: " *";
+      color: #f44336;
+    }
+    
+    .error {
+      color: #f44336;
+      font-size: 12px;
+      margin-top: 5px;
+    }
+    
+    .loading-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(0, 0, 0, 0.1);
+      border-radius: 50%;
+      border-top-color: #1a73e8;
+      animation: spin 1s ease-in-out infinite;
+      margin-left: 10px;
+      vertical-align: middle;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .loading-text {
+      color: #666;
+      font-size: 14px;
+      font-style: italic;
+      margin-top: 5px;
+      display: none;
+      white-space: nowrap;  /* Add this */
+        position: relative;  /* Add this */
+        min-width: fit-content;  /* Add this */
+    }
+    
+    .custom-value-notice {
+      display: none;
+      color: #ff9800;
+      font-size: 12px;
+      margin-top: 5px;
+      font-style: italic;
+    }
+    
+    .datalist-input {
+      width: 100%;
+    }
+
+    .input-container {
+        position: relative;
+        flex: 1;
+    }
+
+    /* Move these inside .input-container */
+    .custom-value-notice {
+        position: absolute;
+        bottom: -20px;
+        left: 0;
+        width: 100%;
+        margin-bottom: 6px;
+    }
+
+    /* Alert Modal Styles */
+    .alert-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .alert-content {
+        background-color: white;
+        padding: 25px;
+        border-radius: 8px;
+        max-width: 400px;
+        width: 90%;
+        text-align: center;
+        position: relative;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    #alertIcon {
+        font-size: 48px;
+        margin-bottom: 15px;
+    }
+
+    #alertMessage {
+        margin-bottom: 20px;
+        color: #333;
+        font-size: 16px;
+        line-height: 1.4;
+    }
+
+    .alert-button {
+        background-color: #1a73e8;
+        color: white;
+        border: none;
+        padding: 10px 24px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: background-color 0.2s;
+    }
+
+    .alert-button:hover {
+        background-color: #0d62c9;
+    }
+
+    /* Success and Error specific styles */
+    .success #alertIcon::before {
+        content: "✓";
+        color: #34A853;
+    }
+
+    .error #alertIcon::before {
+        content: "!";
+        color: #EA4335;
+    }
+
+    .alert-modal.show {
+        display: flex;
+        animation: fadeIn 0.3s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    .button-spinner {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: #fff;
+        animation: spin 1s ease-in-out infinite;
+        margin-left: 8px;
+        vertical-align: middle;
+    }
+
+    button:disabled {
+        background-color: #94b5e8;
+        cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <form id="registrationForm" onsubmit="handleSubmit(event)">
+      <!-- Regular input fields with floating labels -->
+      <div class="form-field">
+        <input type="text" id="name" name="name" placeholder=" " required>
+        <label for="name" class="required">Name</label>
+      </div>
+      
+      <div class="form-field">
+        <input type="email" id="email" name="email" placeholder=" " required>
+        <label for="email" class="required">Email</label>
+      </div>
+      
+      <h2>Webapp Access Details</h2>
+      
+      <div class="form-field">
+        <select id="role" name="role" required>
+          <option value="Employee" selected>Employee</option>
+          <option value="Admin">Admin</option>
+        </select>
+        <label for="role" class="required">Role</label>
+      </div>
+      
+      <div class="form-field">
+        <select id="userType" name="userType" required>
+          <option value="Drafter" selected>Drafter</option>
+          <option value="Engineer">Engineer</option>
+          <option value="Mep">MEP</option>
+          <option value="Civil">Civil</option>
+        </select>
+        <label for="userType" class="required">User Type</label>
+      </div>
+      
+      <h2>Expense Creation Details</h2>
+      
+      <!-- Merchant field with floating label and loading indicator -->
+      <div class="form-field">
+        <div class="input-container">
+            <input 
+                type="text" 
+                id="merchantName" 
+                name="merchantName" 
+                list="merchantsList" 
+                placeholder=" " 
+                required 
+                autocomplete="off"
+                oninput="checkCustomValue('merchantName', 'merchantNotice')"
+            >
+            <label for="merchantName" class="required">Merchant Name</label>
+            <datalist id="merchantsList">
+            </datalist>
+            <div id="merchantNotice" class="custom-value-notice">A new merchant will be created with this name</div>
+        </div>
+        <div id="merchantLoading" class="loading-text">
+            <span class="loading-spinner"></span> Loading merchants...
+        </div>
+      </div>
+      
+      <!-- Category field with floating label and loading indicator -->
+      <div class="form-field">
+        <input 
+          type="text" 
+          id="categoryName" 
+          name="categoryName" 
+          list="categoriesList" 
+          placeholder=" " 
+          required 
+          autocomplete="off"
+          oninput="checkCustomValue('categoryName', 'categoryNotice')"
+        >
+        <label for="categoryName" class="required">Category Name</label>
+        <datalist id="categoriesList">
+          <!-- Options will be populated from getFbCategories() -->
+        </datalist>
+        <div id="categoryLoading" class="loading-text">
+          <span class="loading-spinner"></span> Loading categories...
+        </div>
+        <div id="categoryNotice" class="custom-value-notice">A new category will be created with this name</div>
+      </div>
+      
+      <button type="submit" id="submitButton">
+          <span id="submitText">Submit</span>
+          <span id="submitSpinner" class="button-spinner" style="display: none;"></span>
+      </button>
+    </form>
+  </div>
+  <div id="alertModal" class="alert-modal">
+      <div class="alert-content">
+          <div id="alertIcon"></div>
+          <div id="alertMessage"></div>
+          <button id="alertClose" class="alert-button">OK</button>
+      </div>
+  </div>
+
+  <script>
+    // Function to initialize the form
+    function initialize() {
+      // Show loading indicators
+      document.getElementById('merchantLoading').style.display = 'block';
+      document.getElementById('categoryLoading').style.display = 'block';
+      
+      // Load merchant data from getFbVendors
+      google.script.run.withSuccessHandler(loadMerchants).getFbVendors();
+      
+      // Load category data from getFbCategories
+      google.script.run.withSuccessHandler(loadCategories).getFbCategories();
+    }
+    
+    // Function to check if custom value is entered
+    function checkCustomValue(fieldId, noticeId) {
+      const input = document.getElementById(fieldId);
+      const notice = document.getElementById(noticeId);
+      const datalistId = fieldId === 'merchantName' ? 'merchantsList' : 'categoriesList';
+      const datalist = document.getElementById(datalistId);
+      
+      // Check if the current value exists in the datalist
+      let exists = false;
+      for (let i = 0; i < datalist.options.length; i++) {
+        if (datalist.options[i].value === input.value) {
+          exists = true;
+          break;
+        }
+      }
+      
+      // Show/hide the notice based on whether it's a custom value
+      notice.style.display = exists ? 'none' : 'block';
+    }
+    
+    // Function to load merchants into the datalist
+    function loadMerchants(merchants) {
+      const merchantsList = document.getElementById('merchantsList');
+      merchants.forEach(merchant => {
+        const option = document.createElement('option');
+        option.value = merchant.name || merchant;
+        merchantsList.appendChild(option);
+      });
+      
+      // Hide loading indicator once loaded
+      document.getElementById('merchantLoading').style.display = 'none';
+    }
+    
+    // Function to load categories into the datalist
+    function loadCategories(categories) {
+      const categoriesList = document.getElementById('categoriesList');
+      categories.forEach(category => {
+        const option = document.createElement('option');
+        option.value = category;
+        categoriesList.appendChild(option);
+      });
+      
+      // Hide loading indicator once loaded
+      document.getElementById('categoryLoading').style.display = 'none';
+    }
+    
+    // Function to handle form submission
+    function handleSubmit(event) {
+      event.preventDefault();
+      // Get button elements
+      const submitButton = document.getElementById('submitButton');
+      const submitText = document.getElementById('submitText');
+      const submitSpinner = document.getElementById('submitSpinner');
+
+      submitButton.disabled = true;
+      submitText.textContent = 'Processing...';
+      submitSpinner.style.display = 'inline-block';
+
+      const formData = {
+        name: document.getElementById('name').value,
+        email: document.getElementById('email').value,
+        role: document.getElementById('role').value,
+        merchantName: document.getElementById('merchantName').value,
+        categoryName: document.getElementById('categoryName').value,
+        userType: document.getElementById('userType').value,
+        isNewMerchant: document.getElementById('merchantNotice').style.display === 'block',
+        isNewCategory: document.getElementById('categoryNotice').style.display === 'block'
+      };
+      
+      // Send form data back to Google Apps Script
+      // .withSuccessHandler(onSuccess)
+       google.script.run
+        .withSuccessHandler((response) => {
+            // Reset button state
+            submitButton.disabled = false;
+            submitText.textContent = 'Submit';
+            submitSpinner.style.display = 'none';
+            onSuccess(response);
+        })
+        .withFailureHandler((error) => {
+            // Reset button state
+            submitButton.disabled = false;
+            submitText.textContent = 'Submit';
+            submitSpinner.style.display = 'none';
+            onFailure(error);
+        })
+        .processForm(formData);
+
+    }
+    
+    // Success handler
+    function showAlert(message, type) {
+        const modal = document.getElementById('alertModal');
+        const alertMessage = document.getElementById('alertMessage');
+        
+        modal.className = `alert-modal show ${type}`;
+        alertMessage.textContent = message;
+        
+        // Handle close button
+        document.getElementById('alertClose').onclick = function() {
+            modal.classList.remove('show');
+            if (type === 'success') {
+                google.script.host.close();
+            }
+        }; 
+        
+        // Close on background click
+        modal.onclick = function(e) {
+            if (e.target === modal) {
+                modal.classList.remove('show');
+                if (type === 'success') {
+                    google.script.host.close();
+                }
+            }
+        };
+    }
+
+    function onSuccess(response) {
+        showAlert('New user created successfully!', 'success');
+    }
+
+    function onFailure(error) {
+        showAlert(`Error: ${error.message || 'Something went wrong. Please try again.'}`, 'error');
+    }
+    
+    document.addEventListener('DOMContentLoaded', initialize);
+  </script>
+</body>
+</html>

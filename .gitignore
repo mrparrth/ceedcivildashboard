@@ -23,3 +23,7 @@ dist-ssr
 *.sln
 *.sw?
 .parcel-cache/*
+
+.parcel-cache/
+
+apps-script/index.html

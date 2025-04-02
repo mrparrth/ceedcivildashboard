@@ -25,7 +25,7 @@ class User {
     );
   }
 
-  emailUser(values, password) {
+  emailUserOld(values, password) {
     const [name, email, role] = values.slice(3);
     const subject = `You've been invited to ${this.settings.appName}`;
     const htmlBody = `
@@ -52,7 +52,7 @@ class User {
     GmailApp.sendEmail(email, subject, "", options);
   }
 
-  createUser(name, email, role, password) {
+  createUserOld(name, email, role, password) {
     password = password || _generatePassword_(6);
     const id = Utilities.getUuid();
     const createdAt = new Date().toISOString();
@@ -73,7 +73,7 @@ class User {
     this.ws.appendRow(values);
 
     this.emailUser(values, password);
-    
+
     //share the root folder
     const rootFolderUrl = this.settings.projectsRootFolder
     const rootFolder = DriveApp.getFolderById(_getIdFromUrl_(rootFolderUrl))
@@ -144,12 +144,108 @@ class User {
     }
 
     try {
-      this.createUser(name, email, role, password);
+      this.createUserOld(name, email, role, password);
       msg = `✅ New user has been created!`;
     } catch (err) {
       msg = `🔴 ${err.message}`;
     }
     _alert_(msg, title);
+  }
+
+  showUserRegistrationForm() {
+    const html = HtmlService.createHtmlOutputFromFile('newUserForm.html')
+      .setWidth(550)
+      .setHeight(650)
+      .setTitle('User Registration');
+
+    SpreadsheetApp.getUi().showModalDialog(html, 'User Registration');
+  }
+
+  processForm(formData) {
+    this.createUser(formData)
+    this.emailUser(formData);
+
+    if (formData.isNewCategory) {
+      createFbCategory(formData.categoryName)
+    }
+  }
+
+  createUser(userInfo) {
+    const { name, email, categoryName, userType, merchantName, role } = userInfo
+    const password = _generatePassword_(6);
+    const id = Utilities.getUuid();
+    const createdAt = new Date().toISOString();
+    const hashedPassword = _hashPassword_(
+      password,
+      this.settings.secretPasswordHash
+    );
+    const values = [
+      id,
+      createdAt,
+      createdAt,
+      name,
+      email,
+      role,
+      "Active",
+      hashedPassword,
+      merchantName,
+      categoryName,
+      userType
+    ];
+    this.ws.appendRow(values);
+
+    userInfo.password = password
+
+    //share the root folder
+    const rootFolderUrl = this.settings.projectsRootFolder
+    const rootFolder = DriveApp.getFolderById(_getIdFromUrl_(rootFolderUrl))
+    rootFolder.addEditor(email)
+
+    return userInfo
+  }
+
+  emailUser(userInfo) {
+    const { name, email, role, password } = userInfo;
+    const subject = `Welcome to ${this.settings.appName} - Your Account Information`;
+
+    const htmlBody = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333333;">
+        <div style="text-align: center; margin-bottom: 20px;">
+          <img src="${this.settings.urlLogo}" alt="${this.settings.appName} Logo" style="max-height: 60px;">
+        </div>
+        
+        <h2 style="color: #4A4A4A; margin-bottom: 20px;">Welcome to ${this.settings.appName}, ${name}!</h2>
+        
+        <p>You have been invited to use Project Tracker. Below are your account details:</p>
+        
+        <div style="background-color: #F7F7F7; padding: 15px; border-radius: 5px; margin: 20px 0;">
+          <p><strong>Email:</strong> ${email}</p>
+          <p><strong>Password:</strong> ${password}</p>
+          <p><strong>Role:</strong> ${role}</p>
+        </div>
+        
+        <div style="text-align: center; margin: 25px 0;">
+          <a href="${this.settings.urlApp}" style="background-color: #A482B6; color: white; padding: 12px 25px; text-decoration: none; border-radius: 4px; font-weight: bold;">Access ${this.settings.appName}</a>
+        </div>
+        
+        <hr style="border: 1px solid #EEEEEE; margin: 30px 0;">
+        
+        <div style="color: #64596F; font-size: 12px; text-align: center;">
+          <p>
+            ${this.settings.appName}<br>
+            <a href="https://www.ceedcivil.com/" target="_blank" style="color: #A482B6;">www.ceedcivil.com</a>
+          </p>
+        </div>
+      </div>
+    `;
+
+    const options = {
+      name: this.settings.appName,
+      htmlBody,
+      cc: 'ceedcivil@gmail.com',
+    };
+
+    GmailApp.sendEmail(email, subject, "", options);
   }
 
   resendInvitation() {
@@ -186,7 +282,7 @@ class User {
       }
     }
   }
-  
+
   resendInvitationEmail(row) {
     const title = "Resend Invitation Email";
 
@@ -255,7 +351,7 @@ class Auth {
   }
 
   login({ email, password, token }) {
-    console.log('Loggin in with ', {email, password, token})
+    console.log('Loggin in with ', { email, password, token })
     if (email && password) {
       const user = this.getUserByEmail(email);
       if (!user) {
@@ -328,7 +424,7 @@ class PublicApp {
 
   onOpen() {
     _createMenu_(this.settings.appName, [
-      { caption: "+ New User", action: "addNewUser" },
+      { caption: "+ New User", action: "showUserRegistrationForm" },
       { caption: "Resend Invitation", action: "resendInvitation" },
       null,
       { caption: "Re-authorize Freshbooks", action: "authorizeFB" },
@@ -357,13 +453,17 @@ class PublicApp {
 
   getAppData() {
     let metadata = this.getMetadata()
+    let adminUrls = _getItemsFromSheet_(this.ss.getSheetByName('⚙️Urls'), row => row.name !== '')
 
     return {
       ...metadata,
+      adminUrls,
       appName: this.settings.appName,
       urlLogo: this.settings.urlLogo,
       contractExportFolder: this.settings.contractExportFolder,
-      contractTemplate: this.settings.contractTemplate
+      contractTemplate: this.settings.contractTemplate,
+      totalFoundation: this.settings.totalFoundation,
+      totalNewFoundation: this.settings.totalNewFoundation
     };
   }
 
@@ -513,7 +613,7 @@ class SecureApp extends PublicApp {
   }
 
   createProject(project) {
-    console.log(`Creating project `,project)
+    console.log(`Creating project `, project)
 
     if (!project.projectNumber) {
       project.projectNumber = this.getNewProjectNumber();
@@ -521,9 +621,8 @@ class SecureApp extends PublicApp {
     }
 
     try {
-      // var dropboxFolderName = `Project ${project.projectNumber} - ${project.projectName}`;
       const folderUrls = this.createDriveFolderStructure(project)
-      
+
       project.projectFilesFolder = folderUrls.root
       project.draftingDropboxLink = folderUrls.arch
       project.engineeringDropboxLink = folderUrls.structural
@@ -531,6 +630,12 @@ class SecureApp extends PublicApp {
       project.civilDropboxLink = folderUrls.civil
     } catch (e) {
       console.log(`Error while creating folder`, e);
+    }
+
+    try {
+      project.slackChannelId = _createSlackChannel(project)
+    } catch (e) {
+      console.error(e.message)
     }
 
     let lock = LockService.getScriptLock();
@@ -542,10 +647,73 @@ class SecureApp extends PublicApp {
       this.shProjects
         .getRange(2, 1, 1, 2)
         .setValues([[project.projectName, JSON.stringify({ ...project, dateCreated: new Date().toISOString(), dateModified: new Date().toISOString(), modifiedBy: this.user?.name, createdBy: this.user?.name })]]);
-    }finally{
+    } finally {
       lock.releaseLock()
     }
     return project;
+  }
+
+  logDifferences(oldObj, newObj, type = 'Project') {
+    const timestamp = new Date().toISOString();
+    const changeDescriptions = [];
+
+    Object.keys(newObj).forEach(key => {
+      if (key === 'id') return; // Skip id field
+
+      const oldValue = oldObj[key];
+      const newValue = newObj[key];
+
+      // Handle array comparisons
+      if (Array.isArray(oldValue) && Array.isArray(newValue)) {
+        if (JSON.stringify(oldValue.sort()) !== JSON.stringify(newValue.sort())) {
+          changeDescriptions.push(`${key}: [${oldValue.join(', ')}] → [${newValue.join(', ')}]`);
+        }
+      }
+      // Handle object comparisons
+      else if (typeof oldValue === 'object' && typeof newValue === 'object' && oldValue !== null && newValue !== null) {
+        // Sort object keys before stringifying to ensure consistent comparison
+        const sortedOldValue = Object.keys(oldValue).sort().reduce((acc, key) => {
+          acc[key] = oldValue[key];
+          return acc;
+        }, {});
+
+        const sortedNewValue = Object.keys(newValue).sort().reduce((acc, key) => {
+          acc[key] = newValue[key];
+          return acc;
+        }, {});
+
+        if (JSON.stringify(sortedOldValue) !== JSON.stringify(sortedNewValue)) {
+          changeDescriptions.push(`${key}: ${JSON.stringify(sortedOldValue)} → ${JSON.stringify(sortedNewValue)}`);
+        }
+      }
+      // Handle primitive values
+      else if (oldValue !== newValue) {
+        changeDescriptions.push(`${key}: ${oldValue} → ${newValue}`);
+      }
+    });
+
+    if (changeDescriptions.length == 0) return;
+
+    let lock = LockService.getScriptLock();
+    try {
+      lock.waitLock(30000); // wait 30 seconds for others' use of the code section and lock to stop and then proceed
+    } catch (e) {
+      Logger.log('Could not obtain lock after 30 seconds.');
+    }
+
+    let logSh = this.ss.getSheetByName(type == 'Project' ? 'ProjectLog' : 'PaymentLog')
+    logSh.insertRowBefore(2);
+    let rowValue = [
+      timestamp,
+      this.user?.name,
+      oldObj.projectNumber,
+      (type == 'Project' ? (newObj.assignedTo || oldObj.assignedTo)?.join(', ') : (newObj.assignee || oldObj.assignee)) || 'Unassigned',
+      changeDescriptions.join('\n')
+    ]
+    logSh.getRange(2, 1, 1, rowValue.length).setValues([rowValue]);
+
+    SpreadsheetApp.flush(); // applies all pending spreadsheet changes
+    if (lock.hasLock()) lock.releaseLock();
   }
 
   updateProject(updatedValues) {
@@ -553,10 +721,25 @@ class SecureApp extends PublicApp {
     let project = this.getProjectById(updatedValues.id);
     if (!project) throw "Project not found";
 
-    let updatedProject = { ...project, ...updatedValues, dateModified: new Date().toISOString(), modifiedBy: this.user?.name };
+    const timestamp = new Date().toISOString();
+    const modifiedBy = this.user?.name;
+    let updatedProject = { ...project, ...updatedValues, dateModified: timestamp, modifiedBy };
+
+    this.logDifferences(project, updatedValues);
 
     if (project.overallProjectStatus !== 'Pending S&S' && updatedValues.overallProjectStatus == 'Pending S&S') {
       _sendEmail_(this.settings['statusChangedToPendingS&s'], this.settings['sendS&sEmailTo'], updatedProject)
+    }
+
+    if (project.slackChannelId) {
+      let deltaUsers = updatedValues.assignedTo.filter(user => !project.assignedTo.includes(user))
+      if (deltaUsers.length > 0) {
+        try {
+          inviteUserToChannel(project.slackChannelId, deltaUsers)
+        } catch (e) {
+          console.error(e.message)
+        }
+      }
     }
 
     let lock = LockService.getScriptLock();
@@ -567,7 +750,7 @@ class SecureApp extends PublicApp {
       this.shProjects
         .getRange(project._rowIndex, 2)
         .setValue(JSON.stringify(updatedProject));
-    }finally{
+    } finally {
       lock.releaseLock()
     }
   }
@@ -579,6 +762,43 @@ class SecureApp extends PublicApp {
   unarchiveProjects(ids) {
     ids.forEach((id) => this.updateProject({ id, isArchived: false }));
   }
+
+  newChat(data) {
+    let lock = LockService.getScriptLock();
+    try {
+      if (!lock.tryLock(60000)) {
+        throw new Error("Could not acquire lock");
+      }
+      let project = this.getProjectById(data.projectId);
+      if (!project) throw "Project not found";
+
+      project.chats = [...(project.chats || []), data.chat];
+      this.updateProject(project);
+    } finally {
+      lock.releaseLock();
+    }
+  }
+
+  updateChat(newInfo) {
+    let { projectId, updatedChat } = newInfo
+    let lock = LockService.getScriptLock();
+    try {
+      if (!lock.tryLock(60000)) {
+        throw new Error("Could not acquire lock");
+      }
+      let project = this.getProjectById(projectId);
+      if (!project) throw "Project not found";
+
+      let chatIndex = project.chats.findIndex(chat => chat.id == updatedChat.id)
+
+      project.chats[chatIndex] = { ...project.chats[chatIndex], ...updatedChat }
+
+      this.updateProject(project);
+    } finally {
+      lock.releaseLock();
+    }
+  }
+
 
   createPayments(payments) {
     console.log('Creating payments ', payments)
@@ -607,16 +827,17 @@ class SecureApp extends PublicApp {
     if (!payment) throw "Payment not found";
 
     let updatedPayment = { ...payment, ...updatedValues, dateModified: new Date().toISOString(), modifiedBy: this.user?.name };
+    this.logDifferences(payment, updatedValues, 'Payment');
 
     let lock = LockService.getScriptLock();
     try {
       if (!lock.tryLock(180000)) {
         throw new Error("Could not acquire lock");
       }
-    this.shPayments
-      .getRange(payment._rowIndex, 2)
-      .setValue(JSON.stringify(updatedPayment));
-    }finally{
+      this.shPayments
+        .getRange(payment._rowIndex, 2)
+        .setValue(JSON.stringify(updatedPayment));
+    } finally {
       lock.releaseLock()
     }
   }
@@ -673,46 +894,44 @@ class SecureApp extends PublicApp {
 
     let folderName = `Project ${project.projectNumber} - ${project.projectName}`;
     let driveRoot = DriveApp.getFolderById(_getIdFromUrl_(this.settings.projectsRootFolder));
+    let clientRoot = DriveApp.getFolderById(_getIdFromUrl_(this.settings.clientRootFolder));
     // Share with specific users without sending emails
 
-    let now = new Date();
-    let timestamp = Utilities.formatDate(now, Session.getScriptTimeZone(), "ddMMyyyy_HHmmss");
+    let projectFolder = driveRoot.createFolder(folderName); //removed the timestamp on 14thFeb
+    let clientProjectFolder = clientRoot.createFolder(`Client Folder - project ${project.projectNumber}`)
 
-    // let projectFolder = driveRoot.createFolder(folderName + '_' + timestamp);
-    let projectFolder = driveRoot.createFolder(folderName ); //removed the timestamp on 14thFeb
+    project.clientProjectFolder = clientProjectFolder.getUrl()
+    projectFolder.createShortcut(clientProjectFolder.getId())
+    if (project.clientEmail && project.folderOptions.sendClientEmail) {
+      _sendEmail_('Project {{projectNumber}} - FILE UPLOADS REQUEST', project.clientEmail, project)
+    }
 
     // this.shareWithAllUsers(projectFolder)
+    let subFolders = [`${project.projectNumber} - Old Archive Folder`];
 
-    let subFolders = [
-      `Client Folder - project ${project.projectNumber}`,
-      `${project.projectNumber} - Old Archive Folder`,
-    ];
-
-    if(project.folderOptions?.drafter) subFolders.push(`${project.projectNumber} - Arch Folder`) //drafter
-    if(project.folderOptions?.engg) subFolders.push(`${project.projectNumber} - Structural Folder`) //engg
-    if(project.folderOptions?.mep) subFolders.push(`${project.projectNumber} - MEP Folder`) //mep
-    if(project.folderOptions?.civil) subFolders.push(`${project.projectNumber} - Civil Folder`) //civil
+    if (project.folderOptions?.drafter) subFolders.push(`${project.projectNumber} - Arch Folder`) //drafter
+    if (project.folderOptions?.engg) subFolders.push(`${project.projectNumber} - Structural Folder`) //engg
+    if (project.folderOptions?.mep) subFolders.push(`${project.projectNumber} - MEP Folder`) //mep
+    if (project.folderOptions?.civil) subFolders.push(`${project.projectNumber} - Civil Folder`) //civil
 
     for (let folderName of subFolders) {
       let folder = projectFolder.createFolder(folderName);
-      let folderId = folder.getId();
 
-      if (folderName.startsWith('Client Folder - project ')) {
-        // Share with anyone with link - can use regular DriveApp
-        project.clientProjectFolder = folder.getUrl()
-        folder.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.EDIT);
-        if (project.clientEmail && project.folderOptions.sendClientEmail) {
-          _sendEmail_('Project {{projectNumber}} - FILE UPLOADS REQUEST', project.clientEmail, project)
-        }
-      } else {
-        if(folderName.includes('Arch Folder')) folders.arch = folder.getUrl()
-        if(folderName.includes('Structural Folder')) folders.structural = folder.getUrl()
-        if(folderName.includes('MEP Folder')) folders.mep = folder.getUrl()
-        if(folderName.includes('Civil Folder')) folders.civil = folder.getUrl()
-        if(folderName.includes('Old Archive Folder')) folders.archive = folder.getUrl()
-          
-        // this.shareWithAllUsers(folder)
-      }
+      // if (folderName.startsWith('Client Folder - project ')) {
+      //   // Share with anyone with link - can use regular DriveApp
+      //   folder.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.EDIT);
+      //   project.clientProjectFolder = folder.getUrl()
+      //   if (project.clientEmail && project.folderOptions.sendClientEmail) {
+      //     _sendEmail_('Project {{projectNumber}} - FILE UPLOADS REQUEST', project.clientEmail, project)
+      //   }
+      // } else {
+      if (folderName.includes('Arch Folder')) folders.arch = folder.getUrl()
+      if (folderName.includes('Structural Folder')) folders.structural = folder.getUrl()
+      if (folderName.includes('MEP Folder')) folders.mep = folder.getUrl()
+      if (folderName.includes('Civil Folder')) folders.civil = folder.getUrl()
+      if (folderName.includes('Old Archive Folder')) folders.archive = folder.getUrl()
+      // this.shareWithAllUsers(folder)
+      // }
     }
 
     folders.root = projectFolder.getUrl()
@@ -725,18 +944,18 @@ class SecureApp extends PublicApp {
     let allUsers = this.settings.emailsWithEditAccess.split(',');
     // folder.addEditors(allUsers)
     //if notification is too much
-      // Add write permission without sending notification emails
+    // Add write permission without sending notification emails
     for (const email of allUsers) {
       try {
         Drive.Permissions.create(
           {
-            role: 'writer', 
+            role: 'writer',
             type: 'user',
-            emailAddress: email 
+            emailAddress: email
           },
-          folder.getId(), 
+          folder.getId(),
           {
-            sendNotificationEmail: false 
+            sendNotificationEmail: false
           }
         );
       } catch (e) {
@@ -748,6 +967,8 @@ class SecureApp extends PublicApp {
 
 const doGet = (e) => new PublicApp().doGet(e);
 const addNewUser = () => new User().addNewUser();
+const showUserRegistrationForm = () => new User().showUserRegistrationForm();
+const processForm = (formData) => new User().processForm(formData);
 const resendInvitation = () => new User().resendInvitation();
 
 const login = ({ token, data }) => new Auth().login({ token, ...data });
@@ -762,6 +983,8 @@ const unarchiveProjects = ({ token, data }) => new SecureApp(token).unarchivePro
 const createProject = ({ token, data }) => new SecureApp(token).createProject(data);
 const createDropboxFolder = ({ token, data }) => new SecureApp(token).createDriveFolderForProject(data) //createDropboxFolder(data); //we are creating drive folders as of Jan3,2025
 const getNewProjectNumber = ({ token }) => new SecureApp(token).getNewProjectNumber();
+const newChat = ({ token, data }) => new SecureApp(token).newChat(data);
+const updateChat = ({ token, data }) => new SecureApp(token).updateChat(data);
 
 const createPayments = ({ token, data }) => new SecureApp(token).createPayments(data);
 const updatePayment = ({ token, data }) => new SecureApp(token).updatePayment(data);
