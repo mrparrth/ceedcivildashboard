@@ -75,23 +75,34 @@ const FinanceTable = ({ pageNo, onPageChange, data, selectedRows, onRowSelection
     if (!sortConfig.key) return data;
 
     return [...data].sort((a, b) => {
-      let aValue = a[sortConfig.key];
-      let bValue = b[sortConfig.key];
+      const originalA = a[sortConfig.key];
+      const originalB = b[sortConfig.key];
+
+      // Handle null/undefined values first
+      if (originalA === null || originalA === undefined) return 1;
+      if (originalB === null || originalB === undefined) return -1;
 
       // Handle numeric fields
       const numericFields = ["estimatedBudget", "actualCost", "paid", "revisionCost", "totalProjectCost", "projectNumber"];
 
+      let comparison;
       if (numericFields.includes(sortConfig.key)) {
-        aValue = parseFloat(aValue) || 0;
-        bValue = parseFloat(bValue) || 0;
+        // Try to parse both values as numbers
+        const numA = parseFloat(originalA);
+        const numB = parseFloat(originalB);
+
+        // If both are valid numbers, compare numerically
+        if (!isNaN(numA) && !isNaN(numB)) {
+          comparison = numA < numB ? -1 : numA > numB ? 1 : 0;
+        } else {
+          // If either is not a valid number, compare as strings
+          comparison = String(originalA).localeCompare(String(originalB));
+        }
+      } else {
+        // For non-numeric fields, always compare as strings
+        comparison = String(originalA).localeCompare(String(originalB));
       }
 
-      // Handle null/undefined values
-      if (aValue === null || aValue === undefined) return 1;
-      if (bValue === null || bValue === undefined) return -1;
-
-      // Compare values
-      const comparison = aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
       return sortConfig.direction === "asc" ? comparison : -comparison;
     });
   }, [data, sortConfig]);
