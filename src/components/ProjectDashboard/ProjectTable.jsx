@@ -27,10 +27,19 @@ const ProjectTable = ({
     if (!sortConfig.key) return projects;
 
     return [...projects].sort((a, b) => {
-      if (a[sortConfig.key] < b[sortConfig.key]) {
+      let valueA = a[sortConfig.key];
+      let valueB = b[sortConfig.key];
+
+      // Convert to float if the key is projectNumber
+      if (sortConfig.key === "projectNumber") {
+        valueA = parseFloat(valueA);
+        valueB = parseFloat(valueB);
+      }
+
+      if (valueA < valueB) {
         return sortConfig.direction === "asc" ? -1 : 1;
       }
-      if (a[sortConfig.key] > b[sortConfig.key]) {
+      if (valueA > valueB) {
         return sortConfig.direction === "asc" ? 1 : -1;
       }
       return 0;
@@ -54,6 +63,7 @@ const ProjectTable = ({
       <ArrowDownward fontSize="small" />
     );
   };
+
   const handleRowsPerPageChange = (event) => {
     setRowsPerPage(parseInt(event.target.value));
   };

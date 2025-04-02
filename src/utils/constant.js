@@ -166,7 +166,8 @@ export const BLANK_PROJECT = {
     engg: true,
     mep: true,
     civil: true
-  }
+  },
+  chats: []
 };
 
 export const BLANK_PAYMENT = {

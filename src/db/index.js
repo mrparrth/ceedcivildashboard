@@ -109,6 +109,10 @@ async function handleDevEnvironment(functionName, data) {
         throw "Invoice must be created first for the project";
       }
       return "123456789";
+    case "newChat":
+      return "";
+    case "updateChat":
+      return "";
     default:
       throw new Error(
         "Unhandled Fake Google Function " +

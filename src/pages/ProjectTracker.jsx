@@ -1,17 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Button,
-  Container,
-  Paper,
-  Box,
-  Typography,
-  Toolbar,
-  useTheme,
-  useMediaQuery,
-  TextField,
-  FormControlLabel,
-  Checkbox
-} from "@mui/material";
+import { Button, Container, Paper, Box, Typography, Toolbar, useTheme, useMediaQuery, TextField, FormControlLabel, Checkbox } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import ArchiveIcon from "@mui/icons-material/Archive";
 import AddIcon from "@mui/icons-material/Add";
@@ -20,7 +8,7 @@ import useNotification from "hooks/useNotification";
 import useData from "hooks/useData";
 
 const StyledButton = styled(Button)(({ theme }) => ({
-  margin: theme.spacing(1)
+  margin: theme.spacing(1),
 }));
 
 const ProjectTracker = () => {
@@ -72,8 +60,8 @@ const ProjectTracker = () => {
       archiveProjects(selectedProjects);
     } else {
       addNotification({
-        title: "No active projects selected that can be archived",
-        type: "alert"
+        title: "No active projects selected which can be archived",
+        type: "alert",
       });
     }
   };
@@ -91,28 +79,18 @@ const ProjectTracker = () => {
             flexDirection: { xs: "column", sm: "row" },
             alignItems: { xs: "stretch", sm: "center" },
             gap: 2,
-            justifyContent: "space-between"
+            justifyContent: "space-between",
           }}>
           <Box
             sx={{
               display: "flex",
               gap: 2,
-              flexDirection: { xs: "column", sm: "row" }
+              flexDirection: { xs: "column", sm: "row" },
             }}>
-            <StyledButton
-              variant="contained"
-              color="secondary"
-              startIcon={<ArchiveIcon />}
-              onClick={handleArchiveProject}
-              fullWidth={isXsScreen}>
+            <StyledButton variant="contained" color="secondary" startIcon={<ArchiveIcon />} onClick={handleArchiveProject} fullWidth={isXsScreen}>
               Archive Project(s)
             </StyledButton>
-            <StyledButton
-              variant="contained"
-              color="primary"
-              startIcon={<AddIcon />}
-              onClick={showNewProjectModal}
-              fullWidth={isXsScreen}>
+            <StyledButton variant="contained" color="primary" startIcon={<AddIcon />} onClick={showNewProjectModal} fullWidth={isXsScreen}>
               New Project
             </StyledButton>
           </Box>
@@ -122,24 +100,10 @@ const ProjectTracker = () => {
               display: "flex",
               gap: 2,
               alignItems: "center",
-              flexDirection: { xs: "column", sm: "row" }
+              flexDirection: { xs: "column", sm: "row" },
             }}>
-            <TextField
-              size="small"
-              placeholder="Search Project by name, description, or notes"
-              sx={{ minWidth: 400 }}
-              onChange={(e) => handleSearch(e.target.value)}
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={includeArchived}
-                  onChange={(e) => setIncludeArchived(e.target.checked)}
-                  color="primary"
-                />
-              }
-              label="Include Archived"
-            />
+            <TextField size="small" placeholder="Search Project by name, description, or notes" sx={{ minWidth: 400 }} onChange={(e) => handleSearch(e.target.value)} />
+            <FormControlLabel control={<Checkbox checked={includeArchived} onChange={(e) => setIncludeArchived(e.target.checked)} color="primary" />} label="Include Archived" />
           </Box>
         </Toolbar>
       </Paper>
@@ -148,18 +112,7 @@ const ProjectTracker = () => {
         <Box p={1}>
           <ProjectTable
             projects={projects.filter((project) => {
-              return (
-                (includeArchived || !project.isArchived) &&
-                !project.isDeleted &&
-                (searchQuery === "" ||
-                  [
-                    project.projectName,
-                    project.description,
-                    project.projectNotes
-                  ].some((field) =>
-                    field?.toLowerCase().includes(searchQuery.toLowerCase())
-                  ))
-              );
+              return (includeArchived || !project.isArchived) && !project.isDeleted && (searchQuery === "" || [project.projectName, project.description, project.projectNotes].some((field) => field?.toLowerCase().includes(searchQuery.toLowerCase())));
             })}
             pageNo={currentPage}
             onPageChange={handlePageChange}
@@ -171,13 +124,7 @@ const ProjectTracker = () => {
         </Box>
       </Paper>
 
-      {isModalOpen && (
-        <ProjectModal
-          closeModal={handleCloseModal}
-          projectKey={modalProjectKey}
-          viewOnly={modalReadOnly}
-        />
-      )}
+      {isModalOpen && <ProjectModal closeModal={handleCloseModal} projectKey={modalProjectKey} viewOnly={modalReadOnly} />}
     </Container>
   );
 };

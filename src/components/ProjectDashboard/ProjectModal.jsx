@@ -8,14 +8,16 @@ import { BLANK_PROJECT } from "../../utils/constant";
 import { getAssignedToBreakdown } from "utils/utils";
 import URLInput from "components/UrlInput";
 import CustomTextArea from "components/CustomTextArea";
+import ChatBox from "./ChatBox";
+import { Box, Typography } from "@mui/material";
+import LightbulbIcon from "@mui/icons-material/Lightbulb";
 
 const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
-  let { updateProject, createProject, projects } = useData();
+  let { updateProject, createProject, projects, addNewChat, updateChat } = useData();
   let { appData } = useAppData();
 
   let initProject;
-  if (projectKey)
-    initProject = projects.find((project) => project.id == projectKey);
+  if (projectKey) initProject = projects.find((project) => project.id == projectKey);
 
   const [project, setProject] = useState(initProject || BLANK_PROJECT);
   const [loading, setLoading] = useState(false);
@@ -30,27 +32,14 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
   const isNewProject = !projectKey;
 
   const handleInputChange = (key, value) => {
-    console.log(isNewProject, "isNewProject");
-    if (
-      key === "projectNumber" &&
-      value &&
-      !hasShownConfirmation.current &&
-      isNewProject
-    ) {
+    if (key === "projectNumber" && value && !hasShownConfirmation.current && isNewProject) {
       setPendingProjectNumber(value);
       setShowConfirmation(true);
       return;
     }
     if (key == "") return;
 
-    if (
-      [
-        "draftingEstimate",
-        "engineeringEstimate",
-        "mepEstimate",
-        "civilEstimate"
-      ].includes(key)
-    ) {
+    if (["draftingEstimate", "engineeringEstimate", "mepEstimate", "civilEstimate"].includes(key)) {
       let estimatedBudget = parseFloat(project.draftingEstimate) || 0;
       estimatedBudget += parseFloat(project.engineeringEstimate) || 0;
       estimatedBudget += parseFloat(project.mepEstimate) || 0;
@@ -88,9 +77,7 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
         }
       } catch (error) {
         console.error("Error submitting form:", error);
-        setErrors(
-          "An error occurred while saving the project. Please try again."
-        );
+        setErrors("An error occurred while saving the project. Please try again.");
       } finally {
         setLoading(false);
       }
@@ -100,7 +87,7 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
   const fieldRefs = {
     projectName: useRef(null),
     description: useRef(null),
-    estimatedBudget: useRef(null)
+    estimatedBudget: useRef(null),
   };
 
   const formFields = [
@@ -108,38 +95,38 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
     {
       label: "Project Number",
       key: "projectNumber",
-      placeholder: isNewProject ? "Leave empty to generate new number" : ""
+      placeholder: isNewProject ? "Leave empty to generate new number" : "",
     },
     { label: "Invoice Number", key: "invoiceNumber" },
     {
       label: "Salesman",
       key: "salesMan",
       isSingleSelect: true,
-      options: appData.salesmen
+      options: appData.salesmen,
     },
     {
       label: "Description",
       key: "description",
       isTextarea: true,
-      ref: fieldRefs.description
+      ref: fieldRefs.description,
     },
     {
       label: "Overall Status",
       key: "overallProjectStatus",
       isSingleSelect: true,
-      options: appData.status
+      options: appData.status,
     },
     {
       label: "State",
       key: "state",
       isSingleSelect: true,
-      options: appData.states
+      options: appData.states,
     },
     {
       label: "Priority",
       key: "priority",
       isSingleSelect: true,
-      options: appData.priority
+      options: appData.priority,
     },
     { label: "Project Files Folder", key: "projectFilesFolder", isUrl: true },
     { label: "Project Notes", key: "projectNotes", isTextarea: true },
@@ -147,55 +134,43 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
     {
       label: "Deposit Paid",
       key: "depositPaid",
-      isCheckbox: true
+      isCheckbox: true,
     },
     {
       label: "Estimated Budget",
       key: "estimatedBudget",
       ref: fieldRefs.estimatedBudget,
       disabled: true,
-      placeholder:
-        "Autocalculated: Enter estimates For Engg, MEP, Drafting, Civil"
+      placeholder: "Autocalculated: Enter estimates For Engg, MEP, Drafting, Civil",
     },
     {
       label: "Initial Status",
       key: "initialProjectStatus",
       isSingleSelect: true,
-      options: appData.initialStatus
+      options: appData.initialStatus,
     },
     {
       label: "Assigned To",
       key: "assignedTo",
       options: appData.assignTo,
-      isMultiSelect: true
+      isMultiSelect: true,
     },
     {
       label: "Client Project Name/Address",
       key: "clientProjectNameAddress",
-      isTextarea: true
-    }
+      isTextarea: true,
+    },
   ];
 
   const getInputElement = (formField) => {
     const commonProps = {
       id: formField.key,
       ref: formField.ref,
-      className: `${formField.baseClassName || ""} ${
-        errors[formField.key] ? "error" : ""
-      }`
+      className: `${formField.baseClassName || ""} ${errors[formField.key] ? "error" : ""}`,
     };
 
     if (formField.isSingleSelect) {
-      return (
-        <SingleSelectDropdown
-          {...commonProps}
-          options={formField.options}
-          selectedOption={project[formField.key]}
-          onChange={handleInputChange}
-          label={formField.label}
-          viewOnly={viewOnly}
-        />
-      );
+      return <SingleSelectDropdown {...commonProps} options={formField.options} selectedOption={project[formField.key]} onChange={handleInputChange} label={formField.label} viewOnly={viewOnly} />;
     }
 
     if (formField.isMultiSelect) {
@@ -206,44 +181,24 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
           selectedOptions={project[formField.key]}
           setSelectedOptions={(newSelectedOptions) => {
             if (formField.key == "assignedTo") {
-              const {
-                draftingTaskedTo,
-                engineeringTaskedTo,
-                mepTaskedTo,
-                civilTaskedTo
-              } = getAssignedToBreakdown(newSelectedOptions, appData);
+              const { draftingTaskedTo, engineeringTaskedTo, mepTaskedTo, civilTaskedTo } = getAssignedToBreakdown(newSelectedOptions, appData);
 
               handleInputChange(formField.key, newSelectedOptions);
               handleInputChange("draftingTaskedTo", draftingTaskedTo);
               handleInputChange("draftingNeeded", draftingTaskedTo !== "");
               handleInputChange("engineeringTaskedTo", engineeringTaskedTo);
-              handleInputChange(
-                "engineeringNeeded",
-                engineeringTaskedTo !== ""
-              );
+              handleInputChange("engineeringNeeded", engineeringTaskedTo !== "");
               handleInputChange("mepTaskedTo", mepTaskedTo);
               handleInputChange("mepNeeded", mepTaskedTo !== "");
               handleInputChange("civilTaskedTo", civilTaskedTo);
               handleInputChange("civilNeeded", civilTaskedTo !== "");
-            } else if (
-              [
-                "draftingTaskedTo",
-                "engineeringTaskedTo",
-                "mepTaskedTo",
-                "civilTaskedTo"
-              ].includes(formField.key)
-            ) {
+            } else if (["draftingTaskedTo", "engineeringTaskedTo", "mepTaskedTo", "civilTaskedTo"].includes(formField.key)) {
               let section = formField.key.replace("TaskedTo", "");
               let neededField = section + "Needed";
               handleInputChange(neededField, newSelectedOptions.length > 0);
 
               let oldSelOptions = project[formField.key];
-              handleInputChange("assignedTo", [
-                ...project["assignedTo"].filter(
-                  (u) => !oldSelOptions.includes(u)
-                ),
-                ...newSelectedOptions
-              ]);
+              handleInputChange("assignedTo", [...project["assignedTo"].filter((u) => !oldSelOptions.includes(u)), ...newSelectedOptions]);
             }
           }}
           viewOnly={viewOnly}
@@ -252,40 +207,11 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
     }
 
     if (formField.isTextarea) {
-      return (
-        <CustomTextArea
-          {...commonProps}
-          id={formField.key}
-          value={project[formField.key]}
-          onChange={(e) => handleInputChange(formField.key, e.target.value)}
-          className="form-textarea"
-          disabled={viewOnly}
-        />
-      );
-
-      // <textarea
-      //   {...commonProps}
-      //   id={formField.key}
-      //   value={project[formField.key]}
-      //   onChange={(e) =>
-      //     handleInputChange(formField.key, e.target.value)
-      //   }
-      //   className="form-textarea"
-      //   disabled={viewOnly}
-      // />;
+      return <CustomTextArea {...commonProps} id={formField.key} value={project[formField.key]} onChange={(e) => handleInputChange(formField.key, e.target.value)} className="form-textarea" disabled={viewOnly} />;
     }
 
     if (formField.isCheckbox) {
-      return (
-        <CheckBox
-          {...commonProps}
-          id={formField.key}
-          checked={project[formField.key]}
-          onChange={(value) => handleInputChange(formField.key, value)}
-          label={formField.label}
-          viewOnly={viewOnly}
-        />
-      );
+      return <CheckBox {...commonProps} id={formField.key} checked={project[formField.key]} onChange={(value) => handleInputChange(formField.key, value)} label={formField.label} viewOnly={viewOnly} />;
     }
 
     if (formField.isUrl) {
@@ -296,33 +222,17 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
           value={project[formField.key]}
           onChange={(e) => handleInputChange(formField.key, e.target.value)}
           readOnly={formField.isEditable === false || viewOnly}
-          className={`form-input text-wrap ${
-            formField.disabled ? "disabled-input" : ""
-          }`}
+          className={`form-input text-wrap ${formField.disabled ? "disabled-input" : ""}`}
           disabled={formField.disabled}
           style={{
-            minWidth: formField.key == "projectName" ? "20em" : ""
+            minWidth: formField.key == "projectName" ? "20em" : "",
           }}
           placeholder={formField.placeholder}
         />
       );
     }
 
-    return (
-      <input
-        {...commonProps}
-        id={formField.key}
-        type="text"
-        value={project[formField.key]}
-        onChange={(e) => handleInputChange(formField.key, e.target.value)}
-        readOnly={formField.isEditable === false || viewOnly}
-        className={`form-input text-wrap ${
-          formField.disabled ? "disabled-input" : ""
-        }`}
-        disabled={formField.disabled}
-        placeholder={formField.placeholder}
-      />
-    );
+    return <input {...commonProps} id={formField.key} type="text" value={project[formField.key]} onChange={(e) => handleInputChange(formField.key, e.target.value)} readOnly={formField.isEditable === false || viewOnly} className={`form-input text-wrap ${formField.disabled ? "disabled-input" : ""}`} disabled={formField.disabled} placeholder={formField.placeholder} />;
   };
 
   const validateForm = () => {
@@ -344,11 +254,31 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
       fieldRefs[firstErrorField].current.focus();
       fieldRefs[firstErrorField].current.scrollIntoView({
         behavior: "smooth",
-        block: "center"
+        block: "center",
       });
     }
 
     return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSendMessage = (chat) => {
+    // Update local state immediately for better UX
+    setProject((prev) => ({
+      ...prev,
+      chats: [...(prev.chats || []), chat],
+    }));
+
+    // Update global state
+    addNewChat(project.id, chat);
+  };
+
+  const handleMessageCompletion = (updatedChat) => {
+    setProject((prev) => ({
+      ...prev,
+      chats: prev.chats.map((pChat) => (pChat.id === updatedChat.id ? { ...pChat, ...updatedChat } : pChat)),
+    }));
+
+    updateChat(project.id, updatedChat);
   };
 
   return (
@@ -358,11 +288,7 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
           <button onClick={closeModal} className="close-button">
             ×
           </button>
-          <h2 className="modal-title">
-            {isNewProject
-              ? "Create New Project"
-              : `Project Details${viewOnly ? " (READ MODE)" : ""}`}
-          </h2>
+          <h2 className="modal-title">{isNewProject ? "Create New Project" : `Project Details${viewOnly ? " (READ MODE)" : ""}`}</h2>
           <div className="row flex-column flex-lg-row justify-content-center mt-6">
             <div className="col-12 col-lg-6 mb-4 mb-lg-0">
               <div className="project-form">
@@ -373,11 +299,7 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
                     </label>
                     <div className="form-field">
                       {getInputElement(formField)}
-                      {errors[formField.key] && (
-                        <div className="error-message">
-                          {errors[formField.key]}
-                        </div>
-                      )}
+                      {errors[formField.key] && <div className="error-message">{errors[formField.key]}</div>}
                     </div>
                   </div>
                 ))}
@@ -387,92 +309,70 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
               <div className="vr h-100"></div>
             </div>
             <div className="col-12 col-lg-5">
-              <div className="d-flex flex-column gap-2">
+              <div className="d-flex flex-column gap-2 ">
                 <div className="d-flex flex-column gap-1">
-                  <button
-                    onClick={() => setDrafterToggle(!drafterToggle)}
-                    className="drafter-toggle bg-success text-white"
-                    type="button">
-                    Drafter Details
-                    <span
-                      className={`dropdown-arrow ${
-                        drafterToggle ? "open" : ""
-                      }`}>
-                      ▼
-                    </span>
-                  </button>
-                  {drafterToggle && (
-                    <Drafter
-                      data={project}
-                      setter={(itemKey, value) =>
-                        handleInputChange(itemKey, value)
-                      }
-                      viewOnly={viewOnly}
-                    />
+                  {project.draftingTaskedTo.length == 0 && project.engineeringTaskedTo.length == 0 && project.mepTaskedTo.length == 0 && project.civilTaskedTo.length == 0 && (
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                        p: 2,
+                        backgroundColor: "#f8f9fa",
+                        borderRadius: 1,
+                        border: "1px solid #e0e0e0",
+                        mb: 2,
+                      }}>
+                      <LightbulbIcon sx={{ color: "primary.main", fontSize: 20 }} />
+                      <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                        Assign to a Drafter, Engineer, MEP or Civil to show this section
+                      </Typography>
+                    </Box>
                   )}
-
-                  <button
-                    onClick={() => setEnggToggle(!enggToggle)}
-                    className="drafter-toggle bg-warning text-dark"
-                    type="button">
-                    Engineering Details
-                    <span
-                      className={`dropdown-arrow ${enggToggle ? "open" : ""}`}>
-                      ▼
-                    </span>
-                  </button>
-                  {enggToggle && (
-                    <Engineering
-                      data={project}
-                      setter={(itemKey, value) =>
-                        handleInputChange(itemKey, value)
-                      }
-                      viewOnly={viewOnly}
-                    />
+                  {project.draftingTaskedTo.length > 0 && (
+                    <>
+                      <button onClick={() => setDrafterToggle(!drafterToggle)} className="drafter-toggle bg-success text-white" type="button">
+                        Drafter Details
+                        <span className={`dropdown-arrow ${drafterToggle ? "open" : ""}`}>▼</span>
+                      </button>
+                      {drafterToggle && <Drafter data={project} setter={(itemKey, value) => handleInputChange(itemKey, value)} viewOnly={viewOnly} />}
+                    </>
                   )}
-
-                  <button
-                    onClick={() => setMepToggle(!mepToggle)}
-                    className="drafter-toggle bg-dark text-light"
-                    type="button">
-                    MEP Details
-                    <span
-                      className={`dropdown-arrow ${mepToggle ? "open" : ""}`}>
-                      ▼
-                    </span>
-                  </button>
-                  {mepToggle && (
-                    <MEP
-                      data={project}
-                      setter={(itemKey, value) =>
-                        handleInputChange(itemKey, value)
-                      }
-                      viewOnly={viewOnly}
-                    />
+                  {project.engineeringTaskedTo.length > 0 && (
+                    <>
+                      <button onClick={() => setEnggToggle(!enggToggle)} className="drafter-toggle bg-warning text-dark" type="button">
+                        Engineering Details
+                        <span className={`dropdown-arrow ${enggToggle ? "open" : ""}`}>▼</span>
+                      </button>
+                      {enggToggle && <Engineering data={project} setter={(itemKey, value) => handleInputChange(itemKey, value)} viewOnly={viewOnly} />}
+                    </>
                   )}
-
-                  <button
-                    onClick={() => setCivilToggle(!civilToggle)}
-                    className="drafter-toggle text-light"
-                    style={{ backgroundColor: "#5378e4" }}
-                    type="button">
-                    CIVIL Details
-                    <span
-                      className={`dropdown-arrow ${civilToggle ? "open" : ""}`}>
-                      ▼
-                    </span>
-                  </button>
-                  {civilToggle && (
-                    <Civil
-                      data={project}
-                      setter={(itemKey, value) =>
-                        handleInputChange(itemKey, value)
-                      }
-                      viewOnly={viewOnly}
-                    />
+                  {project.mepTaskedTo.length > 0 && (
+                    <>
+                      <button onClick={() => setMepToggle(!mepToggle)} className="drafter-toggle bg-dark text-light" type="button">
+                        MEP Details
+                        <span className={`dropdown-arrow ${mepToggle ? "open" : ""}`}>▼</span>
+                      </button>
+                      {mepToggle && <MEP data={project} setter={(itemKey, value) => handleInputChange(itemKey, value)} viewOnly={viewOnly} />}
+                    </>
+                  )}
+                  {project.civilTaskedTo.length > 0 && (
+                    <>
+                      <button onClick={() => setCivilToggle(!civilToggle)} className="drafter-toggle text-light" style={{ backgroundColor: "#5378e4" }} type="button">
+                        CIVIL Details
+                        <span className={`dropdown-arrow ${civilToggle ? "open" : ""}`}>▼</span>
+                      </button>
+                      {civilToggle && <Civil data={project} setter={(itemKey, value) => handleInputChange(itemKey, value)} viewOnly={viewOnly} />}
+                    </>
                   )}
                 </div>
               </div>
+              <hr className="section-divider" />
+
+              {/* Chat Section */}
+              <Box sx={{ mt: 2 }}>
+                <ChatBox chats={project.chats} onSendMessage={handleSendMessage} onMessageComplete={handleMessageCompletion} />
+              </Box>
             </div>
           </div>
           <div
@@ -480,21 +380,18 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
             style={{
               display: "flex",
               gap: "1rem",
-              justifyContent: "center"
+              justifyContent: "center",
             }}>
             <button
               onClick={closeModal}
               type="button"
               className="submit-button"
               style={{
-                backgroundColor: "#dc3545"
+                backgroundColor: "#dc3545",
               }}>
               Cancel
             </button>
-            <button
-              onClick={handleSubmit}
-              disabled={loading || viewOnly}
-              className="submit-button">
+            <button onClick={handleSubmit} disabled={loading || viewOnly} className="submit-button">
               {loading ? (
                 <>
                   <span className="spinner"></span>
@@ -517,7 +414,7 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
         message="Manually entering a project number may cause conflicts. Are you sure you want to proceed? Leave empty to auto-generate."
         choices={[
           { label: "Yes, I understand", value: true },
-          { label: "No, auto-generate", value: false }
+          { label: "No, auto-generate", value: false },
         ]}
         showCancel={false}
       />
