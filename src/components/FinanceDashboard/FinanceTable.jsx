@@ -8,20 +8,13 @@ import useAuth from "hooks/useAuth";
 import { Paper, Box, Checkbox } from "@mui/material";
 import { ArrowUpward, ArrowDownward } from "@mui/icons-material";
 
-const FinanceTable = ({
-  pageNo,
-  onPageChange,
-  data,
-  selectedRows,
-  onRowSelection,
-  onEditRow
-}) => {
+const FinanceTable = ({ pageNo, onPageChange, data, selectedRows, onRowSelection, onEditRow }) => {
   const { isLoading } = useData();
   const { user } = useAuth();
   const { addNotification } = useNotification();
   const [sortConfig, setSortConfig] = useState({
     key: null,
-    direction: "asc"
+    direction: "asc",
   });
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const maxAllowedSelection = 7;
@@ -32,7 +25,7 @@ const FinanceTable = ({
     cursor: "pointer",
     userSelect: "none",
     position: "relative",
-    paddingRight: "20px" // Space for sort icon
+    paddingRight: "20px", // Space for sort icon
   };
 
   const editableHeaderStyle = {
@@ -41,14 +34,14 @@ const FinanceTable = ({
     cursor: "pointer",
     userSelect: "none",
     position: "relative",
-    paddingRight: "20px" // Space for sort icon
+    paddingRight: "20px", // Space for sort icon
   };
 
   const checkboxStyle = {
     padding: 0,
     color: "white",
     "&.Mui-checked": { color: "white" },
-    "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.08)" }
+    "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.08)" },
   };
 
   const sortIconStyle = {
@@ -56,38 +49,23 @@ const FinanceTable = ({
     right: "4px",
     top: "50%",
     transform: "translateY(-50%)",
-    fontSize: "16px"
+    fontSize: "16px",
   };
 
   const requestSort = useCallback((key) => {
     setSortConfig((prevConfig) => ({
       key,
-      direction:
-        prevConfig.key === key && prevConfig.direction === "asc"
-          ? "desc"
-          : "asc"
+      direction: prevConfig.key === key && prevConfig.direction === "asc" ? "desc" : "asc",
     }));
   }, []);
 
   const SortIcon = ({ columnKey }) => {
     if (sortConfig.key !== columnKey) return null;
-    return (
-      <span style={sortIconStyle}>
-        {sortConfig.direction === "asc" ? (
-          <ArrowUpward fontSize="small" />
-        ) : (
-          <ArrowDownward fontSize="small" />
-        )}
-      </span>
-    );
+    return <span style={sortIconStyle}>{sortConfig.direction === "asc" ? <ArrowUpward fontSize="small" /> : <ArrowDownward fontSize="small" />}</span>;
   };
 
   const handleSelectRow = (row) => {
-    const updatedSelection = selectedRows.some(
-      (selectedRow) => selectedRow.id === row.id
-    )
-      ? selectedRows.filter((selectedRow) => selectedRow.id !== row.id)
-      : [...selectedRows, row];
+    const updatedSelection = selectedRows.some((selectedRow) => selectedRow.id === row.id) ? selectedRows.filter((selectedRow) => selectedRow.id !== row.id) : [...selectedRows, row];
     onRowSelection(updatedSelection);
   };
 
@@ -101,13 +79,7 @@ const FinanceTable = ({
       let bValue = b[sortConfig.key];
 
       // Handle numeric fields
-      const numericFields = [
-        "estimatedBudget",
-        "actualCost",
-        "paid",
-        "revisionCost",
-        "totalProjectCost"
-      ];
+      const numericFields = ["estimatedBudget", "actualCost", "paid", "revisionCost", "totalProjectCost", "projectNumber"];
 
       if (numericFields.includes(sortConfig.key)) {
         aValue = parseFloat(aValue) || 0;
@@ -134,7 +106,7 @@ const FinanceTable = ({
         onRowSelection(currentPageData.slice(0, maxAllowedSelection));
         if (currentPageData.length > maxAllowedSelection) {
           addNotification({
-            title: `You can create a maximum of ${maxAllowedSelection} expenses at a time`
+            title: `You can create a maximum of ${maxAllowedSelection} expenses at a time`,
           });
         }
       } else {
@@ -156,7 +128,7 @@ const FinanceTable = ({
       {
         title: "Estimated Budget",
         key: "estimatedBudget",
-        style: fixedHeaderStyle
+        style: fixedHeaderStyle,
       },
       { title: "Actual Cost", key: "actualCost", style: editableHeaderStyle },
       { title: "Paid", key: "paid", style: editableHeaderStyle },
@@ -164,19 +136,19 @@ const FinanceTable = ({
       {
         title: "Revisions Needed?",
         key: "revisionNeeded",
-        style: editableHeaderStyle
+        style: editableHeaderStyle,
       },
       {
         title: "Date Paid",
         key: "revisionDatePaid",
-        style: editableHeaderStyle
+        style: editableHeaderStyle,
       },
       {
         title: "Revision Cost",
         key: "revisionCost",
-        style: editableHeaderStyle
+        style: editableHeaderStyle,
       },
-      { title: "Notes/Remarks", key: "notes", style: editableHeaderStyle }
+      { title: "Notes/Remarks", key: "notes", style: editableHeaderStyle },
     ];
     // { title: "Sales Man", key: "salesMan", style: fixedHeaderStyle },
     // {
@@ -186,37 +158,19 @@ const FinanceTable = ({
     // }
     if (isAdmin) {
       headers.unshift({
-        title: (
-          <Checkbox
-            checked={
-              selectedRows.length === currentPageData.length ||
-              selectedRows.length === maxAllowedSelection
-            }
-            indeterminate={
-              selectedRows.length > 0 &&
-              selectedRows.length < currentPageData.length &&
-              selectedRows.length < maxAllowedSelection
-            }
-            onChange={handleSelectAll}
-            sx={checkboxStyle}
-          />
-        ),
+        title: <Checkbox checked={selectedRows.length === currentPageData.length || selectedRows.length === maxAllowedSelection} indeterminate={selectedRows.length > 0 && selectedRows.length < currentPageData.length && selectedRows.length < maxAllowedSelection} onChange={handleSelectAll} sx={checkboxStyle} />,
         key: null,
-        style: fixedHeaderStyle
+        style: fixedHeaderStyle,
       });
       headers.push({
         title: "Create Expense/Expense Id",
         key: "expenseId",
-        style: editableHeaderStyle
+        style: editableHeaderStyle,
       });
     }
 
     return headers.map((header, index) => (
-      <th
-        key={index}
-        scope="col"
-        style={header.style}
-        onClick={() => header.key && requestSort(header.key)}>
+      <th key={index} scope="col" style={header.style} onClick={() => header.key && requestSort(header.key)}>
         {header.title}
         {header.key && <SortIcon columnKey={header.key} />}
       </th>
@@ -231,35 +185,12 @@ const FinanceTable = ({
             <thead>
               <tr>{renderTableHeaders()}</tr>
             </thead>
-            <tbody>
-              {!isLoading &&
-                currentPageData.map((financeRow) => (
-                  <FinanceRow
-                    key={financeRow.id}
-                    row={financeRow}
-                    isAdmin={isAdmin}
-                    isSelected={selectedRows.some(
-                      (selectedRow) => selectedRow.id === financeRow.id
-                    )}
-                    onSelectRow={handleSelectRow}
-                    onEditRow={() => onEditRow(financeRow)}
-                  />
-                ))}
-            </tbody>
+            <tbody>{!isLoading && currentPageData.map((financeRow) => <FinanceRow key={financeRow.id} row={financeRow} isAdmin={isAdmin} isSelected={selectedRows.some((selectedRow) => selectedRow.id === financeRow.id)} onSelectRow={handleSelectRow} onEditRow={() => onEditRow(financeRow)} />)}</tbody>
           </table>
 
           {isLoading && <Loader />}
 
-          {!isLoading && (
-            <PaginationCustom
-              data={sortedData}
-              pageNo={pageNo}
-              rowsPerPage={rowsPerPage}
-              isLoading={isLoading}
-              onPageChange={onPageChange}
-              handleRowsPerPageChange={handleRowsPerPageChange}
-            />
-          )}
+          {!isLoading && <PaginationCustom data={sortedData} pageNo={pageNo} rowsPerPage={rowsPerPage} isLoading={isLoading} onPageChange={onPageChange} handleRowsPerPageChange={handleRowsPerPageChange} />}
         </div>
       </Box>
     </Paper>
