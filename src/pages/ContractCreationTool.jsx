@@ -224,8 +224,6 @@ const CEEDCivilForm = () => {
 
   const handleSubmit = useCallback(
     async (e) => {
-      console.log(formData);
-
       e.preventDefault();
       setIsCreatingContract(true);
 

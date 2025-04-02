@@ -25,7 +25,7 @@ const ExtAndIntCommon = {
   borderRadius: "4px",
   height: 44,
   whiteSpace: "pre",
-  marginBottom: "8px",
+  marginBottom: "2px",
   textDecoration: "none",
   justifyContent: "flex-start",
   padding: "0 16px",

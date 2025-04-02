@@ -16,7 +16,9 @@ import {
   archiveProjects,
   unarchiveProjects,
   createDropboxFolder,
-  toggleProjectSelection
+  toggleProjectSelection,
+  addNewChat,
+  updateChat
 } from "./projectOperations";
 import {
   createPayment,
@@ -112,6 +114,8 @@ export default function DataProvider({ children }) {
       addToQueue,
       user
     ),
+    addNewChat: addNewChat(dispatch, addToQueue),
+    updateChat: updateChat(dispatch, addToQueue),
     deleteProject: deleteProject(dispatch, addToQueue),
     archiveProjects: archiveProjects(dispatch, addToQueue),
     unarchiveProjects: unarchiveProjects(dispatch, addToQueue),

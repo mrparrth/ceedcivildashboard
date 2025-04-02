@@ -1,9 +1,12 @@
 import Pagination from "@mui/material/Pagination";
+import { Select, MenuItem, FormControl, InputLabel } from "@mui/material";
+
 export default function PaginationCustom({
   data,
   pageNo,
   rowsPerPage = 10,
-  onPageChange
+  onPageChange,
+  handleRowsPerPageChange
 }) {
   const indexOfLastRow = pageNo * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
@@ -18,6 +21,18 @@ export default function PaginationCustom({
           results
         </p>
       )}
+      <FormControl variant="standard" sx={{ minWidth: 80, ml: 2 }}>
+        <select
+          className="form-select form-select-lg"
+          value={rowsPerPage}
+          onChange={handleRowsPerPageChange}>
+          {[50, 75, 100, 150].map((rpp) => (
+            <option key={rpp} value={rpp}>
+              {rpp}
+            </option>
+          ))}
+        </select>
+      </FormControl>
       {data.length === 0 && <p className="mb-0">No results to display</p>}
       {
         <Pagination

@@ -526,8 +526,8 @@ table td .info p {
   background-color: #f8f9fa;
   padding: 20px;
   border-radius: 12px;
-  min-width: 65%;
-  max-width: 85%;
+  width: 85%;
+  max-width: 1300px;
   max-height: 90vh;
   overflow-y: auto;
   position: relative;
@@ -858,7 +858,7 @@ table td .info p {
 .form-select {
   height: 38px; /* Adjust this value as needed */
   line-height: 1.5;
-  padding: 0.375rem 0.75rem;
+  padding: 8px 16px;
 }
 
 /* Ensure the text in select elements is vertically centered */
@@ -882,12 +882,6 @@ table td .info p {
 }
 
 .inline-suggestion {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
   align-items: center;
   pointer-events: none;
   padding: 8px 10px; /* Adjust this to match your input padding */
@@ -914,4 +908,9 @@ table td .info p {
 .disabled-input {
   background-color: #f0f0f0;
   color: #888;
+}
+
+[disabled] {
+  background-color: var(--bs-secondary-bg);
+  color: #1f1d1d;
 }

@@ -13,7 +13,7 @@
     "gclone": "clasp clone 13KY-pq1Xwwyjsn-IuTYjO3xVhDVMDhiFlz8r0eP6dFld-43wYVEa4SdN",
     "start": "parcel ./src/index.html --dist-dir ./apps-script",
     "build": "parcel build ./src/index.html --dist-dir ./apps-script",
-    "buildnpush": "npm run build && npm run gpush",
+    "buildgas": "npm run build && npm run gpush",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0"
   },
   "dependencies": {

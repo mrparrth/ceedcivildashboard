@@ -166,11 +166,12 @@ export const BLANK_PROJECT = {
     engg: true,
     mep: true,
     civil: true
-  }
+  },
+  chats: []
 };
 
 export const BLANK_PAYMENT = {
-  id: null,
+  id: "",
   assignee: "",
   projectNumber: "",
   projectName: "",
@@ -186,5 +187,5 @@ export const BLANK_PAYMENT = {
   revisionsPaid: false,
   notes: "",
   totalCost: "",
-  expenseId: null
+  expenseId: ""
 };

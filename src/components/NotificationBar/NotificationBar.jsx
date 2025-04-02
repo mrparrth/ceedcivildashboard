@@ -18,7 +18,7 @@ import { themeShadows } from "../../theme/themeColors";
 import { Paragraph, Small } from "../Typography";
 import PopupNotification from "../PopupNotification";
 
-import useSettings from "../../hooks/useSettings";
+import useSettings from "hooks/useSettings";
 import useNotification from "hooks/useNotification";
 
 function getTimeDifference(date) {

@@ -7,9 +7,16 @@ import Loader from "../LoaderCustom";
 
 import useData from "hooks/useData";
 
-const ProjectTable = ({ projects, pageNo, onPageChange, viewRow, editRow }) => {
+const ProjectTable = ({
+  projects,
+  pageNo,
+  onPageChange,
+  viewRow,
+  editRow,
+  showArchivedIcon
+}) => {
   const { isLoading } = useData();
-  const rowsPerPage = 50;
+  const [rowsPerPage, setRowsPerPage] = useState(50);
   const [sortConfig, setSortConfig] = useState({
     key: null,
     direction: "asc"
@@ -20,10 +27,19 @@ const ProjectTable = ({ projects, pageNo, onPageChange, viewRow, editRow }) => {
     if (!sortConfig.key) return projects;
 
     return [...projects].sort((a, b) => {
-      if (a[sortConfig.key] < b[sortConfig.key]) {
+      let valueA = a[sortConfig.key];
+      let valueB = b[sortConfig.key];
+
+      // Convert to float if the key is projectNumber
+      if (sortConfig.key === "projectNumber") {
+        valueA = parseFloat(valueA);
+        valueB = parseFloat(valueB);
+      }
+
+      if (valueA < valueB) {
         return sortConfig.direction === "asc" ? -1 : 1;
       }
-      if (a[sortConfig.key] > b[sortConfig.key]) {
+      if (valueA > valueB) {
         return sortConfig.direction === "asc" ? 1 : -1;
       }
       return 0;
@@ -46,6 +62,10 @@ const ProjectTable = ({ projects, pageNo, onPageChange, viewRow, editRow }) => {
     ) : (
       <ArrowDownward fontSize="small" />
     );
+  };
+
+  const handleRowsPerPageChange = (event) => {
+    setRowsPerPage(parseInt(event.target.value));
   };
 
   const SortableHeader = ({ column, label, className = "" }) => (
@@ -122,6 +142,7 @@ const ProjectTable = ({ projects, pageNo, onPageChange, viewRow, editRow }) => {
                   project={project}
                   viewRow={viewRow}
                   editRow={editRow}
+                  showArchivedIcon={showArchivedIcon}
                 />
               ))}
         </tbody>
@@ -136,6 +157,7 @@ const ProjectTable = ({ projects, pageNo, onPageChange, viewRow, editRow }) => {
           rowsPerPage={rowsPerPage}
           isLoading={isLoading}
           onPageChange={onPageChange}
+          handleRowsPerPageChange={handleRowsPerPageChange}
         />
       )}
     </>

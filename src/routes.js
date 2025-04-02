@@ -20,28 +20,28 @@ const routes = [
       {
         path: "/dashboard",
         element: <ProjectTracker />,
-        auth: authRoles.employee,
+        auth: authRoles.employee
       },
       {
         path: "/archived",
         element: <Archived />,
-        auth: authRoles.employee,
+        auth: authRoles.employee
       },
       {
         path: "/finance",
         element: <FinanceTracker />,
-        auth: authRoles.employee,
+        auth: authRoles.employee
       },
       {
         path: "/contract-generator-tool",
         element: <CEEDCivilForm />,
-        auth: authRoles.employee,
-      },
-    ],
+        auth: authRoles.employee
+      }
+    ]
   },
   { path: "/login", element: <Login /> },
   { path: "/", element: <Navigate to="/login" /> },
-  { path: "*", element: <Navigate to="/login" /> },
+  { path: "*", element: <Navigate to="/login" /> }
 ];
 
 export default routes;
