@@ -27,3 +27,4 @@ dist-ssr
 .parcel-cache/
 
 apps-script/index.html
+.parcel-cache
