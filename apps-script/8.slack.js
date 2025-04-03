@@ -19,48 +19,41 @@ const API_ENDPOINTS = {
  * Main function to create and configure a Slack channel
  */
 function _createSlackChannel(project) {
+  let settings = _getSettings_(CONFIG.SETTINGS)
+  let commonEmailsForEverySlackChannel = settings.commonEmailsForEverySlackChannel.split(',')
   let users = project.assignedTo
-  let userEmails = new User().getAllUsers().filter(user => users.includes(user.email)).map(user => user.email)
-
+  let userEmails = new User().getAllUsers().filter(user => users.includes(user.name)).map(user => user.email)
   // Channel configuration
   const config = {
-    channelName: `project-${project.projectNumber}`,
+    channelName: formatChannelName(project.projectNumber, project.projectName),
     channelTopic: project.projectName,
     channelDescription: project.description,
-    emailsToInvite: userEmails,
+    emailsToInvite: [...commonEmailsForEverySlackChannel, ...userEmails],
     bookmarks: [
       {
-        title: 'Project Folder',
+        title: 'Go To Project Folder',
         url: project.projectFilesFolder
-      },
-      {
-        title: 'Contract Document',
-        url: project.contractDocumentUrl
-      },
-      {
-        title: 'Engg Folder',
-        url: project.engineeringDropboxLink
-      },
-      {
-        title: 'Mep Folder',
-        url: project.mepDropboxLink
-      },
-      {
-        title: 'Drafting Folder',
-        url: project.draftingDropboxLink
-      },
-      {
-        title: 'Civil Folder',
-        url: project.civilDropboxLink
-      },
+      }
     ],
-    welcomeMessage: `🎉 *Welcome to Project #${project.projectNumber} - ${project.projectName}!* 🎉
-
-                      📢 This channel is your central hub for:
-                        • Project updates and milestones
-                        • Important announcements 
-                        • Team collaboration
-                        • Resource sharing`
+    welcomeMessage: {
+      blocks: [
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: `🎉 *Welcome to Project #${project.projectNumber} - ${project.projectName}!* 🎉`
+          }
+        },
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: `<${project.projectFilesFolder}|📁 Go to project folder>`
+          }
+        }
+      ],
+      parse: 'full'
+    }
   };
 
   config.bookmarks = config.bookmarks.filter(bookmark => !!bookmark.url)
@@ -168,11 +161,13 @@ function addBookmarks(channelId, bookmarks) {
  * @param {string} message - Message text to send
  */
 function sendWelcomeMessage(channelId, message) {
-  const payload = {
-    channel: channelId,
-    text: message,
-    parse: 'full'
-  };
+  let payload = message
+  message.channel = channelId
+  // const payload = {
+  //   channel: channelId,
+  //   text: message,
+  //   parse: 'full'
+  // };
 
   const response = makeSlackApiCall(API_ENDPOINTS.SEND_MESSAGE, payload);
 
@@ -190,7 +185,7 @@ function sendWelcomeMessage(channelId, message) {
 function inviteUserToChannel(channelId, emails) {
   // Look up user by email
   emails.forEach(email => {
-    const lookupUrl = `${SLACK_API_BASE_URL}${API_ENDPOINTS.LOOKUP_USER}?email=${encodeURIComponent(email)}`;
+    const lookupUrl = `${SLACK_API_BASE_URL}${API_ENDPOINTS.LOOKUP_USER}?email=${encodeURIComponent(email.trim())}`;
     const lookupOptions = {
       method: 'get',
       headers: {
@@ -241,5 +236,17 @@ function makeSlackApiCall(endpoint, payload) {
 
   const response = UrlFetchApp.fetch(`${SLACK_API_BASE_URL}${endpoint}`, options);
   return JSON.parse(response.getContentText());
+}
+
+function formatChannelName(projectNumber, projectName) {
+  return `project-${projectNumber}-${projectName}`
+    .replace(/-/g, ' ')
+    .replace(/([a-z])([A-Z])/g, '\$1 $2')
+    .replace(/\s+/g, ' ')
+    .slice(0, 30)
+    .trim()
+    .replace(/\s/g, '-')
+    .replace(/[^a-z0-9\-_]/gi, '')
+    .toLowerCase()
 }
 

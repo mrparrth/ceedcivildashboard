@@ -5,7 +5,7 @@ const testCreateDriveUrl = () => {
   let empToken =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImVjY2I1N2EwLWM0OTItNDlkOS04NmMwLTRmYzBjNTYyMGI3YSIsImNyZWF0ZWRBdCI6IjIwMjQtMTAtMDFUMTQ6MzA6MDAuNjU4WiIsIm1vZGlmaWVkQXQiOiIyMDI0LTEwLTAxVDE0OjMwOjAwLjY1OFoiLCJuYW1lIjoiQXJuZWwiLCJlbWFpbCI6ImlhbXBhcnJ0aEBnbWFpbC5jb20iLCJyb2xlIjoiRW1wbG95ZWUiLCJzdGF0dXMiOiJBY3RpdmUiLCJfcm93SW5kZXgiOjJ9.fUo9EAvFMb+BBYJPKEgmSVZWlGnXej3Mr2FRRjbvxiU=";
 
-  let project = { "clientProjectNameAddress": "James Craft\nBackwoods Pole Barns - FL\n\n", "projectNotes": "", "mepTaskedTo": [], "civilStatus": "", "draftingEstimate": "", "createdBy": "Admin", "mepNeeded": false, "contractDocumentUrl": "https://docs.google.com/open?id=1V4jx1zWG9JgkUDWGaU9MgHv4crvz_csM8GSva9P8k3s", "jobType": "", "engineeringNeeded": false, "engineeringEstimatedDeliveryTime": "", "isArchived": false, "draftingStatus": "", "clientEmail": "", "contractLink": "", "civilNeeded": false, "mepStatus": "", "expenses": [], "description": "Utilize the documents provided and run calcs for all sizing and welds and holes and bolts needed for 450 pole barns to utilize this system. PLEASE note the system is ONLY the backet and rebar and shown on the last page. The idea is to put the rebar and bracket into the wet concrete. ", "engineeringDropboxLink": "https://drive.google.com/drive/folders/1ta-K5PFNu5Hx61DdHrvlXiicOFO6q7zX", "draftingNeeded": false, "id": "adc2b093-3594-45ba-9604-64bb1e71bc48", "salesMan": "", "overallProjectStatus": "For Ryan Review", "payments": [{ "paymentId": "a8af0e3a-f57a-474c-a444-0c744284cbc0", "assignedTo": "VSC - ENG" }], "invoiceNumber": "0001904", "chats": [], "actualCost": "", "assignedTo": ["Erparthas", "Partha.s", "TestTestTest"], "depositPaid": false, "mepEstimate": "", "projectNumber": 704, "civilEstimate": "", "engineeringStatus": "", "draftingEstimatedDeliveryTime": "", "folderOptions": { "sendClientEmail": false, "drafter": false, "engg": true, "mep": false, "civil": false }, "engineeringEstimate": "", "projectName": "450 - Pole Barn Attachment - Open and Enclosed", "civilTaskedTo": [], "draftingTaskedTo": [], "mepEstimatedDeliveryTime": "", "dateCreated": "2025-03-20T17:37:40.995Z", "estimatedBudget": "", "dateModified": "2025-03-24T14:45:59.626Z", "initialProjectStatus": "", "projectFilesFolder": "https://drive.google.com/drive/folders/1lk-qAm87nNNBEQ_Dlee2pM3Chgy6OyTT", "state": "Florida", "priority": "Urgent", "engineeringTaskedTo": ["VSC - ENG"], "modifiedBy": "VSC - ENG", "civilEstimatedDeliveryTime": "", "clientProjectFolder": "https://drive.google.com/drive/folders/1A42s8Bk6VXmqic2_zo1qzlsJ2e1Dfw4V", "_rowIndex": 3, "draftingDropboxLink": null, "mepDropboxLink": null, "civilDropboxLink": null, "slackChannelId": "C08LJMRF5A8" }
+  // let project = { "clientProjectNameAddress": "Test Parth\nBackwoods Pole Barns - FL\n\n", "projectNotes": "", "mepTaskedTo": [], "civilStatus": "", "draftingEstimate": "", "createdBy": "Admin", "mepNeeded": false, "contractDocumentUrl": "https://docs.google.com/open?id=1V4jx1zWG9JgkUDWGaU9MgHv4crvz_csM8GSva9P8k3s", "jobType": "", "engineeringNeeded": false, "engineeringEstimatedDeliveryTime": "", "isArchived": false, "draftingStatus": "", "clientEmail": "", "contractLink": "", "civilNeeded": false, "mepStatus": "", "expenses": [], "description": "Utilize the documents provided and run calcs for all sizing and welds and holes and bolts needed for 450 pole barns to utilize this system. PLEASE note the system is ONLY the backet and rebar and shown on the last page. The idea is to put the rebar and bracket into the wet concrete. ", "engineeringDropboxLink": "https://drive.google.com/drive/folders/1ta-K5PFNu5Hx61DdHrvlXiicOFO6q7zX", "draftingNeeded": false, "id": "adc2b093-3594-45ba-9604-64bb1e71bc48", "salesMan": "", "overallProjectStatus": "For Ryan Review", "payments": [{ "paymentId": "a8af0e3a-f57a-474c-a444-0c744284cbc0", "assignedTo": "VSC - ENG" }], "invoiceNumber": "0001904", "chats": [], "actualCost": "", "assignedTo": ["Test2", "Admin"], "depositPaid": false, "mepEstimate": "", "projectNumber": 704, "civilEstimate": "", "engineeringStatus": "", "draftingEstimatedDeliveryTime": "", "folderOptions": { "sendClientEmail": false, "drafter": false, "engg": true, "mep": false, "civil": false }, "engineeringEstimate": "", "projectName": "450 - Pole Barn Attachment - Open and Enclosed", "civilTaskedTo": [], "draftingTaskedTo": [], "mepEstimatedDeliveryTime": "", "dateCreated": "2025-03-20T17:37:40.995Z", "estimatedBudget": "", "dateModified": "2025-03-24T14:45:59.626Z", "initialProjectStatus": "", "projectFilesFolder": "https://drive.google.com/drive/folders/1lk-qAm87nNNBEQ_Dlee2pM3Chgy6OyTT", "state": "Florida", "priority": "Urgent", "engineeringTaskedTo": ["VSC - ENG"], "modifiedBy": "VSC - ENG", "civilEstimatedDeliveryTime": "", "clientProjectFolder": "https://drive.google.com/drive/folders/1A42s8Bk6VXmqic2_zo1qzlsJ2e1Dfw4V", "_rowIndex": 3, "draftingDropboxLink": null, "mepDropboxLink": null, "civilDropboxLink": null }
 
 
   // createSlackChannel(project)
@@ -13,42 +13,16 @@ const testCreateDriveUrl = () => {
   // console.log(new SecureApp(adminToken).createDriveFolderStructure(project));
 
 
-  console.log(new SecureApp(adminToken).updateProject(project));
+  // console.log(new SecureApp(adminToken).createProject(project));
   // this.settings = _getSettings_(CONFIG.SETTINGS)
   // console.log(this.settings.projectsRootFolder)
   // let folderName = `Project ${project.projectNumber} - ${project.projectName}`
   // let driveRoot = DriveApp.getFolderById(_getIdFromUrl_(this.settings.projectsRootFolder))
 
-  // let now = new Date();
-  // let timestamp = Utilities.formatDate(now, Session.getScriptTimeZone(), "ddMMyyyy_HHmmss");
-
-  // let projectFolder = driveRoot.createFolder(folderName + '_' + timestamp)
-
-  // let subFolders = [
-  //   'Arch Folder',
-  //   'MEP folder',
-  //   'Old Archive Folder',
-  //   'Structural Folder',
-  //   'Client Provided Files'
-  // ];
-
-  // for (let folderName of subFolders) {
-  //   let folder = projectFolder.createFolder(folderName)
-  //   if (folderName == 'Client Provided Files') {
-  //     folder.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.EDIT)
-  //   } else {
-  //     let allUsers = this.settings.emailsWithEditAccess
-  //     folder.addEditors(allUsers.split('/'))
-  //   }
-  // }
-
-  // console.log(new Date(payload['data'].date))
-  // console.log(_createContract_(payload.data));
-
   // console.log(new SecureApp(payload.token).createExpense(payload.data));
 
-  payload = { "data": { "engineeringEstimatedDeliveryTime": "", "projectNotes": "", "priority": "", "description": "Test Description", "civilEngineeringStatus": "", "createdBy": "TestEmployee", "clientProjectNameAddress": "", "dateCreated": "2024-12-03T15:54:20.110Z", "mepTaskedTo": "", "initialProjectStatus": "", "engineeringStatus": "", "estimatedBudget": "0", "projectFilesFolder": "https://www.dropbox.com/scl/fo/qfkp9a8ghy73eurnekxis/AGE9Td31GLJhw3YjYbwUiVk?rlkey=6owed268b39yl8xaji9gdsy37&dl=0", "depositPaid": false, "civilEstimatedDeliveryTime": "", "mepNeeded": false, "actualCost": "", "assignedTo": ["TestEmployee"], "mepEstimatedDeliveryTime": "", "civilNeeded": false, "projectName": "Test By Partha", "contractLink": "", "jobType": "", "projectNumber": 630, "dateModified": "2025-01-04T20:11:33.884Z", "modifiedBy": "TestEmployee", "engineeringNeeded": false, "engineeringDropboxLink": "", "id": "29ae080f-d043-43df-aac2-a9f97b77a136", "overallProjectStatus": "Pending S&S", "civilDropboxLink": "", "draftingEstimatedDeliveryTime": "", "draftingDropboxLink": "", "isArchived": true, "state": "TestState", "engineerTaskedTo": "", "mepDropboxLink": "", "drafterNeeded": false, "mepStatus": "", "invoiceNumber": "", "drafterTaskedTo": "", "salesMan": "", "civilEngineeringTaskedTo": "", "draftingStatus": "", "_rowIndex": 7, "clientEmail": "iamparrth@gmail.com" }, "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjhjNjI4OWJlLWQxODQtNDg3Zi05NTllLTVhOTllYmFiNzg3MiIsImNyZWF0ZWRBdCI6IjIwMjQtMTEtMTdUMTk6MDE6NDUuNTE4WiIsIm1vZGlmaWVkQXQiOiIyMDI0LTExLTE3VDE5OjAxOjQ1LjUxOFoiLCJuYW1lIjoiVGVzdEVtcGxveWVlIiwiZW1haWwiOiJlbXBsb3llZUBjZWVkY2l2aWwuY29tIiwicm9sZSI6IkVtcGxveWVlIiwic3RhdHVzIjoiQWN0aXZlIiwibWVyY2hhbnROYW1lIjoiQWRtaW4iLCJjYXRlZ29yeU5hbWUiOiJEcmFmdGVyIC0gQ29udHJhY3RvciIsIl9yb3dJbmRleCI6MTB9.AU5TjKTgxWjqrXgBSFEe0+0u7KiFc5mf7r5Ha4QtPs8=" }
-  console.log(new SecureApp(payload.token).createProject(payload.data))
+  let projectData = { "clientProjectNameAddress": "Test Parth\nBackwoods Pole Barns - FL\n\n", "projectNotes": "", "mepTaskedTo": [], "civilStatus": "", "draftingEstimate": "", "createdBy": "Admin", "mepNeeded": false, "contractDocumentUrl": "https://docs.google.com/open?id=1V4jx1zWG9JgkUDWGaU9MgHv4crvz_csM8GSva9P8k3s", "jobType": "", "engineeringNeeded": false, "engineeringEstimatedDeliveryTime": "", "isArchived": false, "draftingStatus": "", "clientEmail": "", "contractLink": "", "civilNeeded": false, "mepStatus": "", "expenses": [], "description": "Utilize the documents provided and run calcs for all sizing and welds and holes and bolts needed for 450 pole barns to utilize this system. PLEASE note the system is ONLY the backet and rebar and shown on the last page. The idea is to put the rebar and bracket into the wet concrete. ", "engineeringDropboxLink": "https://drive.google.com/drive/folders/1ta-K5PFNu5Hx61DdHrvlXiicOFO6q7zX", "draftingNeeded": false, "id": "adc2b093-3594-45ba-9604-64bb1e71bc48", "salesMan": "", "overallProjectStatus": "For Ryan Review", "payments": [{ "paymentId": "a8af0e3a-f57a-474c-a444-0c744284cbc0", "assignedTo": "VSC - ENG" }], "invoiceNumber": "0001904", "chats": [], "actualCost": "", "assignedTo": ["Test2", "Ryan"], "depositPaid": false, "mepEstimate": "", "projectNumber": 999, "civilEstimate": "", "engineeringStatus": "", "draftingEstimatedDeliveryTime": "", "folderOptions": { "sendClientEmail": false, "drafter": false, "engg": true, "mep": false, "civil": false }, "engineeringEstimate": "", "projectName": "Test Project 2 By Parth", "civilTaskedTo": [], "draftingTaskedTo": [], "mepEstimatedDeliveryTime": "", "dateCreated": "2025-03-20T17:37:40.995Z", "estimatedBudget": "", "dateModified": "2025-03-24T14:45:59.626Z", "initialProjectStatus": "", "projectFilesFolder": "https://drive.google.com/drive/folders/1lk-qAm87nNNBEQ_Dlee2pM3Chgy6OyTT", "state": "Florida", "priority": "Urgent", "engineeringTaskedTo": ["VSC - ENG"], "modifiedBy": "VSC - ENG", "civilEstimatedDeliveryTime": "", "clientProjectFolder": "https://drive.google.com/drive/folders/1A42s8Bk6VXmqic2_zo1qzlsJ2e1Dfw4V", "_rowIndex": 3, "draftingDropboxLink": null, "mepDropboxLink": null, "civilDropboxLink": null }
+  console.log(new SecureApp(adminToken).createProject(projectData))
 
   // payload = { "data": { "engineeringEstimatedDeliveryTime": "", "projectNotes": "", "priority": "", "description": "Test Description", "civilEngineeringStatus": "", "createdBy": "TestEmployee", "clientProjectNameAddress": "", "dateCreated": "2024-12-03T15:54:20.110Z", "mepTaskedTo": "", "initialProjectStatus": "", "engineeringStatus": "", "estimatedBudget": "0", "projectFilesFolder": "https://www.dropbox.com/scl/fo/qfkp9a8ghy73eurnekxis/AGE9Td31GLJhw3YjYbwUiVk?rlkey=6owed268b39yl8xaji9gdsy37&dl=0", "depositPaid": false, "civilEstimatedDeliveryTime": "", "mepNeeded": false, "actualCost": "", "assignedTo": ["TestEmployee"], "mepEstimatedDeliveryTime": "", "civilNeeded": false, "projectName": "Test By Partha", "contractLink": "", "jobType": "", "projectNumber": 630, "dateModified": "2024-12-24T05:45:49.704Z", "modifiedBy": "TestEmployee", "engineeringNeeded": false, "engineeringDropboxLink": "", "id": "29ae080f-d043-43df-aac2-a9f97b77a136", "overallProjectStatus": "Pending S&S", "civilDropboxLink": "", "draftingEstimatedDeliveryTime": "", "draftingDropboxLink": "", "isArchived": true, "state": "TestState", "engineerTaskedTo": "", "mepDropboxLink": "", "drafterNeeded": false, "mepStatus": "", "invoiceNumber": "", "drafterTaskedTo": "", "salesMan": "", "civilEngineeringTaskedTo": "", "draftingStatus": "", "_rowIndex": 7 }, "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjhjNjI4OWJlLWQxODQtNDg3Zi05NTllLTVhOTllYmFiNzg3MiIsImNyZWF0ZWRBdCI6IjIwMjQtMTEtMTdUMTk6MDE6NDUuNTE4WiIsIm1vZGlmaWVkQXQiOiIyMDI0LTExLTE3VDE5OjAxOjQ1LjUxOFoiLCJuYW1lIjoiVGVzdEVtcGxveWVlIiwiZW1haWwiOiJlbXBsb3llZUBjZWVkY2l2aWwuY29tIiwicm9sZSI6IkVtcGxveWVlIiwic3RhdHVzIjoiQWN0aXZlIiwibWVyY2hhbnROYW1lIjoiQWRtaW4iLCJjYXRlZ29yeU5hbWUiOiJEcmFmdGVyIC0gQ29udHJhY3RvciIsIl9yb3dJbmRleCI6MTB9.AU5TjKTgxWjqrXgBSFEe0+0u7KiFc5mf7r5Ha4QtPs8=" }
 
@@ -129,4 +103,36 @@ const testCreateExpense = () => {
   let user = _getItemsFromSheet_(userSh, row => row.email == 'erparthas@gmail.com')[0]
 
   _createFBExpense_(expense, user)
+}
+
+
+function testSlackMessage() {
+  const project = { "clientProjectNameAddress": "Test Parth\nBackwoods Pole Barns - FL\n\n", "projectNotes": "", "mepTaskedTo": [], "civilStatus": "", "draftingEstimate": "", "createdBy": "Admin", "mepNeeded": false, "contractDocumentUrl": "https://docs.google.com/open?id=1V4jx1zWG9JgkUDWGaU9MgHv4crvz_csM8GSva9P8k3s", "jobType": "", "engineeringNeeded": false, "engineeringEstimatedDeliveryTime": "", "isArchived": false, "draftingStatus": "", "clientEmail": "", "contractLink": "", "civilNeeded": false, "mepStatus": "", "expenses": [], "description": "Utilize the documents provided and run calcs for all sizing and welds and holes and bolts needed for 450 pole barns to utilize this system. PLEASE note the system is ONLY the backet and rebar and shown on the last page. The idea is to put the rebar and bracket into the wet concrete. ", "engineeringDropboxLink": "https://drive.google.com/drive/folders/1ta-K5PFNu5Hx61DdHrvlXiicOFO6q7zX", "draftingNeeded": false, "id": "adc2b093-3594-45ba-9604-64bb1e71bc48", "salesMan": "", "overallProjectStatus": "For Ryan Review", "payments": [{ "paymentId": "a8af0e3a-f57a-474c-a444-0c744284cbc0", "assignedTo": "VSC - ENG" }], "invoiceNumber": "0001904", "chats": [], "actualCost": "", "assignedTo": ["Test2", "Ryan"], "depositPaid": false, "mepEstimate": "", "projectNumber": 999, "civilEstimate": "", "engineeringStatus": "", "draftingEstimatedDeliveryTime": "", "folderOptions": { "sendClientEmail": false, "drafter": false, "engg": true, "mep": false, "civil": false }, "engineeringEstimate": "", "projectName": "Test Project 2 By Parth", "civilTaskedTo": [], "draftingTaskedTo": [], "mepEstimatedDeliveryTime": "", "dateCreated": "2025-03-20T17:37:40.995Z", "estimatedBudget": "", "dateModified": "2025-03-24T14:45:59.626Z", "initialProjectStatus": "", "projectFilesFolder": "https://drive.google.com/drive/folders/1lk-qAm87nNNBEQ_Dlee2pM3Chgy6OyTT", "state": "Florida", "priority": "Urgent", "engineeringTaskedTo": ["VSC - ENG"], "modifiedBy": "VSC - ENG", "civilEstimatedDeliveryTime": "", "clientProjectFolder": "https://drive.google.com/drive/folders/1A42s8Bk6VXmqic2_zo1qzlsJ2e1Dfw4V", "_rowIndex": 3, "draftingDropboxLink": null, "mepDropboxLink": null, "civilDropboxLink": null }
+
+  sendWelcomeMessage('C08LZHNN61X', {
+    blocks: [
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: `🎉 *Welcome to Project #${project.projectNumber} - ${project.projectName}!* 🎉`
+        }
+      },
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: `<${project.projectFilesFolder}|📁 Go to project folder>`
+        }
+      },
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: "📢 This channel is your central hub for:\n• Project updates and milestones\n• Important announcements\n• Team collaboration\n• Resource sharing"
+        }
+      }
+    ],
+    parse: 'full'
+  })
 }

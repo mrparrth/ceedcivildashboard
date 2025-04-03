@@ -277,9 +277,7 @@ class User {
     const rootFolder = DriveApp.getFolderById(_getIdFromUrl_(rootFolderUrl))
     rootFolder.removeEditor(email)
 
-    _alert_(`User deactivated successfully and access to the folders has been removed!\n\n
-      You will need to remove slack access manually.\n\n
-      If you want, you can safely delete the deactivated user row.`, 'User Deletion');
+    _alert_('User deactivated successfully and access to the folders has been removed!\nYou will need to remove slack access manually.\nIf you want, you can safely delete the deactivated user row.', 'User Deletion');
   }
 
   resendInvitation() {
