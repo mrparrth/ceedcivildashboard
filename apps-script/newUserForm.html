@@ -301,11 +301,13 @@
       <div class="form-field">
         <input type="text" id="name" name="name" placeholder=" " required>
         <label for="name" class="required">Name</label>
+        <div id="nameError" class="error" style="display: none;"></div>
       </div>
       
       <div class="form-field">
         <input type="email" id="email" name="email" placeholder=" " required>
         <label for="email" class="required">Email</label>
+        <div id="emailError" class="error" style="display: none;"></div>
       </div>
       
       <h2>Webapp Access Details</h2>
@@ -390,6 +392,14 @@
   </div>
 
   <script>
+    // Parse the existing users data passed from the server
+    let existingUsers = [];
+    try {
+      existingUsers = <?!= allUsers ?>;
+    } catch (e) {
+      console.error('Error parsing existing users:', e);
+    }
+    
     // Function to initialize the form
     function initialize() {
       // Show loading indicators
@@ -529,6 +539,49 @@
     }
     
     document.addEventListener('DOMContentLoaded', initialize);
+
+    function validateField(field, value) {
+      value = value.trim().toLowerCase();
+      
+      const errorElement = document.getElementById(`${field}Error`);
+      const inputElement = document.getElementById(field);
+      
+      // Check if name or email already exists
+      const exists = value!=='' && (existingUsers.some(user => 
+        user[field].trim().toLowerCase() === value
+      ));
+      
+      if (exists) {
+        errorElement.textContent = `This ${field} is already in use. Please use a unique ${field}.`;
+        errorElement.style.display = 'block';
+        inputElement.style.borderColor = '#f44336';
+        return false;
+      } else {
+        errorElement.style.display = 'none';
+        inputElement.style.borderColor = '#ddd';
+        return true;
+      }
+    }
+
+    // Add validation on input
+    document.getElementById('name').addEventListener('input', function(e) {
+      validateField('name', e.target.value);
+    });
+
+    document.getElementById('email').addEventListener('input', function(e) {
+      validateField('email', e.target.value);
+    });
+
+    // Add form submission validation
+    document.getElementById('registrationForm').addEventListener('submit', function(e) {
+      const nameValid = validateField('name', document.getElementById('name').value);
+      const emailValid = validateField('email', document.getElementById('email').value);
+      
+      if (!nameValid || !emailValid) {
+        e.preventDefault();
+        return false;
+      }
+    });
   </script>
 </body>
 </html>

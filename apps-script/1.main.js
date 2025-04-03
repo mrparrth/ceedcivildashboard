@@ -153,7 +153,11 @@ class User {
   }
 
   showUserRegistrationForm() {
-    const html = HtmlService.createHtmlOutputFromFile('newUserForm.html')
+    const allUsers = this.getAllUsers().map(({ name, email }) => ({ name, email }))
+
+    const htmlTemplate = HtmlService.createTemplateFromFile('newUserForm.html')
+    htmlTemplate.allUsers = JSON.stringify(allUsers)
+    const html = htmlTemplate.evaluate()
       .setWidth(550)
       .setHeight(650)
       .setTitle('User Registration');
@@ -162,6 +166,7 @@ class User {
   }
 
   processForm(formData) {
+    console.log('Processing form data:', formData);
     this.createUser(formData)
     this.emailUser(formData);
 
@@ -246,6 +251,35 @@ class User {
     };
 
     GmailApp.sendEmail(email, subject, "", options);
+  }
+
+  deactivateUser() {
+    const range = this.ss.getActiveRange();
+    if (!range) {
+      throw new Error('Please select a user row first');
+    }
+
+    const row = range.getRow();
+    const numRows = range.getNumRows();
+
+    if (numRows !== 1) {
+      throw new Error('Please select only one row');
+    }
+
+    if (row <= 1) {
+      throw new Error('Cannot delete the header row');
+    }
+
+    this.ws.getRange(row, 7).setValue('Inactive')
+
+    const email = this.ws.getRange(row, 5).getValue()
+    const rootFolderUrl = this.settings.projectsRootFolder
+    const rootFolder = DriveApp.getFolderById(_getIdFromUrl_(rootFolderUrl))
+    rootFolder.removeEditor(email)
+
+    _alert_(`User deactivated successfully and access to the folders has been removed!\n\n
+      You will need to remove slack access manually.\n\n
+      If you want, you can safely delete the deactivated user row.`, 'User Deletion');
   }
 
   resendInvitation() {
@@ -426,6 +460,7 @@ class PublicApp {
     _createMenu_(this.settings.appName, [
       { caption: "+ New User", action: "showUserRegistrationForm" },
       { caption: "Resend Invitation", action: "resendInvitation" },
+      { caption: "Deactivate User", action: "deactivateUser" },
       null,
       { caption: "Re-authorize Freshbooks", action: "authorizeFB" },
       { caption: "Re-authorize Dropbox", action: "authorizeDropbox" },
@@ -970,6 +1005,7 @@ const addNewUser = () => new User().addNewUser();
 const showUserRegistrationForm = () => new User().showUserRegistrationForm();
 const processForm = (formData) => new User().processForm(formData);
 const resendInvitation = () => new User().resendInvitation();
+const deactivateUser = () => new User().deactivateUser();
 
 const login = ({ token, data }) => new Auth().login({ token, ...data });
 
