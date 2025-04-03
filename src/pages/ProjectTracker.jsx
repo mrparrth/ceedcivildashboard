@@ -102,7 +102,7 @@ const ProjectTracker = () => {
               alignItems: "center",
               flexDirection: { xs: "column", sm: "row" },
             }}>
-            <TextField size="small" placeholder="Search Project by name, description, or notes" sx={{ minWidth: 400 }} onChange={(e) => handleSearch(e.target.value)} />
+            <TextField size="small" placeholder="Search Project by number, name, description, or note" sx={{ minWidth: 420 }} onChange={(e) => handleSearch(e.target.value)} />
             <FormControlLabel control={<Checkbox checked={includeArchived} onChange={(e) => setIncludeArchived(e.target.checked)} color="primary" />} label="Include Archived" />
           </Box>
         </Toolbar>
@@ -112,7 +112,7 @@ const ProjectTracker = () => {
         <Box p={1}>
           <ProjectTable
             projects={projects.filter((project) => {
-              return (includeArchived || !project.isArchived) && !project.isDeleted && (searchQuery === "" || [project.projectName, project.description, project.projectNotes].some((field) => field?.toLowerCase().includes(searchQuery.toLowerCase())));
+              return (includeArchived || !project.isArchived) && !project.isDeleted && (searchQuery === "" || [project.projectName, project.description, project.projectNotes, project.projectNumber.toString()].some((field) => field?.toLowerCase().includes(searchQuery.toLowerCase())));
             })}
             pageNo={currentPage}
             onPageChange={handlePageChange}
