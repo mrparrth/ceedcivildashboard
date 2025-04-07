@@ -269,7 +269,7 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
     }));
 
     // Update global state
-    addNewChat(project.id, chat);
+    if (!isNewProject) addNewChat(project.id, chat);
   };
 
   const handleMessageCompletion = (updatedChat) => {
@@ -278,7 +278,7 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
       chats: prev.chats.map((pChat) => (pChat.id === updatedChat.id ? { ...pChat, ...updatedChat } : pChat)),
     }));
 
-    updateChat(project.id, updatedChat);
+    if (!isNewProject) updateChat(project.id, updatedChat);
   };
 
   return (
