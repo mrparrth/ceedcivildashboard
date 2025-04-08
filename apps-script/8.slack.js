@@ -20,7 +20,7 @@ const API_ENDPOINTS = {
  */
 function _createSlackChannel(project) {
   let settings = _getSettings_(CONFIG.SETTINGS)
-  let commonEmailsForEverySlackChannel = settings.commonEmailsForEverySlackChannel.split(',')
+  let commonEmailsForEverySlackChannel = settings.commonEmailsForEverySlackChannel.split(',').map(email => email.trim())
   let users = project.assignedTo
   let userEmails = new User().getAllUsers().filter(user => users.includes(user.name)).map(user => user.email)
   // Channel configuration
@@ -243,7 +243,7 @@ function formatChannelName(projectNumber, projectName) {
     .replace(/-/g, ' ')
     .replace(/([a-z])([A-Z])/g, '\$1 $2')
     .replace(/\s+/g, ' ')
-    .slice(0, 30)
+    .slice(0, 35)
     .trim()
     .replace(/\s/g, '-')
     .replace(/[^a-z0-9\-_]/gi, '')
