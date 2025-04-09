@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import { MultiSelectDropdown, SingleSelectDropdown } from "../Fields";
 import { FaEye, FaPencilAlt } from "react-icons/fa";
 import Button from "@mui/material/Button";
@@ -20,6 +20,7 @@ const ProjectRow = ({ project, viewRow, editRow, showArchivedIcon }) => {
   const { appData } = useAppData();
 
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const updateTimeoutRef = useRef(null);
 
   const handleDeleteClick = () => {
     setOpenDeleteDialog(true);
@@ -49,6 +50,37 @@ const ProjectRow = ({ project, viewRow, editRow, showArchivedIcon }) => {
     }
   };
 
+  // Memoize the handleAssignedToChange callback to prevent unnecessary re-renders
+  const handleAssignedToChange = useCallback(
+    (newSelectedOptions) => {
+      // Clear any existing timeout to prevent multiple rapid updates
+      if (updateTimeoutRef.current) {
+        clearTimeout(updateTimeoutRef.current);
+      }
+
+      // Set a new timeout to debounce the update
+      updateTimeoutRef.current = setTimeout(() => {
+        const { draftingTaskedTo, engineeringTaskedTo, mepTaskedTo, civilTaskedTo } = getAssignedToBreakdown(newSelectedOptions, appData);
+
+        console.log(`Updating project ${project.projectName} with new selected options ${JSON.stringify(newSelectedOptions)}`);
+
+        updateProject({
+          id: project.id,
+          assignedTo: newSelectedOptions,
+          draftingTaskedTo,
+          engineeringTaskedTo,
+          mepTaskedTo,
+          civilTaskedTo,
+          draftingNeeded: draftingTaskedTo !== "",
+          engineeringNeeded: engineeringTaskedTo !== "",
+          mepNeeded: mepTaskedTo !== "",
+          civilNeeded: civilTaskedTo !== "",
+        });
+      }, 300); // 300ms debounce time
+    },
+    [project.id, project.projectName, appData, updateProject]
+  );
+
   return (
     <>
       <tr key={project.id} className={getRowStyle()}>
@@ -66,28 +98,7 @@ const ProjectRow = ({ project, viewRow, editRow, showArchivedIcon }) => {
         <td>{project.projectNumber}</td>
         <td>{project.invoiceNumber}</td>
         <td>
-          <MultiSelectDropdown
-            options={appData.assignTo}
-            selectedOptions={project.assignedTo}
-            setSelectedOptions={(newSelectedOptions) => {
-              const { draftingTaskedTo, engineeringTaskedTo, mepTaskedTo, civilTaskedTo } = getAssignedToBreakdown(newSelectedOptions, appData);
-
-              updateProject({
-                id: project.id,
-                assignedTo: newSelectedOptions,
-                draftingTaskedTo,
-                engineeringTaskedTo,
-                mepTaskedTo,
-                civilTaskedTo,
-                draftingNeeded: draftingTaskedTo !== "",
-                engineeringNeeded: engineeringTaskedTo !== "",
-                mepNeeded: mepTaskedTo !== "",
-                civilNeeded: civilTaskedTo !== "",
-              });
-            }}
-            positionRelative={true}
-            style={{ minWidth: "230px" }}
-          />
+          <MultiSelectDropdown options={appData.assignTo} selectedOptions={project.assignedTo} setSelectedOptions={handleAssignedToChange} positionRelative={true} style={{ minWidth: "230px" }} />
         </td>
         <td>
           <select
