@@ -766,6 +766,7 @@ class SecureApp extends PublicApp {
 
     if (project.slackChannelId) {
       let deltaUsers = updatedValues.assignedTo.filter(user => !project.assignedTo.includes(user))
+      console.log(`Delta users ${JSON.stringify(deltaUsers)}`)
       if (deltaUsers.length > 0) {
         try {
           inviteUserToChannel(project.slackChannelId, deltaUsers)

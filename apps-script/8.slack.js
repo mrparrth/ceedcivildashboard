@@ -19,6 +19,7 @@ const API_ENDPOINTS = {
  * Main function to create and configure a Slack channel
  */
 function _createSlackChannel(project) {
+  console.log(`Creating slack channel for project ${project.projectName}`)
   let settings = _getSettings_(CONFIG.SETTINGS)
   let commonEmailsForEverySlackChannel = settings.commonEmailsForEverySlackChannel.split(',').map(email => email.trim())
   let users = project.assignedTo
@@ -80,6 +81,7 @@ function _createSlackChannel(project) {
  * @returns {string} The ID of the created channel
  */
 function createChannel(channelName) {
+  console.log(`Creating slack channel ${channelName}`)
   const payload = {
     name: channelName,
     is_private: false
@@ -101,6 +103,7 @@ function createChannel(channelName) {
  * @param {string} topic - Topic to set
  */
 function setChannelTopic(channelId, topic) {
+  console.log(`Setting topic for channel ${channelId} to ${topic}`)
   const payload = {
     channel: channelId,
     topic: topic.slice(0, 250)
@@ -110,7 +113,7 @@ function setChannelTopic(channelId, topic) {
 
   if (!response.ok) {
     let message = `Failed to set topic: ${response.error}`
-    throw new Error(message);
+    console.error(message)
   }
 }
 
@@ -120,6 +123,7 @@ function setChannelTopic(channelId, topic) {
  * @param {string} purpose - Purpose description to set
  */
 function setChannelPurpose(channelId, purpose) {
+  console.log(`Setting purpose for channel ${channelId} to ${purpose}`)
   const payload = {
     channel: channelId,
     purpose: purpose.slice(0, 250)
@@ -129,7 +133,7 @@ function setChannelPurpose(channelId, purpose) {
 
   if (!response.ok) {
     let message = `Failed to set purpose: ${response.error}`
-    throw new Error(message);
+    console.error(message)
   }
 }
 
@@ -139,6 +143,7 @@ function setChannelPurpose(channelId, purpose) {
  * @param {Array} bookmarks - Array of bookmark objects with title and url properties
  */
 function addBookmarks(channelId, bookmarks) {
+  console.log(`Adding bookmarks to channel ${channelId}, ${JSON.stringify(bookmarks)}`)
   bookmarks.forEach(bookmark => {
     const payload = {
       channel: channelId,
@@ -161,6 +166,7 @@ function addBookmarks(channelId, bookmarks) {
  * @param {string} message - Message text to send
  */
 function sendWelcomeMessage(channelId, message) {
+  console.log(`Sending welcome message to channel ${channelId}, ${JSON.stringify(message)}`)
   let payload = message
   message.channel = channelId
   // const payload = {
@@ -173,7 +179,7 @@ function sendWelcomeMessage(channelId, message) {
 
   if (!response.ok) {
     let message = `Failed to send welcome message: ${response.error}`
-    throw new Error(message);
+    console.error(message)
   }
 }
 
@@ -183,38 +189,39 @@ function sendWelcomeMessage(channelId, message) {
  * @param {string} email - Email address of the user to invite
  */
 function inviteUserToChannel(channelId, emails) {
+  console.log(`Inviting users to channel ${channelId}, ${JSON.stringify(emails)}`)
   // Look up user by email
   emails.forEach(email => {
-    const lookupUrl = `${SLACK_API_BASE_URL}${API_ENDPOINTS.LOOKUP_USER}?email=${encodeURIComponent(email.trim())}`;
-    const lookupOptions = {
-      method: 'get',
-      headers: {
-        'Authorization': 'Bearer ' + SLACK_BOT_TOKEN
+      const lookupUrl = `${SLACK_API_BASE_URL}${API_ENDPOINTS.LOOKUP_USER}?email=${encodeURIComponent(email.trim())}`;
+      const lookupOptions = {
+        method: 'get',
+        headers: {
+          'Authorization': 'Bearer ' + SLACK_BOT_TOKEN
+        }
+      };
+
+      const lookupResponse = UrlFetchApp.fetch(lookupUrl, lookupOptions);
+      const lookupData = JSON.parse(lookupResponse.getContentText());
+
+      if (!lookupData.ok) {
+        let message = `Failed to look up user by email ${email}: ${lookupData.error}`
+        console.error(message)
       }
-    };
 
-    const lookupResponse = UrlFetchApp.fetch(lookupUrl, lookupOptions);
-    const lookupData = JSON.parse(lookupResponse.getContentText());
+      // Invite user to channel
+      const userId = lookupData.user.id;
+      const payload = {
+        channel: channelId,
+        users: userId
+      };
 
-    if (!lookupData.ok) {
-      let message = `Failed to look up user by email: ${lookupData.error}`
-      throw new Error(message);
+      const response = makeSlackApiCall(API_ENDPOINTS.INVITE_USER, payload);
+
+      if (!response.ok) {
+        let message = `Failed to invite user ${email}: ${response.error}`
+        console.error(message)
+      }
     }
-
-    // Invite user to channel
-    const userId = lookupData.user.id;
-    const payload = {
-      channel: channelId,
-      users: userId
-    };
-
-    const response = makeSlackApiCall(API_ENDPOINTS.INVITE_USER, payload);
-
-    if (!response.ok) {
-      let message = `Failed to invite user: ${response.error}`
-      throw new Error(message);
-    }
-  }
   )
 }
 
