@@ -40,7 +40,7 @@ const FormGenerator = ({ data, setter, fields, bgcolor, viewOnly }) => {
                     ...data.assignedTo.filter(
                       (user) => !options.includes(user)
                     ),
-                    ...newSelectedOptions
+                    ...newSelectedOptions,
                   ]);
                 }}
                 positionRelative={true}
@@ -90,29 +90,34 @@ const Drafter = ({ data, setter, viewOnly }) => {
       label: "Drafter Tasked To",
       name: "draftingTaskedTo",
       type: "multiselect",
-      options: drafters
+      options: drafters,
     },
     {
       label: "Drafting Status",
       name: "draftingStatus",
       type: "select",
-      options: draftingStatus
+      options: draftingStatus,
     },
     {
       label: "Drafting Estimate",
       name: "draftingEstimate",
-      type: "number"
+      type: "number",
     },
     {
       label: "Drafting Dropbox Link",
       name: "draftingDropboxLink",
-      type: "url"
+      type: "url",
     },
     {
-      label: "Drafting Estimated Delivery Time",
+      label: "Estimated Start Date",
+      name: "draftingEstimatedStartTime",
+      type: "date",
+    },
+    {
+      label: "Estimated Delivery Date",
       name: "draftingEstimatedDeliveryTime",
-      type: "date"
-    }
+      type: "date",
+    },
   ];
 
   return (
@@ -133,35 +138,40 @@ const Engineering = ({ data, setter, viewOnly }) => {
     {
       label: "Engineering Needed",
       name: "engineeringNeeded",
-      type: "checkbox"
+      type: "checkbox",
     },
     {
       label: "Engineer Tasked To",
       name: "engineeringTaskedTo",
       type: "multiselect",
-      options: engineers
+      options: engineers,
     },
     {
       label: "Engineering Status",
       name: "engineeringStatus",
       type: "select",
-      options: draftingStatus
+      options: draftingStatus,
     },
     {
       label: "Engineering Estimate",
       name: "engineeringEstimate",
-      type: "number"
+      type: "number",
     },
     {
       label: "Engineering Dropbox Link",
       name: "engineeringDropboxLink",
-      type: "url"
+      type: "url",
     },
     {
-      label: "Engineering Estimated Delivery Time",
+      label: "Estimated Start Date",
+      name: "engineeringEstimatedStartTime",
+      type: "date",
+    },
+    {
+      label: "Estimated Delivery Date",
       name: "engineeringEstimatedDeliveryTime",
-      type: "date"
-    }
+      type: "date",
+    },
   ];
 
   return (
@@ -184,25 +194,30 @@ const MEP = ({ data, setter, viewOnly }) => {
       label: "MEP Tasked To",
       name: "mepTaskedTo",
       type: "multiselect",
-      options: mep
+      options: mep,
     },
     {
       label: "MEP Status",
       name: "mepStatus",
       type: "select",
-      options: draftingStatus
+      options: draftingStatus,
     },
     {
       label: "MEP Estimate",
       name: "mepEstimate",
-      type: "number"
+      type: "number",
     },
     { label: "MEP Dropbox Link", name: "mepDropboxLink", type: "url" },
     {
-      label: "MEP Estimated Delivery Time",
+      label: "Estimated Start Date",
+      name: "mepEstimatedStartTime",
+      type: "date",
+    },
+    {
+      label: "Estimated Delivery Date",
       name: "mepEstimatedDeliveryTime",
-      type: "date"
-    }
+      type: "date",
+    },
   ];
 
   return (
@@ -225,25 +240,30 @@ const Civil = ({ data, setter, viewOnly }) => {
       label: "Civil Tasked To",
       name: "civilTaskedTo",
       type: "multiselect",
-      options: civil
+      options: civil,
     },
     {
       label: "Civil Status",
       name: "civilStatus",
       type: "select",
-      options: draftingStatus
+      options: draftingStatus,
     },
     {
       label: "Civil Estimate",
       name: "civilEstimate",
-      type: "number"
+      type: "number",
     },
     { label: "Civil Dropbox Link", name: "civilDropboxLink", type: "url" },
     {
-      label: "Civil Estimated Delivery Time",
+      label: "Estimated Start Date",
+      name: "civilEstimatedStartTime",
+      type: "date",
+    },
+    {
+      label: "Estimated Delivery Date",
       name: "civilEstimatedDeliveryTime",
-      type: "date"
-    }
+      type: "date",
+    },
   ];
 
   return (

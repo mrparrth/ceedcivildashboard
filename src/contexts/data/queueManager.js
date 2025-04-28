@@ -7,26 +7,20 @@ export const useQueueManager = (addNotification, handleGlobalError) => {
   const [isProcessing, setIsProcessing] = useState(false);
 
   const addToQueue = useCallback((functionName, data, options = {}) => {
-    console.log("⏰ Adding to queue:", {
-      functionName,
-      currentQueueLength: requestQueue.length,
-      isProcessing
-    });
-
     const queueItem = {
       functionName,
       data,
       retryCount: 0,
       onSuccess: options.onSuccess,
       onError: options.onError,
-      immediate: options.immediate || false
+      immediate: options.immediate || false,
     };
 
     if (options.immediate) {
       setRequestQueue((prevQueue) => {
         console.log("📥 Setting immediate queue:", {
           prevLength: prevQueue.length,
-          newLength: prevQueue.length + 1
+          newLength: prevQueue.length + 1,
         });
         return [queueItem, ...prevQueue];
       });
@@ -34,7 +28,7 @@ export const useQueueManager = (addNotification, handleGlobalError) => {
       setRequestQueue((prevQueue) => {
         console.log("📥 Setting normal queue:", {
           prevLength: prevQueue.length,
-          newLength: prevQueue.length + 1
+          newLength: prevQueue.length + 1,
         });
         return [...prevQueue, queueItem];
       });
@@ -57,7 +51,7 @@ export const useQueueManager = (addNotification, handleGlobalError) => {
     if (isProcessing) {
       console.log("⏹️ Skipping process:", {
         isEmpty: requestQueue.length === 0,
-        isProcessing
+        isProcessing,
       });
       return;
     }
@@ -84,13 +78,13 @@ export const useQueueManager = (addNotification, handleGlobalError) => {
         setRequestQueue((prevQueue) => prevQueue.slice(1));
         addNotification({
           title: `${functionName} failed: ${error.message}`,
-          type: "alert"
+          type: "alert",
         });
         onError?.(error);
       } else {
         setRequestQueue((prevQueue) => [
           ...prevQueue.slice(1),
-          { ...prevQueue[0], retryCount: retryCount + 1 }
+          { ...prevQueue[0], retryCount: retryCount + 1 },
         ]);
       }
     } finally {

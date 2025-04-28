@@ -23,7 +23,7 @@ function _createSlackChannel(project) {
   let settings = _getSettings_(CONFIG.SETTINGS)
   let commonEmailsForEverySlackChannel = settings.commonEmailsForEverySlackChannel.split(',').map(email => email.trim())
   let users = project.assignedTo
-  let userEmails = new User().getAllUsers().filter(user => users.includes(user.name)).map(user => user.email)
+  let userEmails = new User().getAllUsers().filter(user => users.includes(user.name)).map(user => user.slackAlias)
   // Channel configuration
   const config = {
     channelName: formatChannelName(project.projectNumber, project.projectName),
@@ -63,8 +63,9 @@ function _createSlackChannel(project) {
     // Execute operations in sequence
     const channelId = createChannel(config.channelName);
     setChannelTopic(channelId, config.channelTopic);
-    setChannelPurpose(channelId, config.channelDescription);
-    inviteUserToChannel(channelId, config.emailsToInvite);
+    if(config.channelDescription)
+      setChannelPurpose(channelId, config.channelDescription);
+    inviteUsersToChannel(channelId, config.emailsToInvite);
     addBookmarks(channelId, config.bookmarks);
     sendWelcomeMessage(channelId, config.welcomeMessage);
 
@@ -186,13 +187,14 @@ function sendWelcomeMessage(channelId, message) {
 /**
  * Invites a user to a Slack channel by email
  * @param {string} channelId - ID of the channel
- * @param {string} email - Email address of the user to invite
+ * @param {array} slackAliasEmails - Array of slack alias and email addresses of the users to invite
  */
-function inviteUserToChannel(channelId, emails) {
-  console.log(`Inviting users to channel ${channelId}, ${JSON.stringify(emails)}`)
+function inviteUsersToChannel(channelId, slackAliasEmails) {
+  console.log(`Inviting users to channel ${channelId}, ${JSON.stringify(slackAliasEmails)}`)
+
   // Look up user by email
-  emails.forEach(email => {
-      const lookupUrl = `${SLACK_API_BASE_URL}${API_ENDPOINTS.LOOKUP_USER}?email=${encodeURIComponent(email.trim())}`;
+  slackAliasEmails.forEach(slackAliasEmail => {
+      const lookupUrl = `${SLACK_API_BASE_URL}${API_ENDPOINTS.LOOKUP_USER}?email=${encodeURIComponent(slackAliasEmail.trim())}`;
       const lookupOptions = {
         method: 'get',
         headers: {
@@ -246,7 +248,7 @@ function makeSlackApiCall(endpoint, payload) {
 }
 
 function formatChannelName(projectNumber, projectName) {
-  return `project-${projectNumber}-${projectName}`
+  return `${projectNumber}-${projectName}`
     .replace(/-/g, ' ')
     .replace(/([a-z])([A-Z])/g, '\$1 $2')
     .replace(/\s+/g, ' ')

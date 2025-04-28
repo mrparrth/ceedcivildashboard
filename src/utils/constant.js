@@ -46,7 +46,7 @@ export const INITIAL_FORM = {
   draftingTaskedTo: [],
   engineeringTaskedTo: [],
   mepTaskedTo: [],
-  civilTaskedTo: []
+  civilTaskedTo: [],
 };
 
 export const DEV_PREFILL_FORM = {
@@ -89,19 +89,19 @@ export const DEV_PREFILL_FORM = {
       detail:
         "Preparation of design computations and construction drawings for building plans. Soil assumed at 1500 PSF unless soil report provided. All loads as shown. Single use for address as shown",
       description: "Building Plan Calculations Package",
-      rate: 5
+      rate: 5,
     },
     {
       rate: 2,
       description: "Calculations Report",
-      detail: "Calculations report for the openings in the ceiling."
+      detail: "Calculations report for the openings in the ceiling.",
     },
     {
       description: "Engineering Review, Stamp and Seal P.E.",
       detail:
         "Scope of work, reviewed, stamped, and sealed by state licensed P.E. CA",
-      rate: 2
-    }
+      rate: 2,
+    },
   ],
   sendClientEmail: true,
   drafterFolderNeeded: true,
@@ -111,7 +111,7 @@ export const DEV_PREFILL_FORM = {
   draftingTaskedTo: [],
   engineeringTaskedTo: [],
   mepTaskedTo: [],
-  civilTaskedTo: []
+  civilTaskedTo: [],
 };
 
 export const BLANK_PROJECT = {
@@ -121,7 +121,10 @@ export const BLANK_PROJECT = {
   projectName: "",
   salesMan: "",
   description: "",
+  clientEmail: "",
+  clientPhone: "",
   overallProjectStatus: "",
+  kanbanSortIndex: 0,
   state: "",
   priority: "",
   projectFilesFolder: "",
@@ -138,24 +141,28 @@ export const BLANK_PROJECT = {
   draftingStatus: "",
   draftingEstimate: "",
   draftingDropboxLink: "",
+  draftingEstimatedStartTime: "",
   draftingEstimatedDeliveryTime: "",
   engineeringNeeded: false,
   engineeringTaskedTo: [],
   engineeringStatus: "",
   engineeringEstimate: "",
   engineeringDropboxLink: "",
+  engineeringEstimatedStartTime: "",
   engineeringEstimatedDeliveryTime: "",
   mepNeeded: false,
   mepTaskedTo: [],
   mepStatus: "",
   mepEstimate: "",
   mepDropboxLink: "",
+  mepEstimatedStartTime: "",
   mepEstimatedDeliveryTime: "",
   civilNeeded: false,
   civilTaskedTo: [],
   civilStatus: "",
   civilEstimate: "",
   civilDropboxLink: "",
+  civilEstimatedStartTime: "",
   civilEstimatedDeliveryTime: "",
   jobType: "",
   isArchived: false,
@@ -165,9 +172,10 @@ export const BLANK_PROJECT = {
     drafter: true,
     engg: true,
     mep: true,
-    civil: true
+    civil: true,
   },
-  chats: []
+  billingItems: [],
+  chats: [],
 };
 
 export const BLANK_PAYMENT = {
@@ -187,5 +195,5 @@ export const BLANK_PAYMENT = {
   revisionsPaid: false,
   notes: "",
   totalCost: "",
-  expenseId: ""
+  expenseId: "",
 };

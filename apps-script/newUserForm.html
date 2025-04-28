@@ -20,7 +20,7 @@
       background: white;
       border-radius: 10px;
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-      padding: 30px;
+      padding: 15px 25px;
     }
     
     h1 {
@@ -47,7 +47,7 @@
     /* Floating label styling */
     .form-field {
       position: relative;
-      margin-bottom: 18px;
+      margin-bottom: 13px;
       display: flex;  /* Add this */
       align-items: center;  /* Add this */
       gap: 10px;  /* Add this */
@@ -310,6 +310,12 @@
         <div id="emailError" class="error" style="display: none;"></div>
       </div>
       
+      <div class="form-field">
+        <input type="email" id="slackEmail" name="slackEmail" placeholder=" ">
+        <label for="slackEmail">Slack Alias Email (Used to invite to Slack Channels)</label>
+        <div id="slackEmailError" class="error" style="display: none;"></div>
+      </div>
+      
       <h2>Webapp Access Details</h2>
       
       <div class="form-field">
@@ -395,10 +401,13 @@
     // Parse the existing users data passed from the server
     let existingUsers = [];
     try {
-      existingUsers = <?!= allUsers ?>;
+      existingUsers = JSON.parse('<?!= JSON.stringify(allUsers) ?>');
     } catch (e) {
       console.error('Error parsing existing users:', e);
     }
+    
+    // Track if slack email has been manually edited
+    let slackEmailManuallyEdited = false;
     
     // Function to initialize the form
     function initialize() {
@@ -474,6 +483,7 @@
       const formData = {
         name: document.getElementById('name').value,
         email: document.getElementById('email').value,
+        slackEmail: document.getElementById('slackEmail').value || document.getElementById('email').value,
         role: document.getElementById('role').value,
         merchantName: document.getElementById('merchantName').value,
         categoryName: document.getElementById('categoryName').value,
@@ -570,14 +580,26 @@
 
     document.getElementById('email').addEventListener('input', function(e) {
       validateField('email', e.target.value);
+      
+      // Update slack email if it hasn't been manually edited
+      if (!slackEmailManuallyEdited) {
+        document.getElementById('slackEmail').value = e.target.value;
+      }
+    });
+    
+    // Track when slack email is manually edited
+    document.getElementById('slackEmail').addEventListener('input', function(e) {
+      slackEmailManuallyEdited = true;
+      validateField('slackEmail', e.target.value);
     });
 
     // Add form submission validation
     document.getElementById('registrationForm').addEventListener('submit', function(e) {
       const nameValid = validateField('name', document.getElementById('name').value);
       const emailValid = validateField('email', document.getElementById('email').value);
+      const slackEmailValid = validateField('slackEmail', document.getElementById('slackEmail').value);
       
-      if (!nameValid || !emailValid) {
+      if (!nameValid || !emailValid || !slackEmailValid) {
         e.preventDefault();
         return false;
       }

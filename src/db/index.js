@@ -13,18 +13,19 @@ const FAKE_USER = {
   password: "fake_user",
   role: "Admin",
   status: "Active",
-  _rowIndex: 3
+  defaultDashboard: "Kanban", //Kanban or Table
+  _rowIndex: 3,
 };
 
 function runScriptFunction(functionName, inputData = {}) {
   if (inputData && Object.keys(inputData).length > 0) {
     inputData = {
       data: inputData,
-      token: getTokenFromLocalStorage()
+      token: getTokenFromLocalStorage(),
     };
   } else {
     inputData = {
-      token: getTokenFromLocalStorage()
+      token: getTokenFromLocalStorage(),
     };
   }
 
@@ -64,12 +65,12 @@ async function handleDevEnvironment(functionName, data) {
     case "login":
       return {
         user: FAKE_USER,
-        token: "FAKE_TOKEN"
+        token: "FAKE_TOKEN",
       };
     case "getSheetData":
       return {
         projects: projectsInit, // Fallback to local data if there's an error
-        payments: paymentsInit
+        payments: paymentsInit,
       };
     case "getContractMetadata":
       return contractmetadataInit;
@@ -139,14 +140,14 @@ async function validateLogin(inputData) {
       password: "password",
       role: "Admin",
       status: "Active",
-      _rowIndex: 3
+      _rowIndex: 3,
     };
 
     if (inputData.token)
       return {
         user: FAKE_USER,
         token:
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA5MGE5NWNlLTM5MzMtNGI1Ny1hMTkxLTk2ZGMwNjdmOTg1MSIsImNyZWF0ZWRBdCI6IjIwMjQtMTAtMDNUMTM6NTU6NTEuNzcyWiIsIm1vZGlmaWVkQXQiOiIyMDI0LTEwLTAzVDEzOjU1OjUxLjc3MloiLCJuYW1lIjoiQWRtaW4iLCJlbWFpbCI6ImFkbWluQGNlZWRjaXZpbC5jb20iLCJyb2xlIjoiQWRtaW4iLCJzdGF0dXMiOiJBY3RpdmUiLCJfcm93SW5kZXgiOjN9.yyF0FGeVa4bOVauiHdJmwvN4gHi1YYwhi1y/ZQP3khg="
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA5MGE5NWNlLTM5MzMtNGI1Ny1hMTkxLTk2ZGMwNjdmOTg1MSIsImNyZWF0ZWRBdCI6IjIwMjQtMTAtMDNUMTM6NTU6NTEuNzcyWiIsIm1vZGlmaWVkQXQiOiIyMDI0LTEwLTAzVDEzOjU1OjUxLjc3MloiLCJuYW1lIjoiQWRtaW4iLCJlbWFpbCI6ImFkbWluQGNlZWRjaXZpbC5jb20iLCJyb2xlIjoiQWRtaW4iLCJzdGF0dXMiOiJBY3RpdmUiLCJfcm93SW5kZXgiOjN9.yyF0FGeVa4bOVauiHdJmwvN4gHi1YYwhi1y/ZQP3khg=",
       };
 
     if (
@@ -157,7 +158,7 @@ async function validateLogin(inputData) {
         user: FAKE_USER,
         msg: null,
         token:
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA5MGE5NWNlLTM5MzMtNGI1Ny1hMTkxLTk2ZGMwNjdmOTg1MSIsImNyZWF0ZWRBdCI6IjIwMjQtMTAtMDNUMTM6NTU6NTEuNzcyWiIsIm1vZGlmaWVkQXQiOiIyMDI0LTEwLTAzVDEzOjU1OjUxLjc3MloiLCJuYW1lIjoiQWRtaW4iLCJlbWFpbCI6ImFkbWluQGNlZWRjaXZpbC5jb20iLCJyb2xlIjoiQWRtaW4iLCJzdGF0dXMiOiJBY3RpdmUiLCJfcm93SW5kZXgiOjN9.yyF0FGeVa4bOVauiHdJmwvN4gHi1YYwhi1y/ZQP3khg="
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA5MGE5NWNlLTM5MzMtNGI1Ny1hMTkxLTk2ZGMwNjdmOTg1MSIsImNyZWF0ZWRBdCI6IjIwMjQtMTAtMDNUMTM6NTU6NTEuNzcyWiIsIm1vZGlmaWVkQXQiOiIyMDI0LTEwLTAzVDEzOjU1OjUxLjc3MloiLCJuYW1lIjoiQWRtaW4iLCJlbWFpbCI6ImFkbWluQGNlZWRjaXZpbC5jb20iLCJyb2xlIjoiQWRtaW4iLCJzdGF0dXMiOiJBY3RpdmUiLCJfcm93SW5kZXgiOjN9.yyF0FGeVa4bOVauiHdJmwvN4gHi1YYwhi1y/ZQP3khg=",
       };
     } else {
       throw new Error("Wrong username or password");
@@ -203,7 +204,7 @@ function isCredentialError(error) {
     "User is deactivated. Contact the admin",
     "Invalid credentials!",
     "User not found in the database.",
-    "Invalid login. Login again."
+    "Invalid login. Login again.",
   ];
 
   return errorMessages
@@ -218,5 +219,5 @@ export {
   trashToken,
   runScriptFunction,
   getappData,
-  sleep
+  sleep,
 };

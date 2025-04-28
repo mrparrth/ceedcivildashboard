@@ -1,3 +1,60 @@
+const addPhoneAndEmail = () => {
+  let ss = SpreadsheetApp.getActive();
+  let sheet = ss.getSheetByName('Projects');
+  let projects = _getParsedDataFromSheet_(sheet);
+
+  const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/i;
+  const phoneRegex = /(?:Phone:?\s*)?(\d{3}[-.\s]?\d{3}[-.\s]?\d{4}|\d{10})/i;
+
+  for (let project of projects) {
+    let notes = project.clientProjectNameAddress;
+    let splitNotes = notes.split('\n');
+
+    if (splitNotes.length == 4) {
+      let phone = splitNotes[3];
+      let email = splitNotes[2];
+      
+      if (!project.clientEmail) {
+        project.clientEmail = email.toLowerCase();
+      }
+      project.clientPhone = phone;
+    } else {
+      // Try finding matches in different locations
+      let foundEmail, foundPhone;
+      let searchLocations = [
+        notes,
+        project.projectNotes
+      ];
+
+      for (let location of searchLocations) {
+        if (!location) continue;
+
+        const emailMatch = location.match(emailRegex);
+        const phoneMatch = location.match(phoneRegex);
+
+        if (emailMatch && !foundEmail) {
+          foundEmail = emailMatch[0];
+        }
+        if (phoneMatch && !foundPhone) {
+          foundPhone = phoneMatch[1].replace(/[-.\s]/g, '');
+        }
+
+        if (foundEmail && foundPhone) break;
+      }
+
+      // Update project only if matches were found
+      if (foundEmail && !project.clientEmail) {
+        project.clientEmail = foundEmail.toLowerCase();
+      }
+      if (foundPhone) {
+        project.clientPhone = foundPhone;
+      }
+    }
+  }
+
+  let output = projects.map(project => [JSON.stringify(project)]);
+  sheet.getRange(2, 2, output.length, 1).setValues(output);
+}
 
 const testCreateDriveUrl = () => {
   let adminToken =

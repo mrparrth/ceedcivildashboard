@@ -176,7 +176,7 @@ class User {
   }
 
   createUser(userInfo) {
-    const { name, email, categoryName, userType, merchantName, role } = userInfo
+    const { name, email, categoryName, userType, merchantName, role, slackEmail } = userInfo
     const password = _generatePassword_(6);
     const id = Utilities.getUuid();
     const createdAt = new Date().toISOString();
@@ -195,7 +195,8 @@ class User {
       hashedPassword,
       merchantName,
       categoryName,
-      userType
+      userType,
+      slackEmail
     ];
     this.ws.appendRow(values);
 
@@ -756,22 +757,30 @@ class SecureApp extends PublicApp {
 
     const timestamp = new Date().toISOString();
     const modifiedBy = this.user?.name;
+    this.logDifferences(project, updatedValues);
+
     let updatedProject = { ...project, ...updatedValues, dateModified: timestamp, modifiedBy };
 
-    this.logDifferences(project, updatedValues);
 
     if (project.overallProjectStatus !== 'Pending S&S' && updatedValues.overallProjectStatus == 'Pending S&S') {
       _sendEmail_(this.settings['statusChangedToPendingS&s'], this.settings['sendS&sEmailTo'], updatedProject)
     }
 
     if (project.slackChannelId) {
-      let deltaUsers = updatedValues.assignedTo.filter(user => !project.assignedTo.includes(user))
-      console.log(`Delta users ${JSON.stringify(deltaUsers)}`)
+      let deltaUsers = (updatedValues.assignedTo ?? []).filter(user => !project.assignedTo.includes(user))
       if (deltaUsers.length > 0) {
-        try {
-          inviteUserToChannel(project.slackChannelId, deltaUsers)
-        } catch (e) {
-          console.error(e.message)
+        console.log(`Delta users ${JSON.stringify(deltaUsers)}`)
+        let userApp = new User()
+        let allUsers = userApp.getAllUsers()
+        let deltaUserEmails = deltaUsers.map(user => allUsers.find(u => u.name == user)?.slackAlias).filter(email => email)
+        
+        if(deltaUserEmails.length>0){
+          console.log(`Delta users ${JSON.stringify(deltaUsers)} - ${JSON.stringify(deltaUserEmails)}`)
+          try {
+            inviteUsersToChannel(project.slackChannelId, deltaUserEmails)
+          } catch (e) {
+            console.error(e.message)
+          }
         }
       }
     }
@@ -1047,31 +1056,3 @@ const metadataAutorefresh = () => {
 
   ScriptApp.newTrigger("refreshMetadata").timeBased().everyMinutes(30).create();
 };
-
-const formatPaymentSheet = () => {
-  let ss = SpreadsheetApp.getActive()
-  let sh = ss.getSheetByName('Payments')
-  let data = sh.getDataRange().getValues()
-  for (let i = 1; i < data.length; i++) {
-    let json = JSON.parse(data[i][1])
-
-    if (json.datePaid && json.datePaid.includes('/')) {
-      var [month, day, year] = json.datePaid.split('/');
-      month = month.padStart(2, '0');
-      day = day.padStart(2, '0');
-      json.datePaid = `${year}-${month}-${day}`;
-    }
-
-    if (json.datePaid2 && json.datePaid2.includes('/')) {
-      var [month, day, year] = json.datePaid2.split('/');
-      month = month.padStart(2, '0');
-      day = day.padStart(2, '0');
-      json.datePaid2 = `${year}-${month}-${day}`;
-    }
-
-    // Convert back to JSON string and update the cell
-    data[i][1] = JSON.stringify(json);
-  }
-
-  ss.getSheetByName('testP').getRange(1, 1, data.length, data[0].length).setValues(data)
-}
