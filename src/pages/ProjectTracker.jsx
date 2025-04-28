@@ -57,7 +57,7 @@ const ProjectTracker = () => {
   const [includeArchived, setIncludeArchived] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState(
-    user.defaultDashboard.toLowerCase() || "table"
+    user.defaultDashboard.toLowerCase() || "kanban"
   ); // 'table' or 'kanban'
 
   const { addNotification } = useNotification();
