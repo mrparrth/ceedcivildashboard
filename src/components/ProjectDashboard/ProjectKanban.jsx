@@ -29,7 +29,6 @@ const getStatusColor = (status) => {
 
 const ProjectKanban = ({
   projects = [],
-  loading = false,
   viewRow = () => {},
   editRow = () => {},
 }) => {
@@ -80,7 +79,7 @@ const ProjectKanban = ({
 
   return (
     <>
-      {projects.length === 0 ? (
+      {projects.length === 0 && !isLoading ? (
         <Box
           sx={{
             display: "flex",
@@ -89,7 +88,7 @@ const ProjectKanban = ({
             height: "calc(100vh - 200px)",
           }}>
           <Typography variant="h6" color="text.secondary">
-            No results to display
+            No projects to display
           </Typography>
         </Box>
       ) : (

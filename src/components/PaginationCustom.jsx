@@ -6,7 +6,7 @@ export default function PaginationCustom({
   pageNo,
   rowsPerPage = 10,
   onPageChange,
-  handleRowsPerPageChange
+  handleRowsPerPageChange,
 }) {
   const indexOfLastRow = pageNo * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
@@ -33,7 +33,7 @@ export default function PaginationCustom({
           ))}
         </select>
       </FormControl>
-      {data.length === 0 && <p className="mb-0">No results to display</p>}
+      {data.length === 0 && <p className="mb-0">No projects to display</p>}
       {
         <Pagination
           count={totalPages}
