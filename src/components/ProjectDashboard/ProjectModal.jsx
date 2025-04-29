@@ -124,6 +124,12 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
     },
     { label: "Invoice Number", key: "invoiceNumber" },
     {
+      label: "Project Type",
+      key: "projectType",
+      isSingleSelect: true,
+      options: appData.projectType,
+    },
+    {
       label: "Salesman",
       key: "salesMan",
       isSingleSelect: true,
@@ -202,7 +208,7 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
         <SingleSelectDropdown
           {...commonProps}
           options={formField.options}
-          selectedOption={project[formField.key]}
+          selectedOption={project[formField.key] || ""}
           onChange={handleInputChange}
           label={formField.label}
           viewOnly={viewOnly}

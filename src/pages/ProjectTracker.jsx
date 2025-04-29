@@ -27,6 +27,8 @@ import {
 import useNotification from "hooks/useNotification";
 import useData from "hooks/useData";
 import useAuth from "hooks/useAuth";
+import useAppData from "hooks/useAppData";
+import { SingleSelectDropdown } from "components/Fields";
 
 const StyledButton = styled(Button)(({ theme }) => ({
   margin: theme.spacing(1),
@@ -53,9 +55,11 @@ const ProjectTracker = () => {
     updateProjectStatus,
   } = useData();
   const { user } = useAuth();
+  const { appData } = useAppData();
 
   const [includeArchived, setIncludeArchived] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selProjectType, setSelProjectType] = useState("All");
   const [viewMode, setViewMode] = useState(
     user.defaultDashboard?.toLowerCase() || "kanban"
   ); // 'table' or 'kanban'
@@ -124,7 +128,9 @@ const ProjectTracker = () => {
           project.projectNumber.toString(),
         ].some((field) =>
           field?.toLowerCase().includes(searchQuery.toLowerCase())
-        ))
+        )) &&
+      (selProjectType === "All" ||
+        project.projectType?.toLowerCase() === selProjectType?.toLowerCase())
     );
   });
 
@@ -170,6 +176,13 @@ const ProjectTracker = () => {
                 alignItems: "center",
                 flexDirection: { xs: "column", sm: "row" },
               }}>
+              <SingleSelectDropdown
+                id="project-type"
+                options={["All", ...appData.projectType]}
+                selectedOption={selProjectType}
+                onChange={(id, selValue) => setSelProjectType(selValue)}
+                label={"Project Type"}
+              />
               <TextField
                 size="small"
                 placeholder="Search project by number, name, description, or note"

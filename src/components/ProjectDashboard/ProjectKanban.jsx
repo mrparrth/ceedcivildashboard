@@ -80,128 +80,142 @@ const ProjectKanban = ({
 
   return (
     <>
-      <Box sx={{ position: "relative" }}>
+      {projects.length === 0 ? (
         <Box
-          onClick={() => setShowBlankGroups(!showBlankGroups)}
           sx={{
-            position: "absolute",
-            right: -8,
-            top: -11,
-            zIndex: 1,
             display: "flex",
+            justifyContent: "center",
             alignItems: "center",
-            backgroundColor: "transparent",
-            padding: "1px 6px",
-            borderRadius: 2,
-            cursor: "pointer",
-            "&:hover": {
-              backgroundColor: "action.hover",
-            },
+            height: "calc(100vh - 200px)",
           }}>
-          <IconButton
-            size="small"
-            sx={{
-              padding: 0.5,
-              backgroundColor: "transparent",
-              "&:hover": {
-                backgroundColor: "transparent",
-              },
-            }}>
-            {showBlankGroups ? (
-              <VisibilityOffIcon fontSize="small" />
-            ) : (
-              <VisibilityIcon fontSize="small" />
-            )}
-          </IconButton>
-          <Typography variant="caption" color="text.secondary">
-            {showBlankGroups ? "Hide" : "Show"} blank groups
+          <Typography variant="h6" color="text.secondary">
+            No results to display
           </Typography>
         </Box>
-
-        <DragDropContext onDragEnd={handleDragEnd}>
+      ) : (
+        <Box sx={{ position: "relative" }}>
           <Box
+            onClick={() => setShowBlankGroups(!showBlankGroups)}
             sx={{
+              position: "absolute",
+              right: -8,
+              top: -11,
+              zIndex: 1,
               display: "flex",
-              gap: 2,
-              p: 2,
-              height: "calc(100vh - 200px)",
-              width: "fit-content",
-              minWidth: "100%",
+              alignItems: "center",
+              backgroundColor: "transparent",
+              padding: "1px 6px",
+              borderRadius: 2,
+              cursor: "pointer",
+              "&:hover": {
+                backgroundColor: "action.hover",
+              },
             }}>
-            {Object.entries(groupedProjects).map(([status, projects]) => {
-              // Skip empty groups if showBlankGroups is false
-              if (!showBlankGroups && projects.length === 0) return null;
+            <IconButton
+              size="small"
+              sx={{
+                padding: 0.5,
+                backgroundColor: "transparent",
+                "&:hover": {
+                  backgroundColor: "transparent",
+                },
+              }}>
+              {showBlankGroups ? (
+                <VisibilityOffIcon fontSize="small" />
+              ) : (
+                <VisibilityIcon fontSize="small" />
+              )}
+            </IconButton>
+            <Typography variant="caption" color="text.secondary">
+              {showBlankGroups ? "Hide" : "Show"} blank groups
+            </Typography>
+          </Box>
 
-              return (
-                <Droppable key={status} droppableId={status}>
-                  {(provided) => (
-                    <Paper
-                      ref={provided.innerRef}
-                      {...provided.droppableProps}
-                      sx={{
-                        width: 300,
-                        p: 2,
-                        bgcolor: getStatusColor(status) + "10",
-                        borderTop: `4px solid ${getStatusColor(status)}`,
-                        height: "100%",
-                        display: "flex",
-                        flexDirection: "column",
-                      }}>
-                      <Typography variant="h6" sx={{ mb: 2 }}>
-                        {status} ({projects.length})
-                      </Typography>
-                      <Box
+          <DragDropContext onDragEnd={handleDragEnd}>
+            <Box
+              sx={{
+                display: "flex",
+                gap: 2,
+                p: 2,
+                height: "calc(100vh - 200px)",
+                width: "fit-content",
+                minWidth: "100%",
+              }}>
+              {Object.entries(groupedProjects).map(([status, projects]) => {
+                // Skip empty groups if showBlankGroups is false
+                if (!showBlankGroups && projects.length === 0) return null;
+
+                return (
+                  <Droppable key={status} droppableId={status}>
+                    {(provided) => (
+                      <Paper
+                        ref={provided.innerRef}
+                        {...provided.droppableProps}
                         sx={{
+                          width: 300,
+                          p: 2,
+                          bgcolor: getStatusColor(status) + "10",
+                          borderTop: `4px solid ${getStatusColor(status)}`,
+                          height: "100%",
                           display: "flex",
                           flexDirection: "column",
-                          gap: 2,
-                          flex: 1,
-                          overflowY: "auto",
-                          "&::-webkit-scrollbar": {
-                            width: "6px",
-                          },
-                          "&::-webkit-scrollbar-track": {
-                            background: "#f1f1f1",
-                            borderRadius: "3px",
-                          },
-                          "&::-webkit-scrollbar-thumb": {
-                            background: "#888",
-                            borderRadius: "3px",
-                            "&:hover": {
-                              background: "#555",
-                            },
-                          },
                         }}>
-                        {projects.map((project, index) => (
-                          <Draggable
-                            key={project.id}
-                            draggableId={project.id}
-                            index={index}>
-                            {(provided) => (
-                              <div
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}>
-                                <ProjectCard
-                                  project={project}
-                                  viewRow={viewRow}
-                                  editRow={editRow}
-                                  showArchivedIcon={true}
-                                />
-                              </div>
-                            )}
-                          </Draggable>
-                        ))}
-                        {provided.placeholder}
-                      </Box>
-                    </Paper>
-                  )}
-                </Droppable>
-              );
-            })}
-          </Box>
-        </DragDropContext>
-      </Box>
+                        <Typography variant="h6" sx={{ mb: 2 }}>
+                          {status} ({projects.length})
+                        </Typography>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: 2,
+                            flex: 1,
+                            overflowY: "auto",
+                            "&::-webkit-scrollbar": {
+                              width: "6px",
+                            },
+                            "&::-webkit-scrollbar-track": {
+                              background: "#f1f1f1",
+                              borderRadius: "3px",
+                            },
+                            "&::-webkit-scrollbar-thumb": {
+                              background: "#888",
+                              borderRadius: "3px",
+                              "&:hover": {
+                                background: "#555",
+                              },
+                            },
+                          }}>
+                          {projects.map((project, index) => (
+                            <Draggable
+                              key={project.id}
+                              draggableId={project.id}
+                              index={index}>
+                              {(provided) => (
+                                <div
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}>
+                                  <ProjectCard
+                                    project={project}
+                                    viewRow={viewRow}
+                                    editRow={editRow}
+                                    showArchivedIcon={true}
+                                  />
+                                </div>
+                              )}
+                            </Draggable>
+                          ))}
+                          {provided.placeholder}
+                        </Box>
+                      </Paper>
+                    )}
+                  </Droppable>
+                );
+              })}
+            </Box>
+          </DragDropContext>
+        </Box>
+      )}
       {isLoading && <Loader />}
     </>
   );

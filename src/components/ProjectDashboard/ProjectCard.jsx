@@ -89,6 +89,15 @@ const ProjectCard = ({ project, editRow, showArchivedIcon }) => {
                 variant="outlined"
               />
             )}
+
+            {project.projectType && (
+              <Chip
+                label={project.projectType}
+                size="small"
+                color="default"
+                variant="outlined"
+              />
+            )}
           </Box>
 
           {project.assignedTo && project.assignedTo.length > 0 && (
