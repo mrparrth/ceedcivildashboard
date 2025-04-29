@@ -13,7 +13,7 @@ const FAKE_USER = {
   password: "fake_user",
   role: "Admin",
   status: "Active",
-  defaultDashboard: "Kanban", //Kanban or Table
+  defaultDashboard: "", //Kanban or Table
   _rowIndex: 3,
 };
 
@@ -167,6 +167,7 @@ async function validateLogin(inputData) {
 }
 
 function getappData() {
+  console.log("Getting app data");
   if (ge) {
     const appDataElement = document.getElementById("app-data");
     if (appDataElement) {

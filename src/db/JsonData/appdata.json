@@ -1,10 +1,35 @@
 {
+  "assignTo": [
+    "Admin",
+    "Arnel",
+    "Prateeksha",
+    "VSC - ENG",
+    "TestEmployee",
+    "Nicko",
+    "Tika Koirala",
+    "Madison",
+    "Parth"
+  ],
   "salesmen": [
     "Jerry",
     "Ryan",
     "Ryan - Partial",
     "Jerry - Partial",
     "Jerry - Full"
+  ],
+  "projectType": [
+    "Pole barn",
+    "Container home",
+    "Wood frame home",
+    "Addition",
+    "Site plan",
+    "S&S only",
+    "Calcs only",
+    "Structural only",
+    "Deck",
+    "Full house plan",
+    "Foundation only",
+    "Other"
   ],
   "status": [
     "Hold",
@@ -83,21 +108,6 @@
     "Wyoming",
     "Other"
   ],
-  "assignTo": [
-    "Admin",
-    "Arnel",
-    "Civil Engineer",
-    "Luan",
-    "Nicko",
-    "Ramiro",
-    "Anojan",
-    "Marco",
-    "Prateeksha",
-    "Inoshan",
-    "E-Struc - Eng",
-    "Joy",
-    "VSC - ENG"
-  ],
   "priority": ["High", "Urgent", "Normal"],
   "initialStatus": [
     "Submitted for Permit",
@@ -105,12 +115,10 @@
     "Rework/Updates",
     "In Work"
   ],
-  "drafters": ["Arnel", "Fe"],
-  "engineers": ["Luan", "E-Struc - Eng", "VSC -ENG"],
+  "drafters": ["Arnel", "Prateeksha", "Parth"],
+  "engineers": ["VSC - ENG"],
   "mep": ["Nicko"],
-  "civil": ["Civil Engineer"],
-  "contractExportFolder": "https://drive.google.com/drive/u/0/folders/1r9INUZVhcIZ7mjXrWMXAd6Eye5RbWQoH",
-  "contractTemplate": "https://docs.google.com/document/d/1n9mabMMM4DF8I54wxuczl8us85sfQ-VT2BvTAQUzYpI/edit",
+  "civil": ["Tika Koirala"],
   "adminUrls": [
     {
       "name": "Pole Barn Form",
@@ -137,12 +145,16 @@
       "_rowIndex": 5
     },
     {
-      "name": "Foundation Plan (1 New)",
+      "name": "Foundation Plan",
       "url": "https://docs.google.com/spreadsheets/d/1LFeOLQHdwjueerdKFNrCv-QUNAwE-Q0JL5IG6wtvHRM/edit?gid=422418855#gid=422418855",
       "showToAdminOnly": true,
       "_rowIndex": 6
     }
   ],
-  "totalFoundation": 10,
-  "totalNewFoundation": 2
+  "appName": "Ceed Civil Project Tracker",
+  "urlLogo": "https:///ucarecdn.com/e767c054-980a-4511-aabe-8d7cbe48d732/-/preview/857x1000/",
+  "contractExportFolder": "https://drive.google.com/drive/u/0/folders/1r9INUZVhcIZ7mjXrWMXAd6Eye5RbWQoH",
+  "contractTemplate": "https://docs.google.com/document/d/1n9mabMMM4DF8I54wxuczl8us85sfQ-VT2BvTAQUzYpI/edit",
+  "totalFoundation": 9,
+  "totalNewFoundation": 0
 }

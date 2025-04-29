@@ -13,13 +13,13 @@ const ProjectTable = ({
   onPageChange,
   viewRow,
   editRow,
-  showArchivedIcon
+  showArchivedIcon,
 }) => {
   const { isLoading } = useData();
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [sortConfig, setSortConfig] = useState({
     key: null,
-    direction: "asc"
+    direction: "asc",
   });
 
   // Sorting function
@@ -78,8 +78,8 @@ const ProjectTable = ({
           cursor: "pointer",
           userSelect: "none",
           "&:hover": {
-            opacity: 0.8
-          }
+            opacity: 0.8,
+          },
         }}
         onClick={() => requestSort(column)}>
         {label}

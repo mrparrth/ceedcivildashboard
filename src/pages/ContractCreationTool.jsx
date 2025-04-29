@@ -12,12 +12,12 @@ import {
   DialogTitle,
   CircularProgress,
   Typography,
-  Box
+  Box,
 } from "@mui/material";
 import {
   CheckCircleOutline as SuccessIcon,
   ErrorOutline as ErrorIcon,
-  InfoOutlined as InfoIcon
+  InfoOutlined as InfoIcon,
 } from "@mui/icons-material";
 
 import useData from "hooks/useData";
@@ -30,8 +30,7 @@ const CEEDCivilForm = () => {
   let { appData } = useAppData();
   let { contractMetadata, isLoading: isContractDataLoading } =
     useContractMetadata();
-
-  const [formData, setFormData] = useState(INITIAL_FORM);
+  const [formData, setFormData] = useState(DEV_PREFILL_FORM);
   const [isCreatingFreshbooks, setIsCreatingFreshbooks] = useState(false);
   const [isCreatingContract, setIsCreatingContract] = useState(false);
 
@@ -54,7 +53,7 @@ const CEEDCivilForm = () => {
         siteStreet: prevData.clientStreet,
         siteCity: prevData.clientCity,
         siteState: prevData.clientState,
-        siteZip: prevData.clientZip
+        siteZip: prevData.clientZip,
       }));
     } else {
       setFormData((prevData) => ({
@@ -62,7 +61,7 @@ const CEEDCivilForm = () => {
         siteStreet: "",
         siteCity: "",
         siteState: "",
-        siteZip: ""
+        siteZip: "",
       }));
     }
   }, [
@@ -70,7 +69,7 @@ const CEEDCivilForm = () => {
     formData.clientStreet,
     formData.clientCity,
     formData.clientState,
-    formData.clientZip
+    formData.clientZip,
   ]);
 
   useEffect(() => {
@@ -94,7 +93,7 @@ const CEEDCivilForm = () => {
   const handleSectionAssigneeChange = useCallback((updatedValues) => {
     setFormData((prevData) => ({
       ...prevData,
-      ...updatedValues
+      ...updatedValues,
     }));
   }, []);
 
@@ -107,7 +106,7 @@ const CEEDCivilForm = () => {
           ? checked
           : ["remainingBalance", "retainerDeposit"].includes(name)
           ? Math.round(parseFloat(value) * 100) / 100
-          : value
+          : value,
     }));
   }, []);
 
@@ -122,8 +121,8 @@ const CEEDCivilForm = () => {
           onConfirm: (result) => {
             setModalState((prev) => ({ ...prev, isOpen: false }));
             resolve(result);
-          }
-        }
+          },
+        },
       });
     });
   }, []);
@@ -186,7 +185,7 @@ const CEEDCivilForm = () => {
       const fbInvoiceId = await runScriptFunction("createFBInvoice", {
         ...formData,
         projectNumber,
-        fbClientId
+        fbClientId,
       });
       if (!fbInvoiceId) throw new Error("Failed to create FreshBooks invoice");
 
@@ -195,7 +194,7 @@ const CEEDCivilForm = () => {
         ...formData,
         projectNumber,
         fbClientId,
-        fbInvoiceId
+        fbInvoiceId,
       });
       if (!fbProjectId) throw new Error("Failed to create FreshBooks project");
 
@@ -205,7 +204,7 @@ const CEEDCivilForm = () => {
         projectNumber,
         fbClientId,
         fbInvoiceId,
-        fbProjectId
+        fbProjectId,
       }));
 
       // Show success dialog
@@ -250,7 +249,7 @@ const CEEDCivilForm = () => {
           draftingTaskedTo,
           engineeringTaskedTo,
           mepTaskedTo,
-          civilTaskedTo
+          civilTaskedTo,
         } = formData;
         newProject.draftingTaskedTo = draftingTaskedTo;
         newProject.engineeringTaskedTo = engineeringTaskedTo;
@@ -260,13 +259,16 @@ const CEEDCivilForm = () => {
           ...draftingTaskedTo,
           ...engineeringTaskedTo,
           ...mepTaskedTo,
-          ...civilTaskedTo
+          ...civilTaskedTo,
         ];
+        newProject.projectType = formData.projectType;
+        newProject.clientPhone = formData.clientPhone;
+        newProject.clientEmail = formData.clientEmail;
 
         setFormData((prevData) => ({
           ...prevData,
           showDocumentLink: true,
-          documentUrl: newProject?.contractDocumentUrl
+          documentUrl: newProject?.contractDocumentUrl,
         }));
 
         const folderOptions = {
@@ -274,7 +276,7 @@ const CEEDCivilForm = () => {
           drafter: formData.drafterFolderNeeded,
           engg: formData.enggFolderNeeded,
           mep: formData.mepFolderNeeded,
-          civil: formData.civilFolderNeeded
+          civil: formData.civilFolderNeeded,
         };
 
         createProject({ ...BLANK_PROJECT, ...newProject, folderOptions });
@@ -324,7 +326,7 @@ const CEEDCivilForm = () => {
     formData.projectNumber,
     formData.fbInvoiceId,
     formData.documentUrl,
-    showDialog
+    showDialog,
   ]);
 
   const modalIcon = useMemo(() => {
@@ -332,7 +334,7 @@ const CEEDCivilForm = () => {
       success: <SuccessIcon fontSize="large" color="success" />,
       error: <ErrorIcon fontSize="large" color="error" />,
       info: <InfoIcon fontSize="large" color="info" />,
-      confirm: <InfoIcon fontSize="large" color="info" />
+      confirm: <InfoIcon fontSize="large" color="info" />,
     };
     return icons[modalState.content.type] || icons.info;
   }, [modalState.content.type]);
@@ -347,29 +349,29 @@ const CEEDCivilForm = () => {
       checkboxId: "drafterFolderNeeded",
       options: appData.drafters,
       taskedTo: "draftingTaskedTo",
-      needed: "draftingNeeded"
+      needed: "draftingNeeded",
     },
     {
       label: "Structural",
       checkboxId: "enggFolderNeeded",
       options: appData.engineers || [],
       taskedTo: "engineeringTaskedTo",
-      needed: "engineerNeeded"
+      needed: "engineerNeeded",
     },
     {
       label: "MEP",
       checkboxId: "mepFolderNeeded",
       options: appData.mep || [],
       taskedTo: "mepTaskedTo",
-      needed: "mepNeeded"
+      needed: "mepNeeded",
     },
     {
       label: "Civil",
       checkboxId: "civilFolderNeeded",
       options: appData.civil || [],
       taskedTo: "civilTaskedTo",
-      needed: "civilNeeded"
-    }
+      needed: "civilNeeded",
+    },
   ];
 
   return isDataLoading || isContractDataLoading ? (
@@ -387,25 +389,47 @@ const CEEDCivilForm = () => {
       <div className="card shadow-lg mt-0">
         <div className="card-body">
           <h2 className="card-title text-center mb-4">CEED Civil</h2>
-          <div className="mb-3">
-            <label htmlFor="favClient" className="form-label">
-              Favorite Clients:
-            </label>
-            <select
-              className="form-select"
-              id="favClient"
-              name="favClient"
-              value={formData.favClient || ""}
-              onChange={handleInputChange}>
-              <option value="" key="index" disabled>
-                Select a client
-              </option>
-              {contractMetadata.favClients.map((client, index) => (
-                <option value={client.name} key={client.name}>
-                  {client.name}
+          <div className="row g-3">
+            <div className="col-md-6">
+              <label htmlFor="favClient" className="form-label">
+                Favorite Clients:
+              </label>
+              <select
+                className="form-select"
+                id="favClient"
+                name="favClient"
+                value={formData.favClient || ""}
+                onChange={handleInputChange}>
+                <option value="" key="index" disabled>
+                  Select a client
                 </option>
-              ))}
-            </select>
+                {contractMetadata.favClients.map((client, index) => (
+                  <option value={client.name} key={client.name}>
+                    {client.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="col-md-6">
+              <label htmlFor="projectType" className="form-label">
+                Project Type:
+              </label>
+              <select
+                className="form-select"
+                id="projectType"
+                name="projectType"
+                value={formData.projectType || ""}
+                onChange={handleInputChange}>
+                <option value="" key="index" disabled>
+                  Select a project type
+                </option>
+                {appData.projectType?.map((type, index) => (
+                  <option value={type} key={index}>
+                    {type}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
           <form onSubmit={handleSubmit}>
             <hr className="my-4" />
@@ -565,7 +589,7 @@ const CEEDCivilForm = () => {
                 checked={formData.sameAsClient}
                 onChange={handleInputChange}
                 style={{
-                  transform: "scale(1.5)"
+                  transform: "scale(1.5)",
                 }}
               />
               <label className="form-check-label" htmlFor="sameAsClient">
@@ -644,7 +668,7 @@ const CEEDCivilForm = () => {
                 id="isUpworkJob"
                 name="isUpworkJob"
                 style={{
-                  transform: "scale(1.5)"
+                  transform: "scale(1.5)",
                 }}
                 checked={formData.isUpworkJob}
                 onChange={handleInputChange}
@@ -759,7 +783,7 @@ const CEEDCivilForm = () => {
                   style={{
                     transform: "scale(1.5)",
                     marginRight: "12px",
-                    marginLeft: "4px"
+                    marginLeft: "4px",
                   }}
                   id="sendClientEmail"
                   name="sendClientEmail"
@@ -811,7 +835,7 @@ const CEEDCivilForm = () => {
                       setSelectedOptions={(newSelectedOptions) => {
                         let updates = {
                           [item.needed]: !!newSelectedOptions.length,
-                          [item.taskedTo]: newSelectedOptions
+                          [item.taskedTo]: newSelectedOptions,
                         };
 
                         handleSectionAssigneeChange(updates);
@@ -917,8 +941,8 @@ const CEEDCivilForm = () => {
                   sx={{
                     whiteSpace: "pre-line", // This preserves line breaks
                     "& p": {
-                      marginBottom: "8px" // Add spacing between paragraphs
-                    }
+                      marginBottom: "8px", // Add spacing between paragraphs
+                    },
                   }}>
                   {modalState.content.body}
                 </DialogContentText>

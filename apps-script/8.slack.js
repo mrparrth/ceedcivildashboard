@@ -169,17 +169,28 @@ function addBookmarks(channelId, bookmarks) {
 function sendWelcomeMessage(channelId, message) {
   console.log(`Sending welcome message to channel ${channelId}, ${JSON.stringify(message)}`)
   let payload = message
-  message.channel = channelId
-  // const payload = {
-  //   channel: channelId,
-  //   text: message,
-  //   parse: 'full'
-  // };
+  payload.channel = channelId
 
   const response = makeSlackApiCall(API_ENDPOINTS.SEND_MESSAGE, payload);
 
   if (!response.ok) {
     let message = `Failed to send welcome message: ${response.error}`
+    console.error(message)
+  }
+}
+
+function sendTextMessage(channelId, message) {
+  console.log(`Sending message to channel ${channelId}, ${JSON.stringify(message)}`)
+  const payload = {
+    channel: channelId,
+    text: message,
+    parse: 'full'
+  };
+
+  const response = makeSlackApiCall(API_ENDPOINTS.SEND_MESSAGE, payload);
+
+  if (!response.ok) {
+    let message = `Failed to send message: ${response.error}`
     console.error(message)
   }
 }
@@ -259,3 +270,22 @@ function formatChannelName(projectNumber, projectName) {
     .toLowerCase()
 }
 
+function getIcon(status) {
+  if (!status) return "🔄";
+  const statusIcons = {
+    "hold": "⏸️",
+    "pending start": "🚦",
+    "in work": "👷‍♂️",
+    "for ryan": "👨‍💼",
+    "review": "🔎",
+    "sent to client": "📤",
+    "pending s&s": "⏳",
+    "rework/updates": "🔄",
+    "submitted for permit": "📝",
+    "completed": "✅",
+    "final": "🏁",
+    "cancelled": "❌",
+    "canceled": "❌" // U.S. spelling
+  };
+  return statusIcons[status.toLowerCase().trim()] || "🔄";
+}

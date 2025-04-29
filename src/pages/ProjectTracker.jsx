@@ -17,7 +17,7 @@ import {
 import { styled } from "@mui/material/styles";
 import ArchiveIcon from "@mui/icons-material/Archive";
 import AddIcon from "@mui/icons-material/Add";
-import TableChartIcon from "@mui/icons-material/TableChart";
+import ViewListIcon from "@mui/icons-material/ViewList";
 import ViewKanbanIcon from "@mui/icons-material/ViewKanban";
 import {
   ProjectModal,
@@ -57,7 +57,7 @@ const ProjectTracker = () => {
   const [includeArchived, setIncludeArchived] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState(
-    user.defaultDashboard.toLowerCase() || "kanban"
+    user.defaultDashboard?.toLowerCase() || "kanban"
   ); // 'table' or 'kanban'
 
   const { addNotification } = useNotification();
@@ -196,7 +196,7 @@ const ProjectTracker = () => {
               onClick={() => setViewMode("table")}
               color={viewMode === "table" ? "primary" : "default"}
               size="small">
-              <TableChartIcon />
+              <ViewListIcon />
             </IconButton>
           </Tooltip>
           <Tooltip title="Kanban View">

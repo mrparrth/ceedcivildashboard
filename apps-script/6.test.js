@@ -253,3 +253,23 @@ function testSlackMessage() {
     parse: 'full'
   })
 }
+
+
+function testSlackMessage2() {
+  this.settings = _getSettings_()
+  // sendWelcomeMessage('C08MGGT2V0T', { text: 'TestMessage' })
+  const project = { "overallProjectStatus": "Hold", "civilStatus": "", "civilEstimatedDeliveryTime": "", "draftingTaskedTo": [], "civilTaskedTo": [], "actualCost": "", "engineeringEstimatedDeliveryTime": "", "depositPaid": false, "clientProjectNameAddress": "Maryanne Manjarrez\n605 1st Street,Arbuckle,California 95912\ninfo@ccengineer.net\n530-207-6096", "payments": [{ "paymentId": "df661860-ac00-4d5f-ba7c-f21346339c97", "assignedTo": "VSC - ENG" }], "mepStatus": "", "description": "", "chats": [], "draftingEstimatedDeliveryTime": "", "priority": "", "engineeringStatus": "", "civilNeeded": false, "folderOptions": { "mep": false, "engg": true, "drafter": false, "sendClientEmail": true, "civil": false }, "projectFilesFolder": "https://drive.google.com/drive/folders/1h00JTtNZ8eG5zzzcCu0uIADSGcmz8BwM", "isArchived": false, "modifiedBy": "Admin", "contractLink": "", "mepEstimatedDeliveryTime": "", "mepTaskedTo": [], "draftingEstimate": "", "salesMan": "", "projectNumber": 718, "projectName": "Steel Stair Plans and calcs", "clientEmail": "info@ccengineer.net", "mepEstimate": "", "state": "California", "contractDocumentUrl": "https://docs.google.com/open?id=1JPsuFc5OwxOSqmaNE_U8vZ7w1jdnKnnG8M94oqvYDOU", "civilEstimate": "", "mepNeeded": false, "invoiceNumber": "0001956", "engineeringNeeded": false, "id": "0ad9f5b0-4730-49b8-8f55-34b1fb0d4f2f", "engineeringEstimate": "", "dateCreated": "2025-04-25T17:24:08.385Z", "dateModified": "2025-04-25T17:25:48.171Z", "projectNotes": "", "draftingStatus": "", "engineeringDropboxLink": "https://drive.google.com/drive/folders/1XDBizkNfEOG9re6tiruxK7BdLhxYAwT_", "createdBy": "Admin", "expenses": [], "estimatedBudget": "", "jobType": "", "initialProjectStatus": "", "engineeringTaskedTo": ["VSC - ENG"], "draftingNeeded": false, "assignedTo": ["VSC - ENG"], "clientProjectFolder": "https://drive.google.com/drive/folders/1bZIHaZyMU6vkyDgiKCQT7zopafnuoFwp", "slackChannelId": "C08MGGT2V0T", "_rowIndex": 2, "clientPhone": "530-207-6096" }
+
+  const updatedValues = { "sadf": "Sent To Client" }
+
+  let statusToDetect = this.settings.statusNotificationsFor?.split(', ').map(status => status.toLowerCase())
+  const prevStatus = project.overallProjectStatus;
+  const currStatus = updatedValues.overallProjectStatus;
+
+  if (prevStatus !== currStatus 
+        && statusToDetect.includes(currStatus?.toLowerCase())) {
+    const msg = `*Project Status Changed*\n` +
+            `${prevStatus ? `${getIcon(prevStatus)}  ~*${prevStatus}*~  → ` : ""}${getIcon(currStatus)}  *${currStatus}*`; //added on Apr 29 to notify in slack
+    sendTextMessage(project.slackChannelId, msg)
+  }
+}

@@ -758,7 +758,19 @@ class SecureApp extends PublicApp {
     const timestamp = new Date().toISOString();
     const modifiedBy = this.user?.name;
     this.logDifferences(project, updatedValues);
+  
+    //Added this feature on Apr 29 to notify in slack
+    let statusToDetect = this.settings.statusNotificationsFor?.split(', ').map(status => status.toLowerCase())
+    const prevStatus = project.overallProjectStatus;
+    const currStatus = updatedValues.overallProjectStatus;
 
+    if (project.slackChannelId && prevStatus !== currStatus && statusToDetect.includes(currStatus?.toLowerCase())) {
+      const msg = `*Project Status Changed*\n\n` +
+              `${prevStatus ? `${getIcon(prevStatus)}  ~*${prevStatus}*~  → ` : ""}${getIcon(currStatus)}  *${currStatus}*`; //added on Apr 29 to notify in slack
+      sendTextMessage(project.slackChannelId, msg)
+    }
+    //
+    
     let updatedProject = { ...project, ...updatedValues, dateModified: timestamp, modifiedBy };
 
 
