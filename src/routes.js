@@ -1,7 +1,7 @@
 import { Navigate } from "react-router-dom";
 import AuthGuard from "./contexts/auth/AuthGuard";
-import { authRoles } from "./contexts/auth/authRoles";
-import Layout1 from "./Layouts/Layout1";
+import { PERMISSIONS } from "./contexts/auth/authRoles";
+import Layout1 from "./layouts/Layout1";
 import CEEDCivilForm from "./pages/ContractCreationTool";
 import Login from "./pages/Login";
 import ProjectTracker from "./pages/ProjectTracker";
@@ -20,28 +20,28 @@ const routes = [
       {
         path: "/dashboard",
         element: <ProjectTracker />,
-        auth: authRoles.employee
+        permission: PERMISSIONS.projects,
       },
       {
         path: "/archived",
         element: <Archived />,
-        auth: authRoles.employee
+        permission: PERMISSIONS.projects,
       },
       {
         path: "/finance",
         element: <FinanceTracker />,
-        auth: authRoles.employee
+        permission: PERMISSIONS.finance,
       },
       {
         path: "/contract-generator-tool",
         element: <CEEDCivilForm />,
-        auth: authRoles.employee
-      }
-    ]
+        permission: PERMISSIONS.forms,
+      },
+    ],
   },
   { path: "/login", element: <Login /> },
   { path: "/", element: <Navigate to="/login" /> },
-  { path: "*", element: <Navigate to="/login" /> }
+  { path: "*", element: <Navigate to="/login" /> },
 ];
 
 export default routes;

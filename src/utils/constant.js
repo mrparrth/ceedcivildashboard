@@ -36,6 +36,7 @@ export const INITIAL_FORM = {
   projectNumber: "",
   deliverableFromClient: "",
   projectName: "",
+  projectDesc: "",
   totalCost: "",
   ratePerHour: 225,
   documentUrl: "",
@@ -83,13 +84,13 @@ export const DEV_PREFILL_FORM = {
   fbClientId: "",
   deliverableFromClient: "CAD and PDF files",
   projectName: "Test",
+  projectDesc: "Preparation of design computations and construction drawings for building plans. Soil assumed at 1500 PSF unless soil report provided. All loads as shown. Single use for address as shownBuilding Plan Calculations Package",
   totalCost: 9,
   ratePerHour: 200,
   documentUrl: "",
   scopes: [
     {
-      detail:
-        "Preparation of design computations and construction drawings for building plans. Soil assumed at 1500 PSF unless soil report provided. All loads as shown. Single use for address as shown",
+      detail: "Preparation of design computations and construction drawings for building plans. Soil assumed at 1500 PSF unless soil report provided. All loads as shown. Single use for address as shown",
       description: "Building Plan Calculations Package",
       rate: 5,
     },
@@ -100,8 +101,7 @@ export const DEV_PREFILL_FORM = {
     },
     {
       description: "Engineering Review, Stamp and Seal P.E.",
-      detail:
-        "Scope of work, reviewed, stamped, and sealed by state licensed P.E. CA",
+      detail: "Scope of work, reviewed, stamped, and sealed by state licensed P.E. CA",
       rate: 2,
     },
   ],
@@ -126,7 +126,7 @@ export const BLANK_PROJECT = {
   description: "",
   clientEmail: "",
   clientPhone: "",
-  overallProjectStatus: "",
+  overallProjectStatus: "Hold",
   kanbanSortIndex: 0,
   state: "",
   priority: "",
@@ -177,7 +177,6 @@ export const BLANK_PROJECT = {
     mep: true,
     civil: true,
   },
-  billingItems: [],
   chats: [],
 };
 
@@ -199,4 +198,6 @@ export const BLANK_PAYMENT = {
   notes: "",
   totalCost: "",
   expenseId: "",
+  readyToBePaid: false,
+  billingItems: [],
 };

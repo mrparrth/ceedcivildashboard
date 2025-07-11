@@ -53,6 +53,17 @@
       gap: 10px;  /* Add this */
     }
     
+    .form-row {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 13px;
+    }
+    
+    .form-row .form-field {
+      flex: 1;
+      margin-bottom: 0;
+    }
+    
     .form-field input,
     .form-field select {
         flex: 1;
@@ -318,12 +329,23 @@
       
       <h2>Webapp Access Details</h2>
       
-      <div class="form-field">
-        <select id="role" name="role" required>
-          <option value="Employee" selected>Employee</option>
-          <option value="Admin">Admin</option>
-        </select>
-        <label for="role" class="required">Role</label>
+      <div class="form-row">
+        <div class="form-field">
+          <select id="role" name="role" required>
+            <option value="Employee" selected>Employee</option>
+            <option value="Admin">Admin</option>
+            <option value="FinanceOnly">Finance Only</option>
+            <option value="ProjectOnly">Project Only</option>
+          </select>
+          <label for="role" class="required">Role</label>
+        </div>
+        
+        <div class="form-field" id="managerField" style="display: none;">
+          <select id="manager" name="manager">
+            <option value="">Select Manager</option>
+          </select>
+          <label for="manager">Manager</label>
+        </div>
       </div>
       
       <div class="form-field">
@@ -398,28 +420,98 @@
   </div>
 
   <script>
-    // Parse the existing users data passed from the server
     let existingUsers = [];
     try {
-      existingUsers = JSON.parse('<?!= JSON.stringify(allUsers) ?>');
+      existingUsers = JSON.parse('<?!= allUsers ?>');
     } catch (e) {
       console.error('Error parsing existing users:', e);
     }
     
-    // Track if slack email has been manually edited
     let slackEmailManuallyEdited = false;
     
-    // Function to initialize the form
     function initialize() {
-      // Show loading indicators
       document.getElementById('merchantLoading').style.display = 'block';
       document.getElementById('categoryLoading').style.display = 'block';
       
-      // Load merchant data from getFbVendors
       google.script.run.withSuccessHandler(loadMerchants).getFbVendors();
       
-      // Load category data from getFbCategories
       google.script.run.withSuccessHandler(loadCategories).getFbCategories();
+      
+      populateManagerDropdown();
+      
+      document.getElementById('role').addEventListener('change', handleRoleChange);
+    }
+    
+    function populateManagerDropdown() {
+      const managerSelect = document.getElementById('manager');
+      const managerField = document.getElementById('managerField');
+      
+      while (managerSelect.children.length > 1) {
+        managerSelect.removeChild(managerSelect.lastChild);
+      }
+      
+      const availableManagers = existingUsers.filter(user => !user.manager || user.manager === '');
+      
+      availableManagers.forEach(user => {
+        const option = document.createElement('option');
+        option.value = user.name;
+        option.textContent = user.name;
+        managerSelect.appendChild(option);
+      });
+    }
+    
+    // Function to handle role change
+    function handleRoleChange() {
+      const role = document.getElementById('role').value;
+      const managerField = document.getElementById('managerField');
+      const managerLabel = document.querySelector('label[for="manager"]');
+      const expenseSection = document.querySelector('h2:nth-of-type(2)');
+      const merchantField = document.getElementById('merchantName').closest('.form-field');
+      const categoryField = document.getElementById('categoryName').closest('.form-field');
+      
+      if (role === 'FinanceOnly' || role === 'ProjectOnly') {
+        managerField.style.display = 'flex';
+        document.getElementById('manager').required = true;
+        managerLabel.classList.add('required');
+      } else {
+        managerField.style.display = 'none';
+        document.getElementById('manager').required = false;
+        document.getElementById('manager').value = '';
+        managerLabel.classList.remove('required');
+      }
+      
+      // Handle expense creation fields
+      if (role === 'ProjectOnly') {
+        // Hide expense creation section and fields
+        if (expenseSection) expenseSection.style.display = 'none';
+        if (merchantField) merchantField.style.display = 'none';
+        if (categoryField) categoryField.style.display = 'none';
+        
+        // Remove required attributes
+        document.getElementById('merchantName').required = false;
+        document.getElementById('categoryName').required = false;
+        
+        // Remove required class from labels
+        const merchantLabel = document.querySelector('label[for="merchantName"]');
+        const categoryLabel = document.querySelector('label[for="categoryName"]');
+        if (merchantLabel) merchantLabel.classList.remove('required');
+        if (categoryLabel) categoryLabel.classList.remove('required');
+      } else {
+        // Show expense creation section and fields
+        if (expenseSection) expenseSection.style.display = 'block';
+        if (merchantField) merchantField.style.display = 'flex';
+        if (categoryField) categoryField.style.display = 'flex';
+        
+        // Add required attributes back
+        document.getElementById('merchantName').required = true;
+        document.getElementById('categoryName').required = true;
+        
+        // Add required class back to labels
+        const merchantLabel = document.querySelector('label[for="merchantName"]');
+        const categoryLabel = document.querySelector('label[for="categoryName"]');
+        if (merchantLabel) merchantLabel.classList.add('required');
+        if (categoryLabel) categoryLabel.classList.add('required');
+      }
     }
     
     // Function to check if custom value is entered
@@ -491,6 +583,12 @@
         isNewMerchant: document.getElementById('merchantNotice').style.display === 'block',
         isNewCategory: document.getElementById('categoryNotice').style.display === 'block'
       };
+      
+      // Add manager if the field is visible
+      const managerField = document.getElementById('managerField');
+      if (managerField.style.display !== 'none') {
+        formData.manager = document.getElementById('manager').value;
+      }
       
       // Send form data back to Google Apps Script
       // .withSuccessHandler(onSuccess)

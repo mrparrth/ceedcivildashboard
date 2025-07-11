@@ -87,7 +87,7 @@ function _createNewProjectFromContract_(data) {
     state: siteState || state,
     clientEmail,
     clientPhone,
-    clientProjectNameAddress: [clientName, siteAddress, clientEmail, clientPhone].join('\n'),
+    clientProjectNameAddress: [clientName, siteAddress].join('\n'),
     // projectFilesFolder: dropboxUrl
   }
 

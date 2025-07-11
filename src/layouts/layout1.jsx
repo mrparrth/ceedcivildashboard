@@ -5,26 +5,22 @@ import { Outlet } from "react-router-dom";
 import Scrollbar from "react-perfect-scrollbar";
 import useSettings from "../hooks/useSettings";
 
-import {
-  topBarHeight,
-  sideNavWidth,
-  sidenavCompactWidth
-} from "../utils/constant";
+import { topBarHeight, sideNavWidth, sidenavCompactWidth } from "../utils/constant";
 
 import { SidenavTheme } from "../theme/SidenavTheme";
-import Layout1Sidenav from "../layouts/Layout1Sidenav";
-import Layout1Topbar from "../layouts/Layout1Topbar";
+import Layout1Sidenav from "./Layout1Sidenav";
+import Layout1Topbar from "./Layout1Topbar";
 import Suspense from "../components/Suspense";
 
 // Styled components
 const Layout1Root = styled(Box)(({ theme }) => ({
   display: "flex",
-  background: theme.palette.background.default
+  background: theme.palette.background.default,
 }));
 
 const MainContainer = styled(Box)(() => ({
   display: "flex",
-  flexGrow: 1
+  flexGrow: 1,
 }));
 
 const ContentBox = styled(Box)(() => ({
@@ -33,7 +29,7 @@ const ContentBox = styled(Box)(() => ({
   overflowY: "auto",
   overflowX: "hidden",
   flexDirection: "column",
-  justifyContent: "space-between"
+  justifyContent: "space-between",
 }));
 
 const StyledScrollBar = styled(Scrollbar)(() => ({
@@ -41,7 +37,7 @@ const StyledScrollBar = styled(Scrollbar)(() => ({
   position: "relative",
   display: "flex",
   flexGrow: "1",
-  flexDirection: "column"
+  flexDirection: "column",
 }));
 
 const LayoutContainer = styled(Box)(({ width, open }) => ({
@@ -54,7 +50,7 @@ const LayoutContainer = styled(Box)(({ width, open }) => ({
   position: "relative",
   overflow: "hidden",
   transition: "all 0.3s ease",
-  marginRight: open ? 50 : 0
+  marginRight: open ? 50 : 0,
 }));
 
 const Layout1 = () => {
@@ -63,7 +59,7 @@ const Layout1 = () => {
   const topbarTheme = settings.themes[layout1Settings.topbar.theme];
   const {
     leftSidebar: { mode: sidenavMode, show: showSidenav },
-    topbar: { show: showTopbar, fixed: topbarFixed }
+    topbar: { show: showTopbar, fixed: topbarFixed },
   } = layout1Settings;
 
   const getSidenavWidth = () => {

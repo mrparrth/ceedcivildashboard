@@ -21,9 +21,15 @@ const API_ENDPOINTS = {
 function _createSlackChannel(project) {
   console.log(`Creating slack channel for project ${project.projectName}`)
   let settings = _getSettings_(CONFIG.SETTINGS)
+  
   let commonEmailsForEverySlackChannel = settings.commonEmailsForEverySlackChannel.split(',').map(email => email.trim())
-  let users = project.assignedTo
-  let userEmails = new User().getAllUsers().filter(user => users.includes(user.name)).map(user => user.slackAlias)
+  let userEmails = new User().getAllUsers()
+    .filter(user => user.manager?
+      project.assignedTo.includes(user.manager):
+      project.assignedTo.includes(user.name))
+    .map(user => user.slackAlias)
+    .filter(email => email)
+
   // Channel configuration
   const config = {
     channelName: formatChannelName(project.projectNumber, project.projectName),

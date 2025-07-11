@@ -1,6 +1,6 @@
 import useSettings from "hooks/useSettings";
 import useAppData from "../hooks/useAppData";
-import { authRoles } from "../contexts/auth/authRoles";
+import { PERMISSIONS } from "../contexts/auth/authRoles";
 
 import { Fragment } from "react";
 import { styled } from "@mui/material/styles";
@@ -12,7 +12,7 @@ import { getNavigations } from "../navigations";
 const StyledScrollBar = styled(Scrollbar)(() => ({
   paddingLeft: "1rem",
   paddingRight: "1rem",
-  position: "relative"
+  position: "relative",
 }));
 
 const SideNavMobile = styled("div")(({ theme }) => ({
@@ -24,7 +24,7 @@ const SideNavMobile = styled("div")(({ theme }) => ({
   zIndex: -1,
   width: "100vw",
   background: "rgba(0, 0, 0, 0.54)",
-  [theme.breakpoints.up("lg")]: { display: "none" }
+  [theme.breakpoints.up("lg")]: { display: "none" },
 }));
 
 export default function Sidenav({ children }) {
@@ -41,26 +41,25 @@ export default function Sidenav({ children }) {
         ...activeLayoutSettings,
         leftSidebar: {
           ...activeLayoutSettings.leftSidebar,
-          ...sidebarSettings
-        }
-      }
+          ...sidebarSettings,
+        },
+      },
     });
   };
 
   const navigationItems = getNavigations(appData);
 
-  if (appData.adminUrls?.length > 0)
-    navigationItems.push({ label: "External", type: "label" });
+  if (appData.adminUrls?.length > 0) navigationItems.push({ label: "External", type: "label" });
 
   appData.adminUrls.forEach(({ name, url, showToAdminOnly }) => {
     let navItem = {
       name,
       icon: "launch",
       type: "extLink",
-      path: url
+      path: url,
     };
     if (showToAdminOnly) {
-      navItem.auth = authRoles.admin;
+      navItem.requiredPermission = PERMISSIONS.adminLinks;
     }
 
     navigationItems.push(navItem);

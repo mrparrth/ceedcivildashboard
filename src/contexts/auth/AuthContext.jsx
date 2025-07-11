@@ -1,17 +1,6 @@
-import {
-  createContext,
-  useReducer,
-  useCallback,
-  useEffect,
-  useState
-} from "react";
+import { createContext, useReducer, useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  saveTokenInLocalStorage,
-  getTokenFromLocalStorage,
-  trashToken,
-  runScriptFunction
-} from "../../db";
+import { saveTokenInLocalStorage, getTokenFromLocalStorage, trashToken, runScriptFunction } from "../../db";
 import useContractMetadata from "hooks/useContractMetadata";
 
 const checkForToken = () => getTokenFromLocalStorage() || null;
@@ -20,7 +9,7 @@ const initialState = {
   user: null,
   isAuthenticated: false,
   token: null,
-  error: null
+  error: null,
 };
 
 const reducer = (state, action) => {
@@ -32,6 +21,11 @@ const reducer = (state, action) => {
         isAuthenticated: true,
         token: action.payload.token,
         user: action.payload.user
+          ? {
+              ...action.payload.user,
+              role: action.payload.user.role ? action.payload.user.role.toUpperCase() : action.payload.user.role,
+            }
+          : action.payload.user,
       };
     }
 
@@ -40,7 +34,13 @@ const reducer = (state, action) => {
       return {
         ...state,
         ...action.payload,
-        isAuthenticated: true
+        user: action.payload.user
+          ? {
+              ...action.payload.user,
+              role: action.payload.user.role ? action.payload.user.role.toUpperCase() : action.payload.user.role,
+            }
+          : action.payload.user,
+        isAuthenticated: true,
       };
     }
 
@@ -48,7 +48,7 @@ const reducer = (state, action) => {
       return {
         ...state,
         ...action.payload,
-        isAuthenticated: false
+        isAuthenticated: false,
       };
     }
 
@@ -60,7 +60,7 @@ const reducer = (state, action) => {
     case "SET_ERROR": {
       return {
         ...state,
-        ...action.payload
+        ...action.payload,
       };
     }
     default:
@@ -89,12 +89,12 @@ export default function AuthProvider({ children }) {
 
         dispatch({
           type: "INITIALIZE_AUTH",
-          payload: { token, user }
+          payload: { token, user },
         });
       } catch (error) {
         dispatch({
           type: "LOGIN_FAILURE",
-          payload: { error: error.message }
+          payload: { error: error.message },
         });
       } finally {
         setAuthInProgress(false);
@@ -114,12 +114,12 @@ export default function AuthProvider({ children }) {
 
       dispatch({
         type: "LOGIN_SUCCESS",
-        payload: result
+        payload: result,
       });
     } catch (error) {
       dispatch({
         type: "LOGIN_FAILURE",
-        payload: { error: error.message }
+        payload: { error: error.message },
       });
     } finally {
       setAuthInProgress(false);
@@ -142,7 +142,7 @@ export default function AuthProvider({ children }) {
         isAuthInProgress,
         login,
         logout,
-        setError
+        setError,
       }}>
       {children}
     </AuthContext.Provider>

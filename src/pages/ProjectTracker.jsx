@@ -1,29 +1,12 @@
 import React, { useState, useEffect } from "react";
-import {
-  Button,
-  Container,
-  Paper,
-  Box,
-  Typography,
-  Toolbar,
-  useTheme,
-  useMediaQuery,
-  TextField,
-  FormControlLabel,
-  Checkbox,
-  IconButton,
-  Tooltip,
-} from "@mui/material";
+import { Button, Container, Paper, Box, Typography, Toolbar, useTheme, useMediaQuery, TextField, FormControlLabel, Checkbox, IconButton, Tooltip } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import ArchiveIcon from "@mui/icons-material/Archive";
 import AddIcon from "@mui/icons-material/Add";
 import ViewListIcon from "@mui/icons-material/ViewList";
 import ViewKanbanIcon from "@mui/icons-material/ViewKanban";
-import {
-  ProjectModal,
-  ProjectTable,
-  ProjectKanban,
-} from "../components/ProjectDashboard";
+import { ProjectModal, ProjectTable, ProjectKanban } from "../components/ProjectDashboard";
+import { ProjectCalendar } from "../components/ProjectCalendar";
 import useNotification from "hooks/useNotification";
 import useData from "hooks/useData";
 import useAuth from "hooks/useAuth";
@@ -31,7 +14,7 @@ import useAppData from "hooks/useAppData";
 import { SingleSelectDropdown } from "components/Fields";
 
 const StyledButton = styled(Button)(({ theme }) => ({
-  margin: theme.spacing(1),
+  margin: theme.spacing(0),
 }));
 
 const ViewToggleToolbar = styled(Paper)(({ theme }) => ({
@@ -48,21 +31,14 @@ const ProjectTracker = () => {
   const [modalReadOnly, setModalReadOnly] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [modalProjectKey, setModalProjectKey] = useState(null);
-  const {
-    projects,
-    archiveProjects,
-    createDropboxFolder,
-    updateProjectStatus,
-  } = useData();
+  const { projects, archiveProjects, createDropboxFolder, updateProjectStatus } = useData();
   const { user } = useAuth();
   const { appData } = useAppData();
 
   const [includeArchived, setIncludeArchived] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selProjectType, setSelProjectType] = useState("All");
-  const [viewMode, setViewMode] = useState(
-    user.defaultDashboard?.toLowerCase() || "kanban"
-  ); // 'table' or 'kanban'
+  const [viewMode, setViewMode] = useState(user.defaultDashboard?.toLowerCase() || "kanban"); // 'table' or 'kanban'
 
   const { addNotification } = useNotification();
 
@@ -117,33 +93,20 @@ const ProjectTracker = () => {
   };
 
   const filteredProjects = projects.filter((project) => {
-    return (
-      (includeArchived || !project.isArchived) &&
-      !project.isDeleted &&
-      (searchQuery === "" ||
-        [
-          project.projectName,
-          project.description,
-          project.projectNotes,
-          project.projectNumber.toString(),
-        ].some((field) =>
-          field?.toLowerCase().includes(searchQuery.toLowerCase())
-        )) &&
-      (selProjectType === "All" ||
-        project.projectType?.toLowerCase() === selProjectType?.toLowerCase())
-    );
+    return (includeArchived || !project.isArchived) && !project.isDeleted && (searchQuery === "" || [project.projectName, project.description, project.projectNotes, project.projectNumber.toString()].some((field) => field?.toLowerCase().includes(searchQuery.toLowerCase()))) && (selProjectType === "All" || project.projectType?.toLowerCase() === selProjectType?.toLowerCase());
   });
 
   return (
-    <Container maxWidth={false} sx={{ py: 2, px: { xs: 1, sm: 2, md: 2 } }}>
-      <Box sx={{ display: "flex", gap: 2 }}>
-        <Paper elevation={3} sx={{ flex: 1 }}>
+    <Container maxWidth={false} sx={{ py: 1, px: { xs: 1, sm: 1, md: 1 } }}>
+      <Box sx={{ display: "flex", gap: 2, p: 0 }}>
+        <Paper elevation={3} sx={{ flex: 1, p: 0, m: 0 }}>
           <Toolbar
             sx={{
               flexDirection: { xs: "column", sm: "row" },
               alignItems: { xs: "stretch", sm: "center" },
-              gap: 2,
+              gap: 1,
               justifyContent: "space-between",
+              padding: 0,
             }}>
             <Box
               sx={{
@@ -151,20 +114,12 @@ const ProjectTracker = () => {
                 gap: 2,
                 flexDirection: { xs: "column", sm: "row" },
               }}>
-              <StyledButton
-                variant="contained"
-                color="secondary"
-                startIcon={<ArchiveIcon />}
-                onClick={handleArchiveProject}
-                fullWidth={isXsScreen}>
-                Archive Project(s)
-              </StyledButton>
-              <StyledButton
-                variant="contained"
-                color="primary"
-                startIcon={<AddIcon />}
-                onClick={showNewProjectModal}
-                fullWidth={isXsScreen}>
+              {viewMode !== "kanban" && (
+                <StyledButton variant="contained" color="secondary" startIcon={<ArchiveIcon />} onClick={handleArchiveProject} fullWidth={isXsScreen} sx={{ padding: 0 }}>
+                  Archive Project(s)
+                </StyledButton>
+              )}
+              <StyledButton variant="contained" color="primary" startIcon={<AddIcon />} onClick={showNewProjectModal} fullWidth={isXsScreen}>
                 New Project
               </StyledButton>
             </Box>
@@ -175,52 +130,32 @@ const ProjectTracker = () => {
                 gap: 2,
                 alignItems: "center",
                 flexDirection: { xs: "column", sm: "row" },
+                padding: 0,
               }}>
-              <SingleSelectDropdown
-                id="project-type"
-                options={["All", ...appData.projectType]}
-                selectedOption={selProjectType}
-                onChange={(id, selValue) => setSelProjectType(selValue)}
-                label={"Project Type"}
-              />
-              <TextField
-                size="small"
-                placeholder="Search project by number, name, description, or note"
-                sx={{ minWidth: 420 }}
-                onChange={(e) => handleSearch(e.target.value)}
-              />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={includeArchived}
-                    onChange={(e) => setIncludeArchived(e.target.checked)}
-                    color="primary"
-                  />
-                }
-                label="Include Archived"
-              />
+              <SingleSelectDropdown id="project-type" options={["All", ...appData.projectType]} selectedOption={selProjectType} onChange={(id, selValue) => setSelProjectType(selValue)} label={"Project Type"} />
+              <TextField size="small" placeholder="Search project by number, name, description, or note" sx={{ minWidth: 420 }} onChange={(e) => handleSearch(e.target.value)} />
+              <FormControlLabel control={<Checkbox checked={includeArchived} onChange={(e) => setIncludeArchived(e.target.checked)} color="primary" />} label="Include Archived" sx={{ whiteSpace: "nowrap" }} />
             </Box>
           </Toolbar>
         </Paper>
 
         <ViewToggleToolbar elevation={3}>
           <Tooltip title="Table View">
-            <IconButton
-              onClick={() => setViewMode("table")}
-              color={viewMode === "table" ? "primary" : "default"}
-              size="small">
+            <IconButton onClick={() => setViewMode("table")} color={viewMode === "table" ? "primary" : "default"} size="small">
               <ViewListIcon />
             </IconButton>
           </Tooltip>
           <Tooltip title="Kanban View">
-            <IconButton
-              onClick={() => setViewMode("kanban")}
-              color={viewMode === "kanban" ? "primary" : "default"}
-              size="small">
+            <IconButton onClick={() => setViewMode("kanban")} color={viewMode === "kanban" ? "primary" : "default"} size="small">
               <ViewKanbanIcon />
             </IconButton>
           </Tooltip>
         </ViewToggleToolbar>
+      </Box>
+
+      {/* Project Calendar Component */}
+      <Box sx={{ mt: 1 }}>
+        <ProjectCalendar projects={filteredProjects} viewRow={handleViewProject} editRow={handleEditProject} />
       </Box>
 
       <Paper elevation={3} sx={{ mt: 2 }}>
@@ -243,34 +178,11 @@ const ProjectTracker = () => {
               },
             },
           }}>
-          {viewMode === "table" ? (
-            <ProjectTable
-              projects={filteredProjects}
-              pageNo={currentPage}
-              onPageChange={handlePageChange}
-              onOpenModal={setModalOpen}
-              viewRow={handleViewProject}
-              editRow={handleEditProject}
-              showArchivedIcon={includeArchived}
-            />
-          ) : (
-            <ProjectKanban
-              projects={filteredProjects}
-              viewRow={handleViewProject}
-              editRow={handleEditProject}
-              updateProjectStatus={updateProjectStatus}
-            />
-          )}
+          {viewMode === "table" ? <ProjectTable projects={filteredProjects} pageNo={currentPage} onPageChange={handlePageChange} onOpenModal={setModalOpen} viewRow={handleViewProject} editRow={handleEditProject} showArchivedIcon={includeArchived} /> : <ProjectKanban projects={filteredProjects} viewRow={handleViewProject} editRow={handleEditProject} updateProjectStatus={updateProjectStatus} />}
         </Box>
       </Paper>
 
-      {isModalOpen && (
-        <ProjectModal
-          closeModal={handleCloseModal}
-          projectKey={modalProjectKey}
-          viewOnly={modalReadOnly}
-        />
-      )}
+      {isModalOpen && <ProjectModal closeModal={handleCloseModal} projectKey={modalProjectKey} viewOnly={modalReadOnly} />}
     </Container>
   );
 };

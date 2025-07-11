@@ -1,32 +1,32 @@
-import { authRoles } from "./contexts/auth/authRoles";
+import { PERMISSIONS } from "./contexts/auth/authRoles";
 
 export const getNavigations = (appData) => [
-  { name: "Dashboard", path: "/dashboard", icon: "dashboard" },
-  { name: "Archived", path: "/archived", icon: "archive" },
-  { name: "Finances", path: "/finance", icon: "local_atm" },
+  { name: "Dashboard", path: "/dashboard", icon: "dashboard", requiredPermission: PERMISSIONS.projects },
+  { name: "Archived", path: "/archived", icon: "archive", requiredPermission: PERMISSIONS.projects },
+  { name: "Finances", path: "/finance", icon: "local_atm", requiredPermission: PERMISSIONS.finance },
   { type: "divider" },
-  { label: "Contract Generation", type: "label", auth: authRoles.admin },
+  { label: "Contract Generation", type: "label", requiredPermission: PERMISSIONS.forms },
   {
     name: "Form",
     path: "/contract-generator-tool",
     icon: "post_add",
-    auth: authRoles.admin
+    requiredPermission: PERMISSIONS.forms,
   },
   {
     name: "Folder",
     icon: "snippet_folder",
     type: "extLink",
     path: appData.contractExportFolder,
-    auth: authRoles.admin
+    requiredPermission: PERMISSIONS.forms,
   },
   {
     name: "Template",
     icon: "task",
     type: "extLink",
     path: appData.contractTemplate,
-    auth: authRoles.admin
+    requiredPermission: PERMISSIONS.forms,
   },
-  { type: "divider", auth: authRoles.admin }
+  { type: "divider", requiredPermission: PERMISSIONS.forms },
 ];
 
 // ,

@@ -20,6 +20,8 @@ import {
   InfoOutlined as InfoIcon,
 } from "@mui/icons-material";
 
+import { CustomTextArea2 } from "components";
+
 import useData from "hooks/useData";
 import useAppData from "hooks/useAppData";
 import useContractMetadata from "hooks/useContractMetadata";
@@ -30,7 +32,7 @@ const CEEDCivilForm = () => {
   let { appData } = useAppData();
   let { contractMetadata, isLoading: isContractDataLoading } =
     useContractMetadata();
-  const [formData, setFormData] = useState(DEV_PREFILL_FORM);
+  const [formData, setFormData] = useState(INITIAL_FORM);
   const [isCreatingFreshbooks, setIsCreatingFreshbooks] = useState(false);
   const [isCreatingContract, setIsCreatingContract] = useState(false);
 
@@ -264,6 +266,7 @@ const CEEDCivilForm = () => {
         newProject.projectType = formData.projectType;
         newProject.clientPhone = formData.clientPhone;
         newProject.clientEmail = formData.clientEmail;
+        newProject.description = formData.projectDesc;
 
         setFormData((prevData) => ({
           ...prevData,
@@ -678,6 +681,40 @@ const CEEDCivilForm = () => {
               </label>
             </div>
 
+            <div className="mb-3">
+              <label htmlFor="project" className="form-label">
+                Project Title
+              </label>
+              <div className="input-group">
+                <input
+                  type="text"
+                  className="form-control"
+                  id="project"
+                  name="projectName"
+                  value={formData.projectName}
+                  onChange={handleInputChange}
+                />
+                {/* <button className="btn btn-dark" type="button">
+                  <i className="bi bi-plus-circle-fill me-2"></i>Create New
+                  Project
+                </button> */}
+              </div>
+            </div>
+            <div className="mb-3">
+              <label htmlFor="projectDesc" className="form-label">
+                Scope Of Work
+              </label>
+              <div className="input-group">
+                <CustomTextArea2
+                  id="projectDesc"
+                  name="projectDesc"
+                  value={formData.projectDesc}
+                  onChange={handleInputChange}
+                  rows={3} // Minimum rows
+                />
+              </div>
+            </div>
+
             <div className="row g-3">
               <div className="col-md-4">
                 <label htmlFor="ratePerHour" className="form-label">
@@ -717,26 +754,6 @@ const CEEDCivilForm = () => {
                   value={formData.remainingBalance}
                   onChange={handleInputChange}
                 />
-              </div>
-            </div>
-
-            <div className="mb-3">
-              <label htmlFor="project" className="form-label">
-                Project Description
-              </label>
-              <div className="input-group">
-                <input
-                  type="text"
-                  className="form-control"
-                  id="project"
-                  name="projectName"
-                  value={formData.projectName}
-                  onChange={handleInputChange}
-                />
-                {/* <button className="btn btn-dark" type="button">
-                  <i className="bi bi-plus-circle-fill me-2"></i>Create New
-                  Project
-                </button> */}
               </div>
             </div>
 
