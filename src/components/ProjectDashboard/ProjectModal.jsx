@@ -1,7 +1,6 @@
 import React, { useState, useRef } from "react";
 import { Drafter, Engineering, MEP, Civil } from "../ExpandableSections";
 import { SingleSelectDropdown, MultiSelectDropdown, CheckBox } from "../Fields";
-import { BillingItemsModal } from "components/ProjectDashboard";
 import ConfirmationModal from "components/ConfirmationModal";
 import useData from "hooks/useData";
 import useAppData from "hooks/useAppData";
@@ -10,19 +9,20 @@ import { getAssignedToBreakdown } from "utils/utils";
 import URLInput from "components/UrlInput";
 import CustomTextArea from "components/CustomTextArea";
 import ChatBox from "./ChatBox";
-import { Box, Typography, Button } from "@mui/material";
+import { Box, Typography, Button, IconButton } from "@mui/material";
 import LightbulbIcon from "@mui/icons-material/Lightbulb";
+import ArchiveIcon from "@mui/icons-material/Archive";
+import CloseIcon from "@mui/icons-material/Close";
 import useAuth from "hooks/useAuth";
+import { PERMISSIONS, AUTH_ROLES } from "contexts/auth/authRoles";
 
 const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
-  let { updateProject, createProject, projects, addNewChat, updateChat } =
-    useData();
+  let { updateProject, createProject, projects, addNewChat, updateChat, archiveProjects } = useData();
   let { appData } = useAppData();
   let { user } = useAuth();
 
   let initProject;
-  if (projectKey)
-    initProject = projects.find((project) => project.id == projectKey);
+  if (projectKey) initProject = projects.find((project) => project.id == projectKey);
 
   const [project, setProject] = useState(initProject || BLANK_PROJECT);
   const [loading, setLoading] = useState(false);
@@ -35,29 +35,17 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
   const [pendingProjectNumber, setPendingProjectNumber] = useState("");
   const hasShownConfirmation = useRef(false);
   const isNewProject = !projectKey;
-  const [billingModalOpen, setBillingModalOpen] = useState(false);
+  const [showArchiveConfirmation, setShowArchiveConfirmation] = useState(false);
 
   const handleInputChange = (key, value) => {
-    if (
-      key === "projectNumber" &&
-      value &&
-      !hasShownConfirmation.current &&
-      isNewProject
-    ) {
+    if (key === "projectNumber" && value && !hasShownConfirmation.current && isNewProject) {
       setPendingProjectNumber(value);
       setShowConfirmation(true);
       return;
     }
     if (key == "") return;
 
-    if (
-      [
-        "draftingEstimate",
-        "engineeringEstimate",
-        "mepEstimate",
-        "civilEstimate",
-      ].includes(key)
-    ) {
+    if (["draftingEstimate", "engineeringEstimate", "mepEstimate", "civilEstimate"].includes(key)) {
       let estimatedBudget = parseFloat(project.draftingEstimate) || 0;
       estimatedBudget += parseFloat(project.engineeringEstimate) || 0;
       estimatedBudget += parseFloat(project.mepEstimate) || 0;
@@ -95,9 +83,7 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
         }
       } catch (error) {
         console.error("Error submitting form:", error);
-        setErrors(
-          "An error occurred while saving the project. Please try again."
-        );
+        setErrors("An error occurred while saving the project. Please try again.");
       } finally {
         setLoading(false);
       }
@@ -136,7 +122,7 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
       options: appData.salesmen,
     },
     {
-      label: "Description",
+      label: "Scope Of Work",
       key: "description",
       isTextarea: true,
       ref: fieldRefs.description,
@@ -172,8 +158,7 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
       key: "estimatedBudget",
       ref: fieldRefs.estimatedBudget,
       disabled: true,
-      placeholder:
-        "Autocalculated: Enter estimates For Engg, MEP, Drafting, Civil",
+      placeholder: "Autocalculated: Enter estimates For Engg, MEP, Drafting, Civil",
     },
     {
       label: "Initial Status",
@@ -188,6 +173,12 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
       isMultiSelect: true,
     },
     {
+      label: "Who Is Working On It",
+      key: "personWorking",
+      isSingleSelect: true,
+      options: project.assignedTo,
+    },
+    {
       label: "Client Project Name/Address",
       key: "clientProjectNameAddress",
       isTextarea: true,
@@ -198,22 +189,11 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
     const commonProps = {
       id: formField.key,
       ref: formField.ref,
-      className: `${formField.baseClassName || ""} ${
-        errors[formField.key] ? "error" : ""
-      }`,
+      className: `${formField.baseClassName || ""} ${errors[formField.key] ? "error" : ""}`,
     };
 
     if (formField.isSingleSelect) {
-      return (
-        <SingleSelectDropdown
-          {...commonProps}
-          options={formField.options}
-          selectedOption={project[formField.key] || ""}
-          onChange={handleInputChange}
-          label={formField.label}
-          viewOnly={viewOnly}
-        />
-      );
+      return <SingleSelectDropdown {...commonProps} options={formField.options} selectedOption={project[formField.key] || ""} onChange={handleInputChange} label={formField.label} viewOnly={viewOnly} />;
     }
 
     if (formField.isMultiSelect) {
@@ -224,44 +204,24 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
           selectedOptions={project[formField.key]}
           setSelectedOptions={(newSelectedOptions) => {
             if (formField.key == "assignedTo") {
-              const {
-                draftingTaskedTo,
-                engineeringTaskedTo,
-                mepTaskedTo,
-                civilTaskedTo,
-              } = getAssignedToBreakdown(newSelectedOptions, appData);
+              const { draftingTaskedTo, engineeringTaskedTo, mepTaskedTo, civilTaskedTo } = getAssignedToBreakdown(newSelectedOptions, appData);
 
               handleInputChange(formField.key, newSelectedOptions);
               handleInputChange("draftingTaskedTo", draftingTaskedTo);
               handleInputChange("draftingNeeded", draftingTaskedTo.length > 0);
               handleInputChange("engineeringTaskedTo", engineeringTaskedTo);
-              handleInputChange(
-                "engineeringNeeded",
-                engineeringTaskedTo.length > 0
-              );
+              handleInputChange("engineeringNeeded", engineeringTaskedTo.length > 0);
               handleInputChange("mepTaskedTo", mepTaskedTo);
               handleInputChange("mepNeeded", mepTaskedTo.length > 0);
               handleInputChange("civilTaskedTo", civilTaskedTo);
               handleInputChange("civilNeeded", civilTaskedTo.length > 0);
-            } else if (
-              [
-                "draftingTaskedTo",
-                "engineeringTaskedTo",
-                "mepTaskedTo",
-                "civilTaskedTo",
-              ].includes(formField.key)
-            ) {
+            } else if (["draftingTaskedTo", "engineeringTaskedTo", "mepTaskedTo", "civilTaskedTo"].includes(formField.key)) {
               let section = formField.key.replace("TaskedTo", "");
               let neededField = section + "Needed";
               handleInputChange(neededField, newSelectedOptions.length > 0);
 
               let oldSelOptions = project[formField.key];
-              handleInputChange("assignedTo", [
-                ...project["assignedTo"].filter(
-                  (u) => !oldSelOptions.includes(u)
-                ),
-                ...newSelectedOptions,
-              ]);
+              handleInputChange("assignedTo", [...project["assignedTo"].filter((u) => !oldSelOptions.includes(u)), ...newSelectedOptions]);
             }
           }}
           viewOnly={viewOnly}
@@ -270,29 +230,11 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
     }
 
     if (formField.isTextarea) {
-      return (
-        <CustomTextArea
-          {...commonProps}
-          id={formField.key}
-          value={project[formField.key]}
-          onChange={(e) => handleInputChange(formField.key, e.target.value)}
-          className="form-textarea"
-          disabled={viewOnly}
-        />
-      );
+      return <CustomTextArea {...commonProps} id={formField.key} value={project[formField.key]} onChange={(e) => handleInputChange(formField.key, e.target.value)} className="form-textarea" disabled={viewOnly} />;
     }
 
     if (formField.isCheckbox) {
-      return (
-        <CheckBox
-          {...commonProps}
-          id={formField.key}
-          checked={project[formField.key]}
-          onChange={(value) => handleInputChange(formField.key, value)}
-          label={formField.label}
-          viewOnly={viewOnly}
-        />
-      );
+      return <CheckBox {...commonProps} id={formField.key} checked={project[formField.key]} onChange={(value) => handleInputChange(formField.key, value)} label={formField.label} viewOnly={viewOnly} />;
     }
 
     if (formField.isUrl) {
@@ -303,9 +245,7 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
           value={project[formField.key]}
           onChange={(e) => handleInputChange(formField.key, e.target.value)}
           readOnly={formField.isEditable === false || viewOnly}
-          className={`form-input text-wrap ${
-            formField.disabled ? "disabled-input" : ""
-          }`}
+          className={`form-input text-wrap ${formField.disabled ? "disabled-input" : ""}`}
           disabled={formField.disabled}
           style={{
             minWidth: formField.key == "projectName" ? "20em" : "",
@@ -315,21 +255,7 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
       );
     }
 
-    return (
-      <input
-        {...commonProps}
-        id={formField.key}
-        type="text"
-        value={project[formField.key]}
-        onChange={(e) => handleInputChange(formField.key, e.target.value)}
-        readOnly={formField.isEditable === false || viewOnly}
-        className={`form-input text-wrap ${
-          formField.disabled ? "disabled-input" : ""
-        }`}
-        disabled={formField.disabled}
-        placeholder={formField.placeholder}
-      />
-    );
+    return <input {...commonProps} id={formField.key} type="text" value={project[formField.key]} onChange={(e) => handleInputChange(formField.key, e.target.value)} readOnly={formField.isEditable === false || viewOnly} className={`form-input text-wrap ${formField.disabled ? "disabled-input" : ""}`} disabled={formField.disabled} placeholder={formField.placeholder} />;
   };
 
   const validateForm = () => {
@@ -372,26 +298,70 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
   const handleMessageCompletion = (updatedChat) => {
     setProject((prev) => ({
       ...prev,
-      chats: prev.chats.map((pChat) =>
-        pChat.id === updatedChat.id ? { ...pChat, ...updatedChat } : pChat
-      ),
+      chats: prev.chats.map((pChat) => (pChat.id === updatedChat.id ? { ...pChat, ...updatedChat } : pChat)),
     }));
 
     if (!isNewProject) updateChat(project.id, updatedChat);
+  };
+
+  const handleArchiveClick = () => {
+    if (project.isArchived) {
+      alert("Project is already archived");
+      return;
+    }
+    setShowArchiveConfirmation(true); // Show the confirmation modal
+  };
+
+  const confirmArchive = (confirmed) => {
+    if (confirmed) {
+      archiveProjects([project.id]);
+      closeModal();
+    }
+    setShowArchiveConfirmation(false); // Close the confirmation modal
   };
 
   return (
     <>
       <div className="modal-overlay">
         <div className="modal-content container-fluid">
-          <button onClick={closeModal} className="close-button">
-            ×
-          </button>
-          <h2 className="modal-title">
-            {isNewProject
-              ? "Create New Project"
-              : `Project Details${viewOnly ? " (READ MODE)" : ""}`}
-          </h2>
+          <div
+            className="modal-header"
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              position: "relative",
+            }}>
+            {!isNewProject && !project.isArchived && (
+              <IconButton
+                color="primary"
+                onClick={() => handleArchiveClick()} // Replace with your archive logic
+                title="Archive Project"
+                style={{
+                  position: "absolute",
+                  left: "16px",
+                }}>
+                <ArchiveIcon />
+              </IconButton>
+            )}
+            <h2 className="modal-title">{isNewProject ? "Create New Project" : `Project Details${viewOnly ? " (READ MODE)" : ""}`}</h2>
+            <div
+              style={{
+                position: "absolute",
+                right: "16px",
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+              }}>
+              <IconButton
+                color="secondary"
+                onClick={closeModal} // Close the modal
+                title="Close Modal">
+                <CloseIcon />
+              </IconButton>
+            </div>
+          </div>
+
           <div className="row flex-column flex-lg-row justify-content-center mt-6">
             <div className="col-12 col-lg-6 mb-4 mb-lg-0">
               <div className="project-form">
@@ -402,16 +372,11 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
                     </label>
                     <div className="form-field">
                       {getInputElement(formField)}
-                      {errors[formField.key] && (
-                        <div className="error-message">
-                          {errors[formField.key]}
-                        </div>
-                      )}
+                      {errors[formField.key] && <div className="error-message">{errors[formField.key]}</div>}
                     </div>
                   </div>
                 ))}
-                {(project.clientEmail || project.clientPhone) &&
-                user?.role?.toUpperCase() === "ADMIN" ? (
+                {(project.clientEmail || project.clientPhone) && AUTH_ROLES[user.role].includes(PERMISSIONS.viewContacts) ? (
                   <>
                     <hr className="section-divider" />
                     <div className="client-contact-info">
@@ -419,14 +384,10 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
                       <div className="project-form">
                         {clientInfo.map((formField) => (
                           <div key={formField.key} className="form-row">
-                            <label
-                              htmlFor={formField.key}
-                              className="form-label">
+                            <label htmlFor={formField.key} className="form-label">
                               {formField.label}
                             </label>
-                            <div className="form-field">
-                              {getInputElement(formField)}
-                            </div>
+                            <div className="form-field">{getInputElement(formField)}</div>
                           </div>
                         ))}
                       </div>
@@ -441,38 +402,25 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
             <div className="col-12 col-lg-5">
               <div className="d-flex flex-column gap-2">
                 <div className="d-flex flex-column gap-1">
-                  {project.draftingTaskedTo.length === 0 &&
-                    project.engineeringTaskedTo.length === 0 &&
-                    project.mepTaskedTo.length === 0 &&
-                    project.civilTaskedTo.length === 0 && (
-                      <Box
-                        sx={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 1,
-                          p: 2,
-                          backgroundColor: "#f8f9fa",
-                          borderRadius: 1,
-                          border: "1px solid #e0e0e0",
-                          mb: 2,
-                        }}>
-                        <LightbulbIcon
-                          sx={{ color: "primary.main", fontSize: 20 }}
-                        />
-                        <Typography
-                          variant="body2"
-                          sx={{ color: "text.secondary" }}>
-                          Assign to a Drafter, Engineer, MEP or Civil to show
-                          this section
-                        </Typography>
-                      </Box>
-                    )}
-                  {[
-                    "draftingTaskedTo",
-                    "engineeringTaskedTo",
-                    "mepTaskedTo",
-                    "civilTaskedTo",
-                  ].map((key) => {
+                  {project.draftingTaskedTo.length === 0 && project.engineeringTaskedTo.length === 0 && project.mepTaskedTo.length === 0 && project.civilTaskedTo.length === 0 && (
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                        p: 2,
+                        backgroundColor: "#f8f9fa",
+                        borderRadius: 1,
+                        border: "1px solid #e0e0e0",
+                        mb: 2,
+                      }}>
+                      <LightbulbIcon sx={{ color: "primary.main", fontSize: 20 }} />
+                      <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                        Assign to a Drafter, Engineer, MEP or Civil to show this section
+                      </Typography>
+                    </Box>
+                  )}
+                  {["draftingTaskedTo", "engineeringTaskedTo", "mepTaskedTo", "civilTaskedTo"].map((key) => {
                     const toggleState = {
                       draftingTaskedTo: drafterToggle,
                       engineeringTaskedTo: enggToggle,
@@ -503,35 +451,15 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
                       mepTaskedTo: "bg-dark text-light",
                       civilTaskedTo: "text-light",
                     }[key];
-                    const buttonStyle =
-                      key === "civilTaskedTo"
-                        ? { backgroundColor: "#5378e4" }
-                        : {};
+                    const buttonStyle = key === "civilTaskedTo" ? { backgroundColor: "#5378e4" } : {};
 
                     return project[key].length > 0 ? (
                       <React.Fragment key={key}>
-                        <button
-                          onClick={() => setToggleState(!toggleState)}
-                          className={`drafter-toggle ${buttonClass}`}
-                          style={buttonStyle}
-                          type="button">
+                        <button onClick={() => setToggleState(!toggleState)} className={`drafter-toggle ${buttonClass}`} style={buttonStyle} type="button">
                           {label}
-                          <span
-                            className={`dropdown-arrow ${
-                              toggleState ? "open" : ""
-                            }`}>
-                            ▼
-                          </span>
+                          <span className={`dropdown-arrow ${toggleState ? "open" : ""}`}>▼</span>
                         </button>
-                        {toggleState && (
-                          <Component
-                            data={project}
-                            setter={(itemKey, value) =>
-                              handleInputChange(itemKey, value)
-                            }
-                            viewOnly={viewOnly}
-                          />
-                        )}
+                        {toggleState && <Component data={project} setter={(itemKey, value) => handleInputChange(itemKey, value)} viewOnly={viewOnly} />}
                       </React.Fragment>
                     ) : null;
                   })}
@@ -541,61 +469,7 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
 
               {/* Chat Section */}
               <Box sx={{ mt: 2 }}>
-                <ChatBox
-                  chats={project.chats}
-                  onSendMessage={handleSendMessage}
-                  onMessageComplete={handleMessageCompletion}
-                />
-              </Box>
-              <hr className="section-divider" />
-
-              {/* Summary Section */}
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 1,
-                  p: 2,
-                  backgroundColor: "#f8f9fa",
-                  borderRadius: 1,
-                  border: "1px solid #e0e0e0",
-                  mb: 2,
-                  position: "relative",
-                }}>
-                <Typography variant="h6" sx={{ color: "text.primary" }}>
-                  Billing Summary
-                </Typography>
-                <Typography variant="body2" sx={{ color: "text.secondary" }}>
-                  Total Items: {project.billingItems?.length || 0}
-                </Typography>
-                <Typography variant="body2" sx={{ color: "text.secondary" }}>
-                  Total Hours:{" "}
-                  {project.billingItems
-                    ?.reduce((sum, item) => sum + (item.hoursWorked || 0), 0)
-                    .toFixed(2) || 0}
-                </Typography>
-                <Typography variant="body2" sx={{ color: "text.secondary" }}>
-                  Total Amount: $
-                  {project.billingItems
-                    ?.reduce(
-                      (sum, item) =>
-                        sum + (item.hoursWorked * item.hourlyRate || 0),
-                      0
-                    )
-                    .toFixed(2) || 0}
-                </Typography>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  sx={{
-                    position: "absolute",
-                    top: "50%",
-                    right: "16px",
-                    transform: "translateY(-50%)",
-                  }}
-                  onClick={() => setBillingModalOpen(true)}>
-                  View Details
-                </Button>
+                <ChatBox chats={project.chats} onSendMessage={handleSendMessage} onMessageComplete={handleMessageCompletion} />
               </Box>
             </div>
           </div>
@@ -615,10 +489,7 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
               }}>
               Cancel
             </button>
-            <button
-              onClick={handleSubmit}
-              disabled={loading || viewOnly}
-              className="submit-button">
+            <button onClick={handleSubmit} disabled={loading || viewOnly} className="submit-button">
               {loading ? (
                 <>
                   <span className="spinner"></span>
@@ -633,12 +504,7 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
           </div>
         </div>
       </div>
-      <BillingItemsModal
-        open={billingModalOpen}
-        onClose={() => setBillingModalOpen(false)}
-        onSave={(items) => handleInputChange("billingItems", items)}
-        initialItems={project.billingItems || []}
-      />
+
       <ConfirmationModal
         isOpen={showConfirmation}
         onClose={() => setShowConfirmation(false)}
@@ -648,6 +514,18 @@ const ProjectModal = ({ closeModal, projectKey, viewOnly }) => {
         choices={[
           { label: "Yes, I understand", value: true },
           { label: "No, auto-generate", value: false },
+        ]}
+        showCancel={false}
+      />
+      <ConfirmationModal
+        isOpen={showArchiveConfirmation}
+        onClose={() => setShowArchiveConfirmation(false)}
+        onConfirm={confirmArchive}
+        title="Archive Project"
+        message="Are you sure you want to archive this project?"
+        choices={[
+          { label: "Yes, Archive", value: true },
+          { label: "Cancel", value: false },
         ]}
         showCancel={false}
       />
