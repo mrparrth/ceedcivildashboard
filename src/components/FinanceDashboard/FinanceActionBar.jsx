@@ -5,21 +5,13 @@ import AddIcon from "@mui/icons-material/Add";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import useAuth from "hooks/useAuth";
 import { Button, Paper, Box, Typography, Toolbar } from "@mui/material";
+import { PERMISSIONS, AUTH_ROLES } from "contexts/auth/authRoles";
 
-const FinanceActionBar = ({
-  selectedRows,
-  handleNewPayment,
-  onCreateFreshbooksExpense,
-  totalExpenses,
-  loading,
-  processedRowsCount,
-  justCompleted
-}) => {
+const FinanceActionBar = ({ selectedRows, handleNewPayment, onCreateFreshbooksExpense, totalExpenses, loading, processedRowsCount, justCompleted }) => {
   let { user } = useAuth();
-  const progress = loading
-    ? (processedRowsCount / selectedRows.length) * 100
-    : 0;
-  const isAdmin = user?.role?.toUpperCase() === "ADMIN";
+  const progress = loading ? (processedRowsCount / selectedRows.length) * 100 : 0;
+  const availablePermissions = AUTH_ROLES[user.role];
+  const hasAdminToolsPermission = availablePermissions.includes(PERMISSIONS.adminTools);
 
   return (
     <Paper elevation={3}>
@@ -30,57 +22,27 @@ const FinanceActionBar = ({
           alignItems: { xs: "stretch", sm: "center" },
           gap: 2,
           mt: 1,
-          bgcolor: "grey.200"
+          bgcolor: "grey.200",
         }}>
         <Box
           sx={{
             display: "flex",
             flexDirection: { xs: "column", sm: "row" },
             gap: 2,
-            flexGrow: 1
+            flexGrow: 1,
           }}>
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<AddIcon />}
-            onClick={handleNewPayment}
-            disabled={loading}>
+          <Button variant="contained" color="primary" startIcon={<AddIcon />} onClick={handleNewPayment} disabled={loading}>
             New Payment
           </Button>
-          {isAdmin && (
+          {hasAdminToolsPermission && (
             <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-              <Button
-                variant="contained"
-                color="secondary"
-                startIcon={
-                  loading ? (
-                    justCompleted ? (
-                      <CheckCircleOutlineIcon />
-                    ) : (
-                      <CircularProgress size={20} color="inherit" />
-                    )
-                  ) : (
-                    <AddIcon />
-                  )
-                }
-                onClick={onCreateFreshbooksExpense}
-                disabled={selectedRows.length === 0 || loading}>
-                {loading
-                  ? justCompleted
-                    ? "Completed"
-                    : "Creating Expenses..."
-                  : `New Freshbooks Expense (${selectedRows.length})`}
+              <Button variant="contained" color="secondary" startIcon={loading ? justCompleted ? <CheckCircleOutlineIcon /> : <CircularProgress size={20} color="inherit" /> : <AddIcon />} onClick={onCreateFreshbooksExpense} disabled={selectedRows.length === 0 || loading}>
+                {loading ? (justCompleted ? "Completed" : "Creating Expenses...") : `New Freshbooks Expense (${selectedRows.length})`}
               </Button>
               {loading && (
                 <Box sx={{ width: "100%" }}>
-                  <LinearProgress
-                    variant="determinate"
-                    value={justCompleted ? 100 : progress}
-                  />
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    align="right">
+                  <LinearProgress variant="determinate" value={justCompleted ? 100 : progress} />
+                  <Typography variant="body2" color="text.secondary" align="right">
                     {justCompleted ? "100%" : `${Math.round(progress)}%`}
                   </Typography>
                 </Box>
@@ -88,18 +50,16 @@ const FinanceActionBar = ({
             </Box>
           )}
         </Box>
-        {isAdmin && (
+        {hasAdminToolsPermission && (
           <Box
             sx={{
               display: "flex",
               flexDirection: "column",
               alignItems: { xs: "flex-start", sm: "flex-end" },
               justifyContent: "center",
-              minWidth: { sm: "120px" } // Ensure consistent width on larger screens
+              minWidth: { sm: "120px" }, // Ensure consistent width on larger screens
             }}>
-            <Typography
-              variant="caption"
-              sx={{ fontSize: "0.8rem", color: "text.secondary" }}>
+            <Typography variant="caption" sx={{ fontSize: "0.8rem", color: "text.secondary" }}>
               Total
             </Typography>
             <Typography
@@ -110,7 +70,7 @@ const FinanceActionBar = ({
               $
               {(totalExpenses || 0).toLocaleString("en-US", {
                 minimumFractionDigits: 2,
-                maximumFractionDigits: 2
+                maximumFractionDigits: 2,
               })}
             </Typography>
           </Box>

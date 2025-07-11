@@ -7,6 +7,7 @@ import useData from "hooks/useData";
 import useAuth from "hooks/useAuth";
 import { Paper, Box, Checkbox } from "@mui/material";
 import { ArrowUpward, ArrowDownward } from "@mui/icons-material";
+import { PERMISSIONS, AUTH_ROLES } from "contexts/auth/authRoles";
 
 const FinanceTable = ({ pageNo, onPageChange, data, selectedRows, onRowSelection, onEditRow }) => {
   const { isLoading } = useData();
@@ -69,7 +70,8 @@ const FinanceTable = ({ pageNo, onPageChange, data, selectedRows, onRowSelection
     onRowSelection(updatedSelection);
   };
 
-  const isAdmin = user?.role?.toUpperCase() === "ADMIN";
+  const availablePermissions = AUTH_ROLES[user.role];
+  const hasAdminToolsPermission = availablePermissions.includes(PERMISSIONS.adminTools);
 
   const sortedData = useMemo(() => {
     if (!sortConfig.key) return data;
@@ -141,7 +143,10 @@ const FinanceTable = ({ pageNo, onPageChange, data, selectedRows, onRowSelection
         key: "estimatedBudget",
         style: fixedHeaderStyle,
       },
+      { title: "Created At", key: "dateCreated", style: fixedHeaderStyle },
+
       { title: "Actual Cost", key: "actualCost", style: editableHeaderStyle },
+      { title: "Ready to be Paid?", key: "readyToBePaid", style: editableHeaderStyle },
       { title: "Paid", key: "paid", style: editableHeaderStyle },
       { title: "Date Paid", key: "datePaid", style: editableHeaderStyle },
       {
@@ -159,7 +164,7 @@ const FinanceTable = ({ pageNo, onPageChange, data, selectedRows, onRowSelection
         key: "revisionCost",
         style: editableHeaderStyle,
       },
-      { title: "Notes/Remarks", key: "notes", style: editableHeaderStyle },
+      { title: "Notes/Remarks", key: "notes", style: editableHeaderStyle, className: "notes-cell" },
     ];
     // { title: "Sales Man", key: "salesMan", style: fixedHeaderStyle },
     // {
@@ -167,7 +172,7 @@ const FinanceTable = ({ pageNo, onPageChange, data, selectedRows, onRowSelection
     //   key: "totalProjectCost",
     //   style: editableHeaderStyle
     // }
-    if (isAdmin) {
+    if (hasAdminToolsPermission) {
       headers.unshift({
         title: <Checkbox checked={selectedRows.length === currentPageData.length || selectedRows.length === maxAllowedSelection} indeterminate={selectedRows.length > 0 && selectedRows.length < currentPageData.length && selectedRows.length < maxAllowedSelection} onChange={handleSelectAll} sx={checkboxStyle} />,
         key: null,
@@ -181,7 +186,7 @@ const FinanceTable = ({ pageNo, onPageChange, data, selectedRows, onRowSelection
     }
 
     return headers.map((header, index) => (
-      <th key={index} scope="col" style={header.style} onClick={() => header.key && requestSort(header.key)}>
+      <th key={index} scope="col" style={header.style} className={header.className} onClick={() => header.key && requestSort(header.key)}>
         {header.title}
         {header.key && <SortIcon columnKey={header.key} />}
       </th>
@@ -196,7 +201,7 @@ const FinanceTable = ({ pageNo, onPageChange, data, selectedRows, onRowSelection
             <thead>
               <tr>{renderTableHeaders()}</tr>
             </thead>
-            <tbody>{!isLoading && currentPageData.map((financeRow) => <FinanceRow key={financeRow.id} row={financeRow} isAdmin={isAdmin} isSelected={selectedRows.some((selectedRow) => selectedRow.id === financeRow.id)} onSelectRow={handleSelectRow} onEditRow={() => onEditRow(financeRow)} />)}</tbody>
+            <tbody>{!isLoading && currentPageData.map((financeRow) => <FinanceRow key={financeRow.id} row={financeRow} hasAdminToolsPermission={hasAdminToolsPermission} isSelected={selectedRows.some((selectedRow) => selectedRow.id === financeRow.id)} onSelectRow={handleSelectRow} onEditRow={() => onEditRow(financeRow)} />)}</tbody>
           </table>
 
           {isLoading && <Loader />}
