@@ -95,7 +95,7 @@ const WeekView = ({ currentDate, visibleTimelineData, editRow }) => {
   // Helper function to organize projects by vertical position
   const organizeProjectsByPosition = (projectsInWeek, week) => {
     const positions = new Map(); // projectId -> position index
-    const maxProjectsPerDay = 3;
+    const maxProjectsPerDay = 4;
 
     // Sort projects by start date to maintain consistent ordering
     const sortedProjects = [...projectsInWeek].sort((a, b) => {
@@ -107,7 +107,7 @@ const WeekView = ({ currentDate, visibleTimelineData, editRow }) => {
     // For each day, assign positions to projects
     for (let dayIdx = 0; dayIdx < 7; dayIdx++) {
       const dayProjects = getProjectsForDay(dayIdx, sortedProjects);
-      const visibleProjects = dayProjects.slice(0, maxProjectsPerDay);
+      const visibleProjects = dayProjects.length > maxProjectsPerDay ? dayProjects.slice(0, maxProjectsPerDay) : dayProjects;
 
       visibleProjects.forEach((projectData, index) => {
         if (!positions.has(projectData.project.id)) {
@@ -119,7 +119,17 @@ const WeekView = ({ currentDate, visibleTimelineData, editRow }) => {
     return positions;
   };
 
-  console.log(weeks);
+  const getMaxStackForMonth = (weeks) => {
+    let maxStack = 1;
+    for (const week of weeks) {
+      const projectsInWeek = getProjectTimelineMapForWeek(week);
+      maxStack = Math.max(maxStack, projectsInWeek.length);
+    }
+    return maxStack;
+  };
+
+  const maxStack = getMaxStackForMonth(weeks);
+  const rowHeight = maxStack >= 4 ? 135 : Math.max(maxStack, 2) * 45; // 26px per bar, adjust as needed
 
   return (
     <Paper elevation={2} className="calendar-grid-container" style={{ position: "relative" }}>
@@ -161,7 +171,7 @@ const WeekView = ({ currentDate, visibleTimelineData, editRow }) => {
                   display: "grid",
                   gridTemplateColumns: "repeat(7, 1fr)",
                   borderBottom: "1px solid #e0e0e0",
-                  minHeight: "135px",
+                  minHeight: rowHeight + "px",
                 }}>
                 {week.map((date, dIdx) => {
                   const isCurrentMonth = isDateInCurrentMonth(date);
@@ -182,6 +192,7 @@ const WeekView = ({ currentDate, visibleTimelineData, editRow }) => {
                           fontWeight: 600,
                           fontSize: 13,
                           color: isCurrentMonth ? "#000" : "#888",
+                          backgroundColor: isCurrentMonth ? "#fff" : "#f5f5f5",
                         }}>
                         {formatDateWithMonth(date)}
                       </Typography>
@@ -199,8 +210,7 @@ const WeekView = ({ currentDate, visibleTimelineData, editRow }) => {
                           });
                         });
 
-                        const extraCount = dayProjects.length - 3;
-                        console.log(date, extraCount);
+                        const extraCount = dayProjects.length > 4 ? dayProjects.length - 3 : 0;
                         if (extraCount > 0) {
                           return (
                             <Box
@@ -236,7 +246,7 @@ const WeekView = ({ currentDate, visibleTimelineData, editRow }) => {
                   bottom: 0,
                   pointerEvents: "none",
                 }}>
-                {projectsInWeek.slice(0, 3).map(({ project, timelines }) => {
+                {projectsInWeek.slice(0, projectsInWeek.length > 4 ? 3 : projectsInWeek.length).map(({ project, timelines }) => {
                   const placements = getBarPlacementsForProjectWeek(timelines, week);
                   const position = projectPositions.get(project.id) || 0;
 
@@ -305,7 +315,7 @@ const WeekView = ({ currentDate, visibleTimelineData, editRow }) => {
                               }}
                               onClick={() => editRow(project.id)}>
                               <Typography variant="caption" className="timeline-label" sx={{ fontWeight: 600 }}>
-                                {project.projectName || project.projectNumber}
+                                #{project.projectNumber} - {project.projectName}
                               </Typography>
                             </Box>
                           </Tooltip>
