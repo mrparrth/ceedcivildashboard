@@ -47,20 +47,20 @@ const NewPaymentModal = ({ closeModal, payment: existingPayment }) => {
       updateEstimate();
     }
 
-    if (projectNumber || projectName) {
-      const matchingProject = findMatchingProject();
-
-      if (matchingProject) {
-        setPayment((prev) => ({
-          ...prev,
-          projectNumber: matchingProject.projectNumber,
-          projectName: matchingProject.projectName,
-          salesMan: matchingProject.salesMan,
-          overallProjectStatus: matchingProject.overallProjectStatus,
-        }));
-        setSuggestion("");
-      }
-    }
+    // if (projectNumber || projectName) {
+    //   const matchingProject = findMatchingProject();
+    //   console.log("matchingProject", matchingProject);
+    //   if (matchingProject) {
+    //     setPayment((prev) => ({
+    //       ...prev,
+    //       projectNumber: matchingProject.projectNumber,
+    //       projectName: matchingProject.projectName,
+    //       salesMan: matchingProject.salesMan,
+    //       overallProjectStatus: matchingProject.overallProjectStatus,
+    //     }));
+    //     setSuggestion("");
+    //   }
+    // }
   }, [payment.projectNumber, payment.projectName, payment.assignee]);
 
   const findMatchingProject = () => {
@@ -103,16 +103,24 @@ const NewPaymentModal = ({ closeModal, payment: existingPayment }) => {
     setErrors((prev) => ({ ...prev, [field]: "" }));
 
     if (field === "projectName") {
-      handleProjectNameSuggestion(value);
+      if (value?.length < 3) {
+        setSuggestion("");
+      } else {
+        handleProjectNameSuggestion(value);
+      }
+    } else if (field === "projectNumber") {
+      if (value?.length >= 3) {
+        const matchingProject = projects.find((project) => project.projectNumber == value);
+        if (matchingProject) {
+          setPayment((prev) => ({ ...prev, projectName: matchingProject.projectName }));
+        }
+      } else {
+        setPayment((prev) => ({ ...prev, projectName: "" }));
+      }
     }
   };
 
   const handleProjectNameSuggestion = (value) => {
-    if (value?.length < 3) {
-      setSuggestion("");
-      return;
-    }
-
     const matchingProject = projects.find((project) => project.projectName.toLowerCase().startsWith(value.toLowerCase()));
 
     if (matchingProject && value !== matchingProject.projectName) {
@@ -124,7 +132,6 @@ const NewPaymentModal = ({ closeModal, payment: existingPayment }) => {
 
   const populateProjectDetails = (value, type) => {
     const projectDetails = projects.find((project) => (type === "number" ? project.projectNumber == value : project.projectName.toLowerCase() === value.toLowerCase()));
-
     if (!projectDetails) return;
 
     if (projectDetails) {
@@ -162,7 +169,7 @@ const NewPaymentModal = ({ closeModal, payment: existingPayment }) => {
     const newErrors = {};
     if (!payment.assignee) newErrors.assignee = "Assignee is required";
     if (!payment.projectNumber) newErrors.projectNumber = "Project # is required";
-    // if (!payment.projectName) newErrors.projectName = "Project Name is required";
+    if (!payment.projectName) newErrors.projectName = "Project Name is required";
     // if (!payment.salesMan) newErrors.salesMan = "Sales Man is required";
     // if (!payment.status) newErrors.status = "Status is required";
     // if (!payment.estimatedBudget)
@@ -200,7 +207,6 @@ const NewPaymentModal = ({ closeModal, payment: existingPayment }) => {
     {
       label: "Project",
       key: "projectName",
-      isShadowAutocomplete: true,
       placeHolder: "Type to search",
     },
     {
@@ -273,9 +279,12 @@ const NewPaymentModal = ({ closeModal, payment: existingPayment }) => {
                 <div key={field.key} className="form-row">
                   <label htmlFor={field.key} className="form-label">
                     {field.label}
+                    {(field.key === "assignee" || field.key === "projectNumber" || field.key === "projectName") && <span style={{ color: "red", marginLeft: "4px" }}>*</span>}
                   </label>
                   <div className="form-field">
-                    {field.isShadowAutocomplete ? (
+                    {field.key === "projectNumber" ? (
+                      <input id={field.key} type="text" value={payment[field.key]} onChange={(e) => handleInputChange(field.key, e.target.value)} disabled={field.isDisabled} className="form-input" placeholder={field.placeHolder} />
+                    ) : field.key == "projectName" ? (
                       <>
                         <div className="inline-autocomplete-container">
                           <input ref={projectNameRef} type="text" value={payment.projectName} onChange={(e) => handleInputChange("projectName", e.target.value)} onKeyDown={handleProjectNameKeyDown} className="form-input" placeholder={field.placeHolder} disabled={field.isDisabled} />

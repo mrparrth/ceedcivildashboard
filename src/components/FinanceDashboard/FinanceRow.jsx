@@ -15,7 +15,6 @@ import useNotification from "hooks/useNotification";
 import { createPayment } from "contexts/data/paymentOperations";
 
 const displayFormatDate = (dateString) => {
-  console.log("Display Format Date", dateString);
   if (!dateString) return "";
 
   const [year, month, day] = dateString.split("-");
