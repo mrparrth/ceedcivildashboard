@@ -135,7 +135,11 @@ class User {
     //share the root folder
     const rootFolderUrl = this.settings.projectsRootFolder
     const rootFolder = DriveApp.getFolderById(_getIdFromUrl_(rootFolderUrl))
-    rootFolder.addEditor(email)
+    try {
+      rootFolder.addEditor(email)
+    } catch (e) {
+      _toast_(`Unable to share the projects folder with ${email}. Do share the folder manually!`)
+    }
 
     return userInfo
   }
@@ -250,8 +254,9 @@ class User {
     const title = "Resend Invitation Email";
 
     // Get all the values from the selected row
-    const rowValues = this.ws.getRange(row, 1, 1, this.ws.getLastColumn()).getValues()[0];
-    const [id, createdAt, updatedAt, name, email, role, status, hashedPassword] = rowValues;
+    let rowValues = _getItemsFromSheet_(this.ss.getActiveSheet()).find(rowData => rowData._rowIndex == row)
+    // const rowValues = this.ws.getRange(row, 1, 1, this.ws.getLastColumn()).getValues()[0];
+    const { id, createdAt, updatedAt, name, email, role, status, hashedPassword } = rowValues;
 
     if (status !== 'Active') {
       throw new Error('Cannot resend invitation to inactive user');
@@ -272,10 +277,10 @@ class User {
     this.ws.getRange(row, 8).setValue(newHashedPassword); // Password column
     this.ws.getRange(row, 3).setValue(new Date().toISOString()); // UpdatedAt column
 
-    const values = [id, createdAt, new Date().toISOString(), name, email, role];
-
+    // const values = [id, createdAt, new Date().toISOString(), name, email, role];
+    rowValues.password = password
     try {
-      this.emailUser(values, password || 'Use your existing password');
+      this.emailUser(rowValues);
       return true;
     } catch (error) {
       throw new Error(`Failed to send email: ${error.message}`);
@@ -568,12 +573,12 @@ class SecureApp extends PublicApp {
     let lName = name?.toLowerCase();
     let lManager = manager?.toLowerCase();
     let lRole = role?.toLowerCase();
-    
+
     let projects = this.getProjects(
       (project) => {
         let lAssignedTo = project.assignedTo.map(user => user.toLowerCase());
-        return lRole == "admin" 
-          || (!lManager && lAssignedTo.includes(lName)) 
+        return lRole == "admin"
+          || (!lManager && lAssignedTo.includes(lName))
           || (lManager && [lName, lManager].some(userName => lAssignedTo.includes(userName)))
       }
     );
@@ -581,7 +586,7 @@ class SecureApp extends PublicApp {
     let payments = this.getPayments(
       (payment) => {
         let lAssignee = payment.assignee.toLowerCase();
-        return lRole == "admin" 
+        return lRole == "admin"
           || (!lManager && lAssignee == lName)
           || (lManager && [lName, lManager].some(userName => lAssignee == userName))
       }
@@ -653,15 +658,15 @@ class SecureApp extends PublicApp {
           }
           return String(a).localeCompare(String(b));
         }));
-        
+
         if (oldValueStr !== newValueStr) {
           if (oldValue.length > 0 && newValue.length > 0 && typeof oldValue[0] === 'object' && typeof newValue[0] === 'object') {
             const oldIds = oldValue.map(item => item.id || JSON.stringify(item));
             const newIds = newValue.map(item => item.id || JSON.stringify(item));
-            
+
             const added = newValue.filter(item => !oldIds.includes(item.id || JSON.stringify(item)));
             const removed = oldValue.filter(item => !newIds.includes(item.id || JSON.stringify(item)));
-            
+
             const modified = [];
             oldValue.forEach(oldItem => {
               const newItem = newValue.find(item => (item.id || JSON.stringify(item)) === (oldItem.id || JSON.stringify(oldItem)));
@@ -669,7 +674,7 @@ class SecureApp extends PublicApp {
                 modified.push({ old: oldItem, new: newItem });
               }
             });
-            
+
             const changes = [];
             if (added.length > 0) {
               changes.push(`Added: ${added.map(item => item.name || item.title || item.id || 'item').join(', ')}`);
@@ -691,7 +696,7 @@ class SecureApp extends PublicApp {
                 }
               });
             }
-            
+
             if (changes.length > 0) {
               changeDescriptions.push(`${key}: ${changes.join('; ')}`);
             }
@@ -756,7 +761,7 @@ class SecureApp extends PublicApp {
     const timestamp = new Date().toISOString();
     const modifiedBy = this.user?.name;
     this.logDifferences(project, updatedValues);
-  
+
     //Added this feature on Apr 29 to notify in slack
     let statusToDetect = this.settings.statusNotificationsFor?.split(', ').map(status => status.toLowerCase())
     const prevStatus = project.overallProjectStatus;
@@ -764,11 +769,11 @@ class SecureApp extends PublicApp {
 
     if (project.slackChannelId && prevStatus !== currStatus && statusToDetect.includes(currStatus?.toLowerCase())) {
       const msg = `*Project Status Changed*\n\n` +
-              `${prevStatus ? `${getIcon(prevStatus)}  ~*${prevStatus}*~  → ` : ""}${getIcon(currStatus)}  *${currStatus}*`; //added on Apr 29 to notify in slack
+        `${prevStatus ? `${getIcon(prevStatus)}  ~*${prevStatus}*~  → ` : ""}${getIcon(currStatus)}  *${currStatus}*`; //added on Apr 29 to notify in slack
       sendTextMessage(project.slackChannelId, msg)
     }
     //
-    
+
     let updatedProject = { ...project, ...updatedValues, dateModified: timestamp, modifiedBy };
 
 
@@ -783,8 +788,8 @@ class SecureApp extends PublicApp {
         let userApp = new User()
         let allUsers = userApp.getAllUsers()
         let deltaUserEmails = deltaUsers.map(user => allUsers.find(u => u.name == user)?.slackAlias).filter(email => email)
-        
-        if(deltaUserEmails.length>0){
+
+        if (deltaUserEmails.length > 0) {
           console.log(`Delta users ${JSON.stringify(deltaUsers)} - ${JSON.stringify(deltaUserEmails)}`)
           try {
             inviteUsersToChannel(project.slackChannelId, deltaUserEmails)
