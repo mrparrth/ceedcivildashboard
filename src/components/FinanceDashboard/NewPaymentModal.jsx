@@ -16,6 +16,7 @@ const NewPaymentModal = ({ closeModal, payment: existingPayment }) => {
   const isAdmin = user?.role?.toUpperCase() === "ADMIN";
   const [payment, setPayment] = useState({
     ...(isEditing ? existingPayment : BLANK_PAYMENT),
+    isManual: !isEditing,
     assignee: isEditing ? existingPayment.assignee : isAdmin ? "" : user.manager || user.name,
   });
 
@@ -91,7 +92,6 @@ const NewPaymentModal = ({ closeModal, payment: existingPayment }) => {
     };
 
     const assigneeEstimate = Object.values(estimateMap).find(({ team }) => team.includes(payment.assignee))?.value || matchingProject.estimatedBudget;
-
     setPayment((prev) => ({
       ...prev,
       estimatedBudget: assigneeEstimate,

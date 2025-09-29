@@ -199,5 +199,6 @@ export const BLANK_PAYMENT = {
   totalCost: "",
   expenseId: "",
   readyToBePaid: false,
+  isManual: false,
   billingItems: [],
 };
