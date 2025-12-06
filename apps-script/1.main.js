@@ -208,9 +208,11 @@ class User {
     this.ws.getRange(row, 7).setValue('Inactive')
 
     const email = this.ws.getRange(row, 5).getValue()
-    const rootFolderUrl = this.settings.projectsRootFolder
-    const rootFolder = DriveApp.getFolderById(_getIdFromUrl_(rootFolderUrl))
+    const rootFolder = DriveApp.getFolderById(_getIdFromUrl_(this.settings.projectsRootFolder))
     rootFolder.removeEditor(email)
+
+    let clientRoot = DriveApp.getFolderById(_getIdFromUrl_(this.settings.clientRootFolder));
+    clientRoot.removeEditor(email)
 
     _alert_('User deactivated successfully and access to the folders has been removed!\nYou will need to remove slack access manually.\nIf you want, you can safely delete the deactivated user row.', 'User Deletion');
   }
@@ -961,6 +963,11 @@ class SecureApp extends PublicApp {
     project.clientProjectFolder = clientProjectFolder.getUrl()
     projectFolder.createShortcut(clientProjectFolder.getId())
     if (project.clientEmail && project.folderOptions.sendClientEmail) {
+      try {
+        clientProjectFolder.addEditor(project.clientEmail)
+      } catch (e) {
+        console.info(e)
+      }
       _sendEmail_('Project {{projectNumber}} - FILE UPLOADS REQUEST', project.clientEmail, project)
     }
 

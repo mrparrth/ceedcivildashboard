@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Button, CircularProgress, Typography, Box } from "@mui/material";
 import LinearProgress from "@mui/material/LinearProgress";
 import AddIcon from "@mui/icons-material/Add";
@@ -12,6 +12,10 @@ const FinanceActionBar = ({ selectedRows, handleNewPayment, onCreateFreshbooksEx
   const progress = loading ? (processedRowsCount / selectedRows.length) * 100 : 0;
   const availablePermissions = AUTH_ROLES[user.role];
   const hasAdminToolsPermission = availablePermissions.includes(PERMISSIONS.adminTools);
+
+  const totalSelectedPayments = useMemo(() => {
+    return selectedRows.reduce((total, payment) => total + ((typeof payment.actualCost === "string" ? parseFloat(payment.actualCost) : payment.actualCost) || 0) + ((typeof payment.revisionCost === "string" ? parseFloat(payment.revisionCost) : payment.revisionCost) || 0), 0);
+  }, [selectedRows]);
 
   return (
     <Paper elevation={3}>
@@ -51,29 +55,56 @@ const FinanceActionBar = ({ selectedRows, handleNewPayment, onCreateFreshbooksEx
           )}
         </Box>
         {hasAdminToolsPermission && (
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: { xs: "flex-start", sm: "flex-end" },
-              justifyContent: "center",
-              minWidth: { sm: "120px" }, // Ensure consistent width on larger screens
-            }}>
-            <Typography variant="caption" sx={{ fontSize: "0.8rem", color: "text.secondary" }}>
-              Total
-            </Typography>
-            <Typography
-              variant="body2"
-              fontWeight="bold"
-              sx={{ fontSize: "1.1rem", color: "primary.main" }} // Changed color to primary theme color
-            >
-              $
-              {(totalExpenses || 0).toLocaleString("en-US", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
-            </Typography>
-          </Box>
+          <>
+            {selectedRows.length > 0 && (
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: { xs: "flex-start", sm: "flex-end" },
+                  justifyContent: "center",
+                  minWidth: { sm: "120px" }, // Ensure consistent width on larger screens
+                }}>
+                <Typography variant="caption" sx={{ fontSize: "0.8rem", color: "text.secondary" }}>
+                  Selected Payments Total
+                </Typography>
+                <Typography
+                  variant="body2"
+                  fontWeight="bold"
+                  sx={{ fontSize: "1.1rem", color: "primary.main" }} // Changed color to primary theme color
+                >
+                  $
+                  {(totalSelectedPayments || 0).toLocaleString("en-US", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                </Typography>
+              </Box>
+            )}
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: { xs: "flex-start", sm: "flex-end" },
+                justifyContent: "center",
+                minWidth: { sm: "120px" }, // Ensure consistent width on larger screens
+              }}>
+              <Typography variant="caption" sx={{ fontSize: "0.8rem", color: "text.secondary" }}>
+                Total
+              </Typography>
+              <Typography
+                variant="body2"
+                fontWeight="bold"
+                sx={{ fontSize: "1.1rem", color: "primary.main" }} // Changed color to primary theme color
+              >
+                $
+                {(totalExpenses || 0).toLocaleString("en-US", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
+              </Typography>
+            </Box>
+          </>
         )}
       </Toolbar>
     </Paper>

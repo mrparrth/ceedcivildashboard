@@ -61,7 +61,7 @@ function fbPostRequest_(url, jsonData) {
   };
 
   let response = UrlFetchApp.fetch(url, options);
-
+  console.log(response.getContentText())
   let result = JSON.parse(response.getContentText());
   Logger.log(JSON.stringify(result, null, 2), false);
   return result;

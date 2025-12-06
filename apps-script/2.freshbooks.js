@@ -126,7 +126,6 @@ function _getAllServices_() {
 }
 
 function _createFBProject_(project) {
-  console.log(project)
   const jsonProject = _createProjectJson_(project);
   const response = fbPostRequest_(`https://api.freshbooks.com/projects/business/${BUSINESS_ID}/project`, jsonProject)
 
@@ -153,6 +152,7 @@ function _createProjectJson_(project) {
   let { scopes, projectNumber, projectName, fbClientId, totalCost } = project
 
   const serviceData = _getAllServices_()
+  console.log(serviceData.map(s => s.name))
 
   rootDict["title"] = `${projectNumber} - ${projectName}`
   rootDict["client_id"] = fbClientId;
@@ -162,7 +162,11 @@ function _createProjectJson_(project) {
     let indivService = {};
     indivService["name"] = scope.description
     let serviceId = _getServiceIdByName_(serviceData, scope.description)
-    if (serviceId) indivService["id"] = serviceId
+    if (serviceId) {
+      indivService["id"] = serviceId
+    } else {
+      indivService["id"] = _createFbService_(scope.description)
+    }
     allServices.push(indivService)
   })
 
@@ -176,8 +180,18 @@ function _createProjectJson_(project) {
 }
 
 function _getServiceIdByName_(serviceData, scopeDesc) {
-  let service = serviceData.find(service => service.name == scopeDesc)
+  let service = serviceData.find(service => service.name.trim().toLowerCase() == scopeDesc.trim().toLowerCase())
   if (service) return service.id
+}
+
+function _createFbService_(name) {
+  let response = fbPostRequest_(`https://api.freshbooks.com/comments/business/${BUSINESS_ID}/service`, {
+    "service": {
+      "name": name
+    }
+  })
+
+  return response.service.id
 }
 
 function _getClientIdFromInvoiceDesc_(invoiceDesc) {
