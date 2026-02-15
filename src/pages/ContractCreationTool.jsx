@@ -2,7 +2,8 @@ import React, { useState, useEffect, useCallback, useMemo } from "react";
 import useContractMetadata from "hooks/useContractMetadata";
 import { MultiSelectDropdown } from "components/Fields";
 import ScopeSelectorModal from "components/ScopeSelectorModal";
-import { runScriptFunction } from "../db";
+import { API } from "services/gas";
+
 import {
   Button,
   Dialog,
@@ -25,7 +26,7 @@ import { CustomTextArea2 } from "components";
 import useData from "hooks/useData";
 import useAppData from "hooks/useAppData";
 import useContractMetadata from "hooks/useContractMetadata";
-import { BLANK_PROJECT, DEV_PREFILL_FORM, INITIAL_FORM } from "utils/constant";
+import { BLANK_PROJECT, DEV_PREFILL_FORM, INITIAL_FORM } from "@/utils/constant";
 
 const CEEDCivilForm = () => {
   let { isLoading: isDataLoading, createProject } = useData();

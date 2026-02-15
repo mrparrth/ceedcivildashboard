@@ -1,0 +1,52 @@
+{
+  "assignTo": ["Admin", "Arnel", "VSC - ENG", "TestEmployee", "Nicko", "Tika Koirala", "Madison", "Parth"],
+  "salesmen": ["Jerry", "Ryan", "Ryan - Partial", "Jerry - Partial", "Jerry - Full"],
+  "projectType": ["Pole barn", "Container home", "Wood frame home", "Addition", "Site plan", "S&S only", "Calcs only", "Structural only", "Deck", "Full house plan", "Foundation only", "Other"],
+  "status": ["Hold", "Pending Start", "In Work", "For Ryan Review", "Sent to Client", "Pending S&S", "Rework/Updates", "Submitted for Premit", "Completed", "Final", "Cancelled"],
+  "draftingStatus": ["Not Started", "In Work", "For Ryan Review", "Ready to Send to Client", "Rework/Updates", "Completed", "Final", "Not Needed"],
+  "states": ["Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Dc", "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming", "Other"],
+  "priority": ["High", "Urgent", "Normal"],
+  "initialStatus": ["Submitted for Permit", "Pending S&S", "Rework/Updates", "In Work"],
+  "drafters": ["Arnel", "Parth"],
+  "engineers": ["VSC - ENG"],
+  "mep": ["Nicko"],
+  "civil": ["Tika Koirala"],
+  "adminUrls": [
+    {
+      "name": "Pole Barn Form",
+      "url": "https://script.google.com/macros/s/AKfycbwlMhk694ZaK0lvZ-QK_CRzBmAYCpLru11AcS3cxV42B5Qt3lANM0kARfFbAdv6xdi--A/exec",
+      "showToAdminOnly": false,
+      "_rowIndex": 2
+    },
+    {
+      "name": "A Frame Form",
+      "url": "https://script.google.com/macros/s/AKfycbx4Gx__TTGsrecDH2O8567811P72n942pRPlLrYbbMXK3Ng7HXzqKdqenUxdGsb6tOGGg/exec",
+      "showToAdminOnly": false,
+      "_rowIndex": 3
+    },
+    {
+      "name": "New Request/ Bug Report",
+      "url": "https://forms.blue.cc/f/jj548m56r5o5iy0c73j8haay",
+      "showToAdminOnly": false,
+      "_rowIndex": 4
+    },
+    {
+      "name": "Backend Google Sheet",
+      "url": "https://docs.google.com/spreadsheets/d/1URKG0G1KP9YqlR6DX4kyQ18Jgd1yIRDdGmPdzcTjWpc/edit?gid=1757567131#gid=1757567131",
+      "showToAdminOnly": true,
+      "_rowIndex": 5
+    },
+    {
+      "name": "Foundation Plan",
+      "url": "https://docs.google.com/spreadsheets/d/1LFeOLQHdwjueerdKFNrCv-QUNAwE-Q0JL5IG6wtvHRM/edit?gid=422418855#gid=422418855",
+      "showToAdminOnly": true,
+      "_rowIndex": 6
+    }
+  ],
+  "appName": "Ceed Civil Project Tracker",
+  "urlLogo": "https:///ucarecdn.com/e767c054-980a-4511-aabe-8d7cbe48d732/-/preview/857x1000/",
+  "contractExportFolder": "https://drive.google.com/drive/u/0/folders/1r9INUZVhcIZ7mjXrWMXAd6Eye5RbWQoH",
+  "contractTemplate": "https://docs.google.com/document/d/1n9mabMMM4DF8I54wxuczl8us85sfQ-VT2BvTAQUzYpI/edit",
+  "totalFoundation": 9,
+  "totalNewFoundation": 0
+}

@@ -47,10 +47,15 @@ function runScriptFunction(functionName, inputData = {}) {
     };
 
     if (ge) {
-      google.script.run.withSuccessHandler(handleSuccess).withFailureHandler(handleFailure)[functionName](inputData);
+      google.script.run
+        .withSuccessHandler(handleSuccess)
+        .withFailureHandler(handleFailure)
+        [functionName](inputData);
     } else {
       // Handle dev environment with the same error handling
-      handleDevEnvironment(functionName, inputData).then(handleSuccess).catch(handleFailure);
+      handleDevEnvironment(functionName, inputData)
+        .then(handleSuccess)
+        .catch(handleFailure);
     }
   });
 }
@@ -97,7 +102,11 @@ async function handleDevEnvironment(functionName, data) {
       await sleep(3000);
       console.log("data", data);
       console.log("projectsInit[0]", projectsInit[0]);
-      const project = { ...projectsInit[0], ...data.data, id: Date.now().toString(36) + Math.random().toString(36).substr(2) };
+      const project = {
+        ...projectsInit[0],
+        ...data.data,
+        id: Date.now().toString(36) + Math.random().toString(36).substr(2),
+      };
       return project; // Return the modified project instead of projectsInit[0]
     case "createFBExpense":
       await sleep(3000);
@@ -113,7 +122,11 @@ async function handleDevEnvironment(functionName, data) {
     case "updateChat":
       return "";
     default:
-      throw new Error("Unhandled Fake Google Function " + functionName + ` ${Object.keys(data.data).length > 0 ? JSON.stringify(data) : ""}`);
+      throw new Error(
+        "Unhandled Fake Google Function " +
+          functionName +
+          ` ${Object.keys(data.data).length > 0 ? JSON.stringify(data) : ""}`
+      );
   }
 }
 
@@ -140,14 +153,19 @@ async function validateLogin(inputData) {
     if (inputData.token)
       return {
         user: FAKE_USER,
-        token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA5MGE5NWNlLTM5MzMtNGI1Ny1hMTkxLTk2ZGMwNjdmOTg1MSIsImNyZWF0ZWRBdCI6IjIwMjQtMTAtMDNUMTM6NTU6NTEuNzcyWiIsIm1vZGlmaWVkQXQiOiIyMDI0LTEwLTAzVDEzOjU1OjUxLjc3MloiLCJuYW1lIjoiQWRtaW4iLCJlbWFpbCI6ImFkbWluQGNlZWRjaXZpbC5jb20iLCJyb2xlIjoiQWRtaW4iLCJzdGF0dXMiOiJBY3RpdmUiLCJfcm93SW5kZXgiOjN9.yyF0FGeVa4bOVauiHdJmwvN4gHi1YYwhi1y/ZQP3khg=",
+        token:
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA5MGE5NWNlLTM5MzMtNGI1Ny1hMTkxLTk2ZGMwNjdmOTg1MSIsImNyZWF0ZWRBdCI6IjIwMjQtMTAtMDNUMTM6NTU6NTEuNzcyWiIsIm1vZGlmaWVkQXQiOiIyMDI0LTEwLTAzVDEzOjU1OjUxLjc3MloiLCJuYW1lIjoiQWRtaW4iLCJlbWFpbCI6ImFkbWluQGNlZWRjaXZpbC5jb20iLCJyb2xlIjoiQWRtaW4iLCJzdGF0dXMiOiJBY3RpdmUiLCJfcm93SW5kZXgiOjN9.yyF0FGeVa4bOVauiHdJmwvN4gHi1YYwhi1y/ZQP3khg=",
       };
 
-    if (inputData.email === FAKE_USER.email && inputData.password === FAKE_USER.password) {
+    if (
+      inputData.email === FAKE_USER.email &&
+      inputData.password === FAKE_USER.password
+    ) {
       return {
         user: FAKE_USER,
         msg: null,
-        token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA5MGE5NWNlLTM5MzMtNGI1Ny1hMTkxLTk2ZGMwNjdmOTg1MSIsImNyZWF0ZWRBdCI6IjIwMjQtMTAtMDNUMTM6NTU6NTEuNzcyWiIsIm1vZGlmaWVkQXQiOiIyMDI0LTEwLTAzVDEzOjU1OjUxLjc3MloiLCJuYW1lIjoiQWRtaW4iLCJlbWFpbCI6ImFkbWluQGNlZWRjaXZpbC5jb20iLCJyb2xlIjoiQWRtaW4iLCJzdGF0dXMiOiJBY3RpdmUiLCJfcm93SW5kZXgiOjN9.yyF0FGeVa4bOVauiHdJmwvN4gHi1YYwhi1y/ZQP3khg=",
+        token:
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA5MGE5NWNlLTM5MzMtNGI1Ny1hMTkxLTk2ZGMwNjdmOTg1MSIsImNyZWF0ZWRBdCI6IjIwMjQtMTAtMDNUMTM6NTU6NTEuNzcyWiIsIm1vZGlmaWVkQXQiOiIyMDI0LTEwLTAzVDEzOjU1OjUxLjc3MloiLCJuYW1lIjoiQWRtaW4iLCJlbWFpbCI6ImFkbWluQGNlZWRjaXZpbC5jb20iLCJyb2xlIjoiQWRtaW4iLCJzdGF0dXMiOiJBY3RpdmUiLCJfcm93SW5kZXgiOjN9.yyF0FGeVa4bOVauiHdJmwvN4gHi1YYwhi1y/ZQP3khg=",
       };
     } else {
       throw new Error("Wrong username or password");
@@ -190,9 +208,24 @@ function trashToken() {
 }
 
 function isCredentialError(error) {
-  const errorMessages = ["User is deactivated. Contact the admin", "Invalid credentials!", "User not found in the database.", "Invalid login. Login again."];
+  const errorMessages = [
+    "User is deactivated. Contact the admin",
+    "Invalid credentials!",
+    "User not found in the database.",
+    "Invalid login. Login again.",
+  ];
 
-  return errorMessages.map((message) => message.toLowerCase()).includes(error.message?.toLowerCase());
+  return errorMessages
+    .map((message) => message.toLowerCase())
+    .includes(error.message?.toLowerCase());
 }
 
-export { saveTokenInLocalStorage, getTokenFromLocalStorage, validateLogin, trashToken, runScriptFunction, getappData, sleep };
+export {
+  saveTokenInLocalStorage,
+  getTokenFromLocalStorage,
+  validateLogin,
+  trashToken,
+  runScriptFunction,
+  getappData,
+  sleep,
+};
