@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback, useMemo } from "react";
 import useContractMetadata from "hooks/useContractMetadata";
 import { MultiSelectDropdown } from "components/Fields";
 import ScopeSelectorModal from "components/ScopeSelectorModal";
-import { API } from "services/gas";
 
 import {
   Button,
@@ -416,14 +415,15 @@ const CEEDCivilForm = () => {
             </div>
             <div className="col-md-6">
               <label htmlFor="projectType" className="form-label">
-                Project Type:
+                Project Type: <span className="text-danger">*</span>
               </label>
               <select
                 className="form-select"
                 id="projectType"
                 name="projectType"
                 value={formData.projectType || ""}
-                onChange={handleInputChange}>
+                onChange={handleInputChange}
+                required>
                 <option value="" key="index" disabled>
                   Select a project type
                 </option>

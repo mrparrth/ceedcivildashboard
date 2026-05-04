@@ -4,7 +4,10 @@
     "jsx": "react",
     "moduleResolution": "node",
     "allowJs": true,
-    "noEmit": true
+    "noEmit": true,
+    "paths": {
+      "@/*": ["*"]
+    }
   },
   "include": ["src/**/*"]
 }

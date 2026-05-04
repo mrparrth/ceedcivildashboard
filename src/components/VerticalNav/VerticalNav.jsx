@@ -146,7 +146,7 @@ export default function VerticalNav({ items }) {
       } else if (item.type === "extLink") {
         return (
           <ExternalLink key={index} href={item.path} className={`${mode === "compact" && "compactNavItem"}`} rel="noopener noreferrer" target="_blank">
-            <ButtonBase className="buttonBase">
+            <ButtonBase className="buttonBase" style={{ height: "100%", padding: "0 8px" }}>
               {(() => {
                 if (item.icon) {
                   return <Icon className="icon">{item.icon}</Icon>;
@@ -174,7 +174,7 @@ export default function VerticalNav({ items }) {
         return (
           <InternalLink key={index}>
             <NavLink to={item.path} className={({ isActive }) => (isActive ? `navItemActive ${mode === "compact" && "compactNavItem"}` : `${mode === "compact" && "compactNavItem"}`)}>
-              <ButtonBase className="buttonBase">
+              <ButtonBase className="buttonBase" style={{ height: "100%", padding: "0 8px" }}>
                 {item?.icon ? (
                   <Icon className="icon" sx={{ width: 36 }}>
                     {item.icon}

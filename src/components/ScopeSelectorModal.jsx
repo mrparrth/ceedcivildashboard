@@ -222,7 +222,7 @@ const ScopeSelectorModal = ({
                   className="btn btn-info"
                   onClick={toggleView}
                   type="button">
-                  {showAllScopes ? "Show Selected" : "Show All"}
+                  {showAllScopes ? `Show Selected (${projectScopes.length})` : "Show All"}
                 </button>
               </div>
             </div>
