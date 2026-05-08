@@ -1,4 +1,14 @@
 import React, { useState, useRef, useEffect } from "react";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  IconButton,
+  Icon,
+  TextareaAutosize
+} from "@mui/material";
 
 const ScopeSelectorModal = ({
   isOpen,
@@ -13,6 +23,7 @@ const ScopeSelectorModal = ({
   const [showAllScopes, setShowAllScopes] = useState(true);
   // const [projectScopes, setProjectScopes] = useState(formData.scopes);
   const [editingIndex, setEditingIndex] = useState(null);
+  const [editFormData, setEditFormData] = useState({});
   const [draggingOver, setDraggingOver] = useState(null);
   const dragItem = useRef();
   const dragOverItem = useRef();
@@ -71,15 +82,24 @@ const ScopeSelectorModal = ({
 
   const handleEdit = (index) => {
     setEditingIndex(index);
+    setEditFormData(projectScopes[index]);
   };
 
-  const handleEditChange = (index, field, value) => {
-    const updatedScopes = [...projectScopes];
-    updatedScopes[index][field] = field === "rate" ? Number(value) : value;
-    setProjectScopes(updatedScopes);
+  const handleEditChange = (field, value) => {
+    setEditFormData((prev) => ({
+      ...prev,
+      [field]: field === "rate" ? Number(value) : value,
+    }));
   };
 
   const handleEditSave = () => {
+    const updatedScopes = [...projectScopes];
+    updatedScopes[editingIndex] = editFormData;
+    setProjectScopes(updatedScopes);
+    setEditingIndex(null);
+  };
+
+  const handleEditCancel = () => {
     setEditingIndex(null);
   };
 
@@ -269,79 +289,23 @@ const ScopeSelectorModal = ({
                           ${dragItem.current === index ? "dragging" : ""}
                           ${draggingOver === index ? "drag-over" : ""}
                         `}>
-                        <td className="text-wrap">
-                          {editingIndex === index ? (
-                            <input
-                              type="text"
-                              className="form-control"
-                              value={scope.description}
-                              onChange={(e) =>
-                                handleEditChange(
-                                  index,
-                                  "description",
-                                  e.target.value
-                                )
-                              }
-                            />
-                          ) : (
-                            scope.description
-                          )}
-                        </td>
+                        <td className="text-wrap">{scope.description}</td>
+                        <td>${scope.rate}</td>
+                        <td className="text-wrap">{scope.detail}</td>
                         <td>
-                          {editingIndex === index ? (
-                            <input
-                              type="number"
-                              value={scope.rate}
-                              className="form-control"
-                              onChange={(e) =>
-                                handleEditChange(index, "rate", e.target.value)
-                              }
-                            />
-                          ) : (
-                            `$${scope.rate}`
-                          )}
-                        </td>
-                        <td className="text-wrap">
-                          {editingIndex === index ? (
-                            <textarea
-                              value={scope.detail}
-                              className="form-control"
-                              onChange={(e) =>
-                                handleEditChange(
-                                  index,
-                                  "detail",
-                                  e.target.value
-                                )
-                              }
-                            />
-                          ) : (
-                            scope.detail
-                          )}
-                        </td>
-                        <td>
-                          {editingIndex === index ? (
-                            <button
-                              className="btn btn-success btn-sm"
-                              onClick={handleEditSave}
-                              type="button">
-                              Save
-                            </button>
-                          ) : (
-                            <>
-                              <button
-                                className="btn btn-warning btn-sm me-1"
-                                onClick={() => handleEdit(index)}
-                                type="button">
-                                Edit
-                              </button>
-                              <button
-                                className="btn btn-danger btn-sm"
-                                onClick={() => removeItem(index)}
-                                type="button">
-                                Delete
-                              </button>
-                            </>
-                          )}
+                          <IconButton
+                            color="primary"
+                            size="small"
+                            onClick={() => handleEdit(index)}
+                            sx={{ mr: 1 }}>
+                            <Icon>edit</Icon>
+                          </IconButton>
+                          <IconButton
+                            color="error"
+                            size="small"
+                            onClick={() => removeItem(index)}>
+                            <Icon>delete</Icon>
+                          </IconButton>
                         </td>
                       </tr>
                     ))}
@@ -351,6 +315,51 @@ const ScopeSelectorModal = ({
           </div>
         </div>
       </div>
+
+      {/* Edit Scope Dialog */}
+      <Dialog open={editingIndex !== null} onClose={handleEditCancel} maxWidth="sm" fullWidth>
+        <DialogTitle>
+          Editing Scope {editingIndex !== null ? editingIndex + 1 : ""}:{" "}
+          {editingIndex !== null ? projectScopes[editingIndex]?.description : ""}
+        </DialogTitle>
+        <DialogContent>
+          <div className="mb-3 mt-2">
+            <label className="form-label">Description</label>
+            <input
+              type="text"
+              className="form-control"
+              value={editFormData?.description || ""}
+              onChange={(e) => handleEditChange("description", e.target.value)}
+            />
+          </div>
+          <div className="mb-3">
+            <label className="form-label">Rate</label>
+            <input
+              type="number"
+              className="form-control"
+              value={editFormData?.rate || ""}
+              onChange={(e) => handleEditChange("rate", e.target.value)}
+            />
+          </div>
+          <div className="mb-3">
+            <label className="form-label">Details</label>
+            <TextareaAutosize
+              className="form-control"
+              minRows={3}
+              value={editFormData?.detail || ""}
+              onChange={(e) => handleEditChange("detail", e.target.value)}
+            />
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleEditCancel} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={handleEditSave} color="primary" variant="contained">
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };

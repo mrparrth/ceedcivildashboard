@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import useContractMetadata from "hooks/useContractMetadata";
+import { runScriptFunction } from "../db/index";
 import { MultiSelectDropdown } from "components/Fields";
 import ScopeSelectorModal from "components/ScopeSelectorModal";
+import useContractMetadata from "hooks/useContractMetadata";
+import { runScriptFunction } from "../db";
 
 import {
   Button,
@@ -886,7 +888,9 @@ const CEEDCivilForm = () => {
                   type="button"
                   className="btn btn-info w-100  py-2"
                   onClick={handleOpenScopeModal}>
-                  <i className="bi bi-search me-2"></i>Scope
+                  <i className="bi bi-search me-2"></i>Scope{" "}
+                  {projectScopes.length > 0 &&
+                    `(${projectScopes.length} Selected)`}
                 </button>
               </div>
               <div className="col-md-4">

@@ -532,25 +532,13 @@ class SecureApp extends PublicApp {
         throw new Error("Could not acquire lock");
       }
 
-      let projects = this.getProjects();
-      let projectNumbers = projects
-        .map((project) => parseFloat(project.projectNumber))
-        .filter((num) => Number.isInteger(num));
-
-      let maxProjectNumber =
-        projectNumbers.length === 0 ? 100 : Math.max(...projectNumbers);
-
+      let year = new Date().getFullYear().toString().slice(-2);
       let cachedProjectNumber = parseInt(
         this.getProperty(CONFIG.PROJECT_ID_PROP) || 0
       );
 
-      if (cachedProjectNumber > maxProjectNumber) {
-        this.setProperty(CONFIG.PROJECT_ID_PROP, cachedProjectNumber + 1);
-        return cachedProjectNumber + 1;
-      } else {
-        this.setProperty(CONFIG.PROJECT_ID_PROP, maxProjectNumber + 1);
-        return maxProjectNumber + 1;
-      }
+      this.setProperty(CONFIG.PROJECT_ID_PROP, cachedProjectNumber + 1);
+      return year + "." + (cachedProjectNumber + 1).toString().padStart(3, "0");
     } finally {
       lock.releaseLock();
     }

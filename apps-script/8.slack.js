@@ -224,7 +224,7 @@ function inviteUsersToChannel(channelId, slackAliasEmails) {
 
       if (!lookupData.ok) {
         let message = `Failed to look up user by email ${slackAliasEmail}: ${lookupData.error}`
-        console.error(message)
+        return console.warn(message)
       }
 
       // Invite user to channel
@@ -234,11 +234,14 @@ function inviteUsersToChannel(channelId, slackAliasEmails) {
         users: userId
       };
 
-      const response = makeSlackApiCall(API_ENDPOINTS.INVITE_USER, payload);
-
-      if (!response.ok) {
-        let message = `Failed to invite user ${slackAliasEmail}: ${response.error}`
-        console.error(message)
+      let response = null
+      try{
+        response = makeSlackApiCall(API_ENDPOINTS.INVITE_USER, payload);
+      }finally{
+        if (!response || !response.ok) {
+          let message = `Failed to invite user ${slackAliasEmail}: ${response.error}`
+          console.warn(message)
+        }
       }
     }
   )
