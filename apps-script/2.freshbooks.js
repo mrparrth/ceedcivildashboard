@@ -1,6 +1,6 @@
-function authorizeFB() {
-  resetFreshbooks()
-  getAccountId()
+const FRESHBOOKS_CONFIG = {
+  bearerToken: 'mbk_live_d7c8b4321cc330191d5d8bd2c4e2f265d56f23167e16258e6b2fb0912e4dde6f',
+  baseUrl: 'https://main.d2ong3g37sbjmz.amplifyapp.com/api/'
 }
 
 function getAccountId() {
@@ -12,125 +12,84 @@ function getAccountId() {
 }
 
 function _getFBClient_(data) {
-  Logger.log(JSON.stringify(data))
-  let { clientName, clientEmail } = data
-  let namesplit = clientName.split(" ");
-  let lastName, firstName
-  if (namesplit.length > 1) {
-    lastName = namesplit[namesplit.length - 1];
-    firstName = clientName.replace(" " + lastName, "");
-  } else {
-    firstName = clientName
-  }
+  let client = fbGetRequest_('clients', { email: data.clientEmail })
 
-  let queryString = `https://api.freshbooks.com/accounting/account/${ACCOUNT_ID}/users/clients?search[email]=${clientEmail}&search[fname_like]=${firstName}&search[lname_like]=${lastName}`
-  Logger.log(queryString)
-  let response = fbGetRequest_(queryString)
-
-  if (response.response.result.total == 0) {
+  if (client.totalItems == 0) {
     return
   } else {
-    return response.response.result.clients[0].id;
+    return client.items[0].id;
   }
 }
 
 function _createFBClient_(data) {
   let { clientName, clientEmail, clientPhone, clientCompany, clientStreet, clientCity, clientState, clientZip } = data
-  const parts = clientName.trim().split(/\s+/);
 
-  let firstName = "";
-  let lastName = "";
-
-  if (parts.length === 1) {
-    firstName = parts[0];
-  } else {
-    lastName = parts.pop();
-    firstName = parts.join(" ");
-  }
 
   let jsonClient = {
-    "client": {
-      "fname": firstName,
-      "lname": lastName,
-      "home_phone": clientPhone,
-      "email": clientEmail,
-      "organization": clientCompany,
-      "p_street": clientStreet,
-      "p_city": clientCity,
-      "p_province": clientState,
-      "p_code": clientZip,
-      "p_country": "United States",
-      "currency_code": "USD",
-      "language": "en"
-    }
+    "displayName": clientName,
+    "phone": clientPhone,
+    "email": clientEmail,
+    "company": clientCompany,
+    "address_line1": clientStreet,
+    "city": clientCity,
+    "state": clientState,
+    "postal": clientZip,
+    "country": "United States",
   };
 
-  let response = fbPostRequest_(`https://api.freshbooks.com/accounting/account/${ACCOUNT_ID}/users/clients`, jsonClient)
+  let client = fbPostRequest_(`clients`, jsonClient)
 
-  return response.response.result.client.id
+  return client.id
 }
 
 function _createFBInvoice_(data) {
   let jsonInvoice = _createInvoiceJson_(data);
-  let response = fbPostRequest_(`https://api.freshbooks.com/accounting/account/${ACCOUNT_ID}/invoices/invoices`, jsonInvoice);
+  let invoice = fbPostRequest_(`invoices`, jsonInvoice);
 
-  Logger.log(`Invoice Created ${response.response.result.invoice.id}`)
-  return response.response.result.invoice.invoice_number;
+
+  Logger.log(`Invoice Created ${invoice.invoiceNumber}`)
+  return invoice.invoiceNumber;
 }
 
 function _createInvoiceJson_(project) {
-  let finalDict = {};
   let rootDict = {};
   let allItems = [];
-  let scopes = project['scopes']
-  let { projectNumber, projectName, fbClientId, isUpworkJob } = project
+  let { projectNumber, projectName, fbClientId, isUpworkJob, scopes, totalCost } = project
 
-  rootDict["customerid"] = fbClientId;
-  rootDict["create_date"] = Utilities.formatDate(new Date(), "UTC", "yyyy-MM-dd");
-  rootDict["terms"] = _getSettings_().terms
+  rootDict["clientId"] = fbClientId;
+  rootDict["issueDate"] = Utilities.formatDate(new Date(), "UTC", "yyyy-MM-dd");
+  rootDict["dueDate"] = Utilities.formatDate(new Date(), "UTC", "yyyy-MM-dd");
+  rootDict["terms"] = 'test'
+  rootDict["subtotal"] = _parseCost_(totalCost)
+  rootDict["tax"] = 0
+  rootDict["discount"] = 0
+  rootDict["total"] = _parseCost_(totalCost)
 
   let individualItems = {}
-  individualItems["type"] = 0;
   individualItems["name"] = "Info";
-  individualItems["description"] = `Project ${projectNumber} - ${projectName}${isUpworkJob ? " - Upwork Job" : ""}`
-  individualItems["qty"] = 1;
-  individualItems["unit_cost"] = { amount: 0, code: 'USD' };
+  individualItems["details"] = `Project ${projectNumber} - ${projectName}${isUpworkJob ? " - Upwork Job" : ""}`
+  individualItems["quantity"] = 1;
+  individualItems["unitPrice"] = 0;
   allItems.push(individualItems);
 
   scopes.forEach((scope) => {
     let individualItems = {};
-    individualItems["type"] = 0;
     individualItems["name"] = scope.description
-    individualItems["description"] = scope.detail;
-    individualItems["qty"] = 1;
-    individualItems["unit_cost"] = { amount: _parseCost_(scope.rate), code: 'USD' }
+    individualItems["details"] = scope.detail;
+    individualItems["quantity"] = 1;
+    individualItems["unitPrice"] = _parseCost_(scope.rate)
 
     allItems.push(individualItems);
   })
 
-  rootDict["lines"] = allItems;
-  finalDict["invoice"] = rootDict;
-  Logger.log(`Invoice data ${JSON.stringify(finalDict)}`)
-  return finalDict;
-}
-
-function _getAllServices_() {
-  const response = fbGetAll_(`https://api.freshbooks.com/comments/business/${BUSINESS_ID}/services`)
-  const services = response.services;
-  const arrServices = [];
-
-  for (let i = 0; i < services.length; i++) {
-    let name = services[i].name;
-    let id = services[i].id;
-    arrServices.push({ name, id });
-  }
-
-  return arrServices
+  rootDict["lineItems"] = allItems;
+  Logger.log(`Invoice data ${JSON.stringify(rootDict)}`)
+  return rootDict;
 }
 
 function _createFBProject_(project) {
   const jsonProject = _createProjectJson_(project);
-  const response = fbPostRequest_(`https://api.freshbooks.com/projects/business/${BUSINESS_ID}/project`, jsonProject)
+  const response = fbPostRequest_(`projects`, jsonProject)
 
   if (response.error) {
     throw response.error
@@ -139,32 +98,21 @@ function _createFBProject_(project) {
   }
 }
 
-function _parseCost_(cost) {
-  if (cost instanceof String) {
-    return parseFloat(cost.replace(/[$,]/g, '')) || 0
-  } else {
-    return cost
-  }
-}
-
 function _createProjectJson_(project) {
-  Logger.log(JSON.stringify(project))
-  const finalDict = {};
   const rootDict = {};
   const allServices = [];
   let { scopes, projectNumber, projectName, fbClientId, totalCost } = project
 
-  const serviceData = _getAllServices_()
-  console.log(serviceData.map(s => s.name))
+  const serviceMap = _getAllServices_()
 
   rootDict["title"] = `${projectNumber} - ${projectName}`
-  rootDict["client_id"] = fbClientId;
-  rootDict["project_type"] = "fixed_price";
+  rootDict["clientId"] = fbClientId;
+  rootDict["projectType"] = "fixed_price";
 
   scopes.forEach(scope => {
     let indivService = {};
     indivService["name"] = scope.description
-    let serviceId = _getServiceIdByName_(serviceData, scope.description)
+    let serviceId = serviceMap[scope.description.trim()]
     if (serviceId) {
       indivService["id"] = serviceId
     } else {
@@ -173,45 +121,84 @@ function _createProjectJson_(project) {
     allServices.push(indivService)
   })
 
-  rootDict["fixed_price"] = _parseCost_(totalCost);
-  rootDict["services"] = allServices;
-  finalDict["project"] = rootDict;
+  rootDict["fixedPrice"] = _parseCost_(totalCost);
+  rootDict["serviceIds"] = allServices.map(s => s.id);
 
-  console.log(JSON.stringify(finalDict));
+  console.log(JSON.stringify(rootDict));
 
-  return finalDict;
+  return rootDict;
 }
 
-function _getServiceIdByName_(serviceData, scopeDesc) {
-  let service = serviceData.find(service => service.name.trim().toLowerCase() == scopeDesc.trim().toLowerCase())
-  if (service) return service.id
+function _getAllServices_() {
+  const services = fbGetAll_(`services`)
+
+  return Object.fromEntries(
+    services.map(({ name, id }) => [name.trim(), id])
+  );
 }
 
 function _createFbService_(name) {
-  let response = fbPostRequest_(`https://api.freshbooks.com/comments/business/${BUSINESS_ID}/service`, {
-    "service": {
-      "name": name
-    }
-  })
+  let response = fbPostRequest_(`services`, { name })
 
   return response.service.id
 }
 
-function _getClientIdFromInvoiceDesc_(invoiceDesc) {
-  const url = `https://api.freshbooks.com/accounting/account/${ACCOUNT_ID}/invoices/invoices?search[item_description]=${invoiceDesc}`
-  const result = fbGetRequest_(url)
+function _createFBExpense_(payment, user) {
+  let { projectNumber, projectName, actualCost, revisionCost, revisionNeeded, notes, datePaid, datePaid2 } = payment
+  let { merchantName, categoryName } = user
 
-  let invoices = result.response.result.invoices
-  if (invoices.length == 0) throw `Invoice must be created for this project before you can create expenses`
-
-  let invoice
-  if (result.response.result.invoices.length > 1) {
-    invoice = invoices.find(invoice => invoice.description.includes(invoiceDesc))
-  } else {
-    invoice = invoices[0]
+  try {
+    var clientId = _getClientIdFromInvoiceDesc_(projectNumber)
+  }
+  catch (e) {
+    throw e
   }
 
-  return invoice.customerid
+  let body = {
+    "amount": revisionNeeded ? revisionCost : actualCost,
+    "currency": "USD",
+    "notes": `${projectNumber} - ${projectName}`,
+    "vendor": merchantName,
+    "category": categoryName,
+    "date": revisionNeeded ? datePaid2 : datePaid,
+    "clientId": clientId,
+    "billable": false
+  }
+
+  let result = fbPostRequest_(`expenses`, body)
+
+  if (result?.errors) {
+    throw result.response.errors[0].message
+  } else {
+    return result.id
+  }
+}
+
+function _getClientIdFromInvoiceDesc_(invoiceDesc) {
+  const params = { keyword: invoiceDesc, include: 'lineItems', keywordField: 'description' }
+  const result = fbGetRequest_('invoices', params)
+
+  let invoices = result.items
+  if (invoices.length == 0) throw `Invoice must be created for this project before you can create expenses`
+
+  let foundInvoice = invoices.find(invoice => invoice.description.includes(invoiceDesc))
+
+  if (!foundInvoice) {
+    foundInvoice = invoices.find(inv => inv.lineItems.some(r => r.description.includes(invoiceDesc)))
+  }
+
+  if (!foundInvoice) throw 'Invoice must be created for this project before you can create expenses'
+
+  return foundInvoice.clientId
+}
+
+
+function _parseCost_(cost) {
+  if (typeof cost === 'string') {
+    return parseFloat(cost.replace(/[$,]/g, '')) || 0
+  } else {
+    return cost
+  }
 }
 
 function getExpenses() {
@@ -261,77 +248,105 @@ function getExpenses() {
   // console.log(analyzedExpenses)
 }
 
-function _createFBExpense_(payment, user) {
-  let { projectNumber, projectName, actualCost, revisionCost, revisionNeeded, notes, datePaid, datePaid2 } = payment
-  let { merchantName, categoryName } = user
-
-  try {
-    var clientId = _getClientIdFromInvoiceDesc_(projectNumber)
-  }
-  catch (e) {
-    throw e
-  }
-
-  let body = {
-    "expense": {
-      "amount": {
-        "amount": revisionNeeded ? revisionCost : actualCost,
-        "code": "USD"
-      },
-      notes: `${projectNumber} - ${projectName}`,
-      "vendor": merchantName,
-      "date": revisionNeeded ? datePaid2 : datePaid,
-      "clientid": clientId,
-      "staffid": 1,
-      "category_name": categoryName,
-      "billable": false
-    }
-  }
-
-  let url = `https://api.freshbooks.com/accounting/account/${ACCOUNT_ID}/expenses/expenses`
-
-  let result = fbPostRequest_(url, body)
-
-  if (result.response.errors) {
-    throw result.response.errors[0].message
-  }
-  else {
-    return result.response.result.expense.expenseid
-  }
-}
-
 function getFbVendors() {
-  let url = `https://api.freshbooks.com/accounting/account/${ACCOUNT_ID}/expenses/vendors`
-  let response = fbGetAll_(url)?.vendors
-  let vendors = response.map(vendor => vendor.vendor)
-  console.log(vendors)
+  let url = `expenses/merchants`
+  let vendors = fbGetAll_(url)
   return vendors
 }
 
 function getFbCategories() {
-  let url = `https://api.freshbooks.com/accounting/account/${ACCOUNT_ID}/expenses/categories`
-  let response = fbGetAll_(url)
-  let categories = response?.categories
-  let contractorIds = categories.filter(category => category.category == 'Contractors').map(category => category.id)
-  let contractorCategories = categories.filter(category => contractorIds.includes(category.parentid)).map(category => category.category)
-  console.log(Array.from(new Set(contractorCategories)))
+  let url = `/expense-categories`
+  let categories = fbGetAll_(url)
+  console.log(categories.map(c => [c.id, c.parentId, c.category]))
+  let file = DriveApp.createFile('test.txt', JSON.stringify(categories.map(c => [c.id, c.parentId, c.category])))
+  console.log(file.getUrl())
+  let parentCIds = categories.filter(c => c.category == 'Contractors').map(c => c.id)
+  let contractorCategories = categories.filter(c => parentCIds.includes(c.parentid)).map(c => c.category)
+
   return Array.from(new Set(contractorCategories))
 }
 
 function createFbCategory(fbCategory) {
-  let url = `https://api.freshbooks.com/accounting/account/${ACCOUNT_ID}/expenses/categories`
-  let getResponse = fbGetAll_(url)
-  let categories = getResponse?.categories
-  let contractorId = categories.filter(category => category.category == 'Contractors').map(category => category.id)[0]
+  let url = `/expense-categories`
+  let categories = fbGetAll_(url)
+  console.log(categories.map(c => [c.id, c.parentId, c.category]))
+  let file = DriveApp.createFile('test.txt', JSON.stringify(categories.map(c => [c.id, c.parentId, c.category])))
+  console.log(file.getUrl())
+  let parentCIds = categories.filter(c => c.category == 'Contractors').map(c => c.id)
 
   let params = {
-    "category": {
-      "category": fbCategory,
-      "is_cogs": false,
-      "is_editable": true,
-      "parentid": contractorId,
-    }
+    "category": fbCategory,
+    "is_cogs": false,
+    "parentid": parentCIds,
   }
   let response = fbPostRequest_(url, params)
   if (!response.result) console.log(response)
+}
+
+function fbGetRequest_(endpoint, params = {}) {
+  const strParams = Object.entries(params)
+    .filter(([_, value]) => value !== undefined && value !== null)
+    .map(([key, value]) => encodeURIComponent(key) + '=' + encodeURIComponent(value))
+    .join('&');
+
+  const url = FRESHBOOKS_CONFIG.baseUrl + (strParams ? `${endpoint}?${strParams}` : endpoint);
+
+  const options = {
+    method: 'get',
+    headers: {
+      Authorization: `Bearer ${FRESHBOOKS_CONFIG.bearerToken}`
+    }
+  }
+
+  const response = UrlFetchApp.fetch(url, options);
+
+  const json = JSON.parse(response.getContentText());
+
+  return json
+}
+
+function fbPostRequest_(endpoint, data = {}) {
+  const url = FRESHBOOKS_CONFIG.baseUrl + endpoint;
+
+  const options = {
+    method: 'post',
+    contentType: 'application/json',
+    headers: {
+      Authorization: `Bearer ${FRESHBOOKS_CONFIG.bearerToken}`
+    },
+    payload: JSON.stringify(data),
+    muteHttpExceptions: true
+  };
+
+  console.log(JSON.stringify(data))
+  const response = UrlFetchApp.fetch(url, options);
+
+  return JSON.parse(response.getContentText());
+}
+
+function fbGetAll_(endpoint, options = {}) {
+  if (!options.pageSize) options.pageSize = 100
+
+  let allData = [];
+  let hasMoreData = true;
+  let pageCnt = 0;
+  let mainDataKey;
+
+  while (hasMoreData) {
+    pageCnt++;
+    options.page = pageCnt
+
+    let response = fbGetRequest_(endpoint, options);
+    mainDataKey = Object.keys(response).find(key => Array.isArray(response[key]));
+
+    if (!mainDataKey) {
+      return {};
+    }
+
+    allData.push(...response[mainDataKey]);
+
+    hasMoreData = response.totalPages > response.page
+  }
+
+  return allData
 }
