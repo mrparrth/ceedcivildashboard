@@ -59,7 +59,7 @@ function _createInvoiceJson_(project) {
   rootDict["clientId"] = fbClientId;
   rootDict["issueDate"] = Utilities.formatDate(new Date(), "UTC", "yyyy-MM-dd");
   rootDict["dueDate"] = Utilities.formatDate(new Date(), "UTC", "yyyy-MM-dd");
-  rootDict["terms"] = 'test'
+  rootDict["terms"] = _getSettings_().terms
   rootDict["subtotal"] = _parseCost_(totalCost)
   rootDict["tax"] = 0
   rootDict["discount"] = 0
@@ -257,9 +257,6 @@ function getFbVendors() {
 function getFbCategories() {
   let url = `/expense-categories`
   let categories = fbGetAll_(url)
-  console.log(categories.map(c => [c.id, c.parentId, c.category]))
-  let file = DriveApp.createFile('test.txt', JSON.stringify(categories.map(c => [c.id, c.parentId, c.category])))
-  console.log(file.getUrl())
   let parentCIds = categories.filter(c => c.category == 'Contractors').map(c => c.id)
   let contractorCategories = categories.filter(c => parentCIds.includes(c.parentid)).map(c => c.category)
 
