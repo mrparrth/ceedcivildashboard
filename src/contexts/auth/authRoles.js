@@ -12,7 +12,15 @@ export const PERMISSIONS = {
 //currently the tools available for admin are: create expenses,
 
 export const AUTH_ROLES = {
-  ADMIN: [PERMISSIONS.finance, PERMISSIONS.projects, PERMISSIONS.settings, PERMISSIONS.adminLinks, PERMISSIONS.adminTools, PERMISSIONS.forms, PERMISSIONS.viewContacts],
+  ADMIN: [
+    PERMISSIONS.finance,
+    PERMISSIONS.projects,
+    PERMISSIONS.settings,
+    PERMISSIONS.adminLinks,
+    PERMISSIONS.adminTools,
+    PERMISSIONS.forms,
+    PERMISSIONS.viewContacts,
+  ],
   EMPLOYEE: [PERMISSIONS.finance, PERMISSIONS.projects],
   AFRAME: [PERMISSIONS.finance, PERMISSIONS.projects, PERMISSIONS.profile],
   FINANCEONLY: [PERMISSIONS.finance],

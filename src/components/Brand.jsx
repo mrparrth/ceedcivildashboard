@@ -4,11 +4,11 @@ import Logo from "./Logo";
 import useSettings from "hooks/useSettings";
 
 // STYLED COMPONENTS
-const BrandRoot = styled(Box)(({ mode }) => ({
+const BrandRoot = styled(Box)(() => ({
   display: "flex",
   alignItems: "center",
-  justifyContent: mode === "compact" ? "center" : "space-between",
-  padding: mode === "compact" ? "10px 0" : "0px 16px",
+  justifyContent: "center",
+  padding: "10px 0",
   margin: "5px 0px",
   minHeight: "60px"
 }));

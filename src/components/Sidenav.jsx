@@ -13,6 +13,7 @@ const StyledScrollBar = styled(Scrollbar)(() => ({
   paddingLeft: "1rem",
   paddingRight: "1rem",
   position: "relative",
+  height: "100%",
 }));
 
 const SideNavMobile = styled("div")(({ theme }) => ({

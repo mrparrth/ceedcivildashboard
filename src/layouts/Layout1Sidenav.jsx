@@ -36,6 +36,7 @@ const NavListBox = styled(Box)({
 
 const SidenavContainer = styled(Box)({
   flex: 1,
+  minHeight: 0,
   overflow: "hidden",
   display: "flex",
   flexDirection: "column"

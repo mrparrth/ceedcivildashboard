@@ -144,7 +144,9 @@ const FinanceRow = ({ row, hasAdminToolsPermission, onSelectRow, isSelected, onE
   const handleCreateFbExpense = async () => {
     setLoading(true);
     try {
-      await createFbExpense(editedRow);
+      const updatedRow = { ...editedRow, disabledEditing: true };
+      await createFbExpense(updatedRow);
+      setEditedRow(updatedRow);
       setIsEditing(false);
     } catch (e) {
       addNotification({ title: e.message, type: "alert" });
@@ -270,8 +272,8 @@ const FinanceRow = ({ row, hasAdminToolsPermission, onSelectRow, isSelected, onE
         {hasAdminToolsPermission && (
           <td>
             {row.expenseId ? (
-              <Link href={`https://my.freshbooks.com/#/expense/${row.expenseId}/`} target="_blank" rel="noopener noreferrer" display="flex" alignItems="center" justifyContent="center" sx={{ color: "primary.main", textDecoration: "none" }}>
-                {row.expenseId}
+              <Link href={String(row.expenseId).length > 10 ? `https://main.d2ong3g37sbjmz.amplifyapp.com/expenses?editExpense=${row.expenseId}` : `https://my.freshbooks.com/#/expense/${row.expenseId}/`} target="_blank" rel="noopener noreferrer" display="flex" alignItems="center" justifyContent="center" sx={{ color: "primary.main", textDecoration: "none" }}>
+                View On Portal
                 <OpenInNewIcon fontSize="small" sx={{ ml: 0.5 }} />
               </Link>
             ) : (

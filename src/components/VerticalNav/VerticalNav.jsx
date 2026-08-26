@@ -40,22 +40,24 @@ const ExtAndIntCommon = {
   "& .icon": {
     fontSize: "18px",
     width: "24px",
-    marginRight: "8px",
+    marginRight: "3px",
     verticalAlign: "middle",
   },
 };
 
-const ExternalLink = styled("a")(({ theme }) => ({
+const ExternalLink = styled("a")(({ theme, mode }) => ({
   ...ExtAndIntCommon,
   color: theme.palette.text.primary,
   "& .buttonBase": {
     width: "100%",
     padding: "0",
-    justifyContent: "flex-start",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: mode === "compact" ? "center" : "flex-start",
   },
 }));
 
-const InternalLink = styled(Box)(({ theme }) => ({
+const InternalLink = styled(Box)(({ theme, mode }) => ({
   "& a": {
     ...ExtAndIntCommon,
     color: theme.palette.text.primary,
@@ -66,7 +68,9 @@ const InternalLink = styled(Box)(({ theme }) => ({
   "& .buttonBase": {
     width: "100%",
     padding: "0",
-    justifyContent: "flex-start",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: mode === "compact" ? "center" : "flex-start",
   },
 }));
 
@@ -162,7 +166,7 @@ export default function VerticalNav({ items }) {
             arrow
             disableHoverListener={mode !== "compact"}
           >
-            <ExternalLink href={item.path} className={`${mode === "compact" && "compactNavItem"}`} rel="noopener noreferrer" target="_blank">
+            <ExternalLink mode={mode} href={item.path} className={`${mode === "compact" && "compactNavItem"}`} rel="noopener noreferrer" target="_blank">
               <ButtonBase className="buttonBase" style={{ height: "100%", padding: "0 0px" }}>
                 {(() => {
                   if (item.icon) {
@@ -205,7 +209,7 @@ export default function VerticalNav({ items }) {
             arrow
             disableHoverListener={mode !== "compact"}
           >
-            <InternalLink>
+            <InternalLink mode={mode}>
               <NavLink to={item.path} className={({ isActive }) => (isActive ? `navItemActive ${mode === "compact" && "compactNavItem"}` : `${mode === "compact" && "compactNavItem"}`)}>
                 <ButtonBase className="buttonBase" style={{ height: "100%", padding: "0 0px" }}>
                   {item?.icon ? (
