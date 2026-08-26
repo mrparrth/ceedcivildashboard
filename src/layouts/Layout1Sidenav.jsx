@@ -1,14 +1,16 @@
-import { Hidden, Switch, Box, styled, useTheme } from "@mui/material";
+import { Box, styled, useTheme, Tooltip, ButtonBase } from "@mui/material";
+import { ChevronLeft, ChevronRight } from "@mui/icons-material";
 
 import useSettings from "hooks/useSettings";
 
 import Brand from "../components/Brand";
 import Sidenav from "../components/Sidenav";
 import { themeShadows } from "../theme/themeColors";
+import { Span } from "../components/Typography";
 
 import { sidenavCompactWidth, sideNavWidth } from "../utils/constant";
 
-// // STYLED COMPONENTS
+// STYLED COMPONENTS
 const SidebarNavRoot = styled(Box)(({ theme, width, bg, image }) => ({
   position: "fixed",
   top: 0,
@@ -24,16 +26,6 @@ const SidebarNavRoot = styled(Box)(({ theme, width, bg, image }) => ({
   color: theme.palette.text.primary,
   transition: "all 250ms ease-in-out",
   backgroundImage: `linear-gradient(to bottom, rgba(${bg}, 0.96), rgba(${bg}, 0.96)), url(${image})`,
-  "&:hover": {
-    width: sideNavWidth,
-    "& .sidenavHoverShow": { display: "block" },
-    "& .compactNavItem": {
-      width: "100%",
-      maxWidth: "100%",
-      "& .nav-bullet": { display: "block" },
-      "& .nav-bullet-text": { display: "none" }
-    }
-  }
 }));
 
 const NavListBox = styled(Box)({
@@ -41,8 +33,25 @@ const NavListBox = styled(Box)({
   display: "flex",
   flexDirection: "column"
 });
+
+const SidenavContainer = styled(Box)({
+  flex: 1,
+  overflow: "hidden",
+  display: "flex",
+  flexDirection: "column"
+});
+
+const NavBottomSection = styled(Box)(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  padding: "12px 16px",
+  borderTop: `1px solid rgba(255, 255, 255, 0.12)`,
+  marginTop: "auto"
+}));
+
 const convertHexToRGB = (hex) => {
-  // check if it's a rgba
+  if (!hex) return "0,0,0";
   if (hex.match("rgba")) {
     let triplet = hex.slice(5).split(",").slice(0, -1).join(",");
     return triplet;
@@ -58,6 +67,7 @@ const convertHexToRGB = (hex) => {
 
     return [(c >> 16) & 255, (c >> 8) & 255, c & 255].join(",");
   }
+  return "0,0,0";
 };
 
 const Layout1Sidenav = () => {
@@ -88,23 +98,53 @@ const Layout1Sidenav = () => {
     updateSidebarMode({ mode: mode === "compact" ? "full" : "compact" });
   };
 
+  const isCompact = mode === "compact";
+
   return (
     <SidebarNavRoot image={bgImgURL} bg={primaryRGB} width={getSidenavWidth()}>
       <NavListBox>
-        <Brand>
-          <Hidden smDown>
-            <Switch
-              onChange={handleSidenavToggle}
-              checked={leftSidebar.mode !== "full"}
-              color="secondary"
-              size="small"
-            />
-          </Hidden>
-        </Brand>
-        <Sidenav />
+        <Brand />
+        <SidenavContainer>
+          <Sidenav />
+        </SidenavContainer>
+        <NavBottomSection>
+          <Tooltip
+            title={isCompact ? "Maximize Sidebar" : "Minimize Sidebar"}
+            placement="right"
+            arrow
+          >
+            <ButtonBase
+              onClick={handleSidenavToggle}
+              sx={{
+                width: "100%",
+                height: 40,
+                borderRadius: "4px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: isCompact ? "center" : "flex-start",
+                padding: isCompact ? "0" : "0 12px",
+                color: "text.primary",
+                transition: "all 150ms ease-in",
+                "&:hover": {
+                  backgroundColor: "rgba(255, 255, 255, 0.08)"
+                }
+              }}
+            >
+              {isCompact ? (
+                <ChevronRight sx={{ fontSize: 22 }} />
+              ) : (
+                <>
+                  <ChevronLeft sx={{ fontSize: 22, mr: 1.5 }} />
+                  <Span sx={{ fontSize: "0.875rem", fontWeight: 500 }}>Minimize</Span>
+                </>
+              )}
+            </ButtonBase>
+          </Tooltip>
+        </NavBottomSection>
       </NavListBox>
     </SidebarNavRoot>
   );
 };
 
 export default Layout1Sidenav;
+

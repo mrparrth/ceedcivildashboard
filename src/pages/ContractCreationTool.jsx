@@ -229,7 +229,7 @@ const CEEDCivilForm = () => {
     async (e) => {
       e.preventDefault();
       setIsCreatingContract(true);
-
+      console.log(formData);
       let error;
       if (!formData.fbInvoiceId || !formData.fbProjectId) {
         error = "Freshbooks invoice has not been generated yet!";

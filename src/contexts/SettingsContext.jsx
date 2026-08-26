@@ -1,7 +1,18 @@
-import { useEffect } from "react";
-import { createContext, useState } from "react";
+import { useEffect, createContext, useState } from "react";
 import { themes } from "../theme/initThemes";
 import { merge } from "lodash";
+
+const getSavedSidenavMode = () => {
+  try {
+    const saved = localStorage.getItem("sidenav_mode");
+    if (saved && (saved === "full" || saved === "compact")) {
+      return saved;
+    }
+  } catch (e) {
+    console.error("Error reading sidenav_mode from localStorage", e);
+  }
+  return null;
+};
 
 let initialSettings = {
   showSidebar: true,
@@ -15,7 +26,7 @@ let initialSettings = {
   layout1Settings: {
     leftSidebar: {
       show: true,
-      mode: "compact", // full, close, compact, mobile,
+      mode: getSavedSidenavMode() || "compact", // full, close, compact, mobile,
       theme: "whiteBlue", // View all valid theme colors inside Theme/themeColors.js
       bgImgURL: "/assets/images/sidebar/sidebar-bg-dark.jpg"
     },
@@ -39,9 +50,16 @@ export const SettingsContext = createContext({
 });
 
 export default function SettingsProvider({ settings, children }) {
-  const [currentSettings, setCurrentSettings] = useState(
-    settings || initialSettings
-  );
+  const [currentSettings, setCurrentSettings] = useState(() => {
+    const defaultSettings = settings || initialSettings;
+    const savedMode = getSavedSidenavMode();
+    if (savedMode && defaultSettings?.layout1Settings?.leftSidebar) {
+      return merge({}, defaultSettings, {
+        layout1Settings: { leftSidebar: { mode: savedMode } }
+      });
+    }
+    return defaultSettings;
+  });
 
   useEffect(() => {
     const handleResize = () => {
@@ -58,6 +76,17 @@ export default function SettingsProvider({ settings, children }) {
     };
   }, []);
 
+  useEffect(() => {
+    const mode = currentSettings?.layout1Settings?.leftSidebar?.mode;
+    if (mode && (mode === "full" || mode === "compact")) {
+      try {
+        localStorage.setItem("sidenav_mode", mode);
+      } catch (e) {
+        console.error("Error saving sidenav_mode to localStorage", e);
+      }
+    }
+  }, [currentSettings?.layout1Settings?.leftSidebar?.mode]);
+
   const handleUpdateSettings = (update = {}) => {
     const marged = merge({}, currentSettings, update);
     setCurrentSettings(marged);
@@ -73,3 +102,4 @@ export default function SettingsProvider({ settings, children }) {
     </SettingsContext.Provider>
   );
 }
+

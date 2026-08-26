@@ -187,7 +187,7 @@ const testUpdateStatus = () => {
   const auth = {
     email: undefined,
     password: undefined,
-    token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjhjNjI4OWJlLWQxODQtNDg3Zi05NTllLTVhOTllYmFiNzg3MiIsImNyZWF0ZWRBdCI6IjIwMjQtMTEtMTdUMTk6MDE6NDUuNTE4WiIsIm1vZGlmaWVkQXQiOiIyMDI0LTExLTE3VDE5OjAxOjQ1LjUxOFoiLCJuYW1lIjoiVGVzdEVtcGxveWVlIiwiZW1haWwiOiJlbXBsb3llZUBjZWVkY2l2aWwuY29tIiwicm9sZSI6IkFkbWluIiwic3RhdHVzIjoiQWN0aXZlIiwibWVyY2hhbnROYW1lIjoiQWRtaW4iLCJjYXRlZ29yeU5hbWUiOiJEcmFmdGVyIC0gQ29udHJhY3RvciIsInVzZXJUeXBlIjoiIiwidGVzdFVzZXI/Ijp0cnVlLCJfcm93SW5kZXgiOjEwfQ==.kIeCLPy5EPJsz3Eiv4I2QNWMg8lDfrK49kElvtnFTGU='
+    token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQwMjk3NzVhLWVmMGEtNDJkOC1hM2YyLTRkMjA3MWQzZWYwZiIsImNyZWF0ZWRBdCI6IjIwMjQtMTAtMzBUMDY6NTQ6NDkuMjkyWiIsIm1vZGlmaWVkQXQiOiIyMDI0LTEwLTMwVDA2OjU0OjQ5LjI5MloiLCJuYW1lIjoiQWRtaW4iLCJlbWFpbCI6ImNlZWRjaXZpbEBnbWFpbC5jb20iLCJyb2xlIjoiQWRtaW4iLCJzdGF0dXMiOiJBY3RpdmUiLCJtZXJjaGFudE5hbWUiOiJBZG1pbiIsImNhdGVnb3J5TmFtZSI6IkRyYWZ0ZXIgLSBDb250cmFjdG9yIiwidXNlclR5cGUiOiIiLCJzbGFja0FsaWFzIjoiIiwibWFuYWdlciI6IiIsImRlZmF1bHREYXNoYm9hcmQiOiJLYW5iYW4iLCJfcm93SW5kZXgiOjJ9.odhQgX87j4ynehcGd5AWzXJUQG6UwGH0rPCzqyDXGZg='
   }
 
   let update = {
@@ -214,10 +214,35 @@ const testNewUser = () => {
 }
 
 const testCreateExpense = () => {
-  let expense = { "dateModified": "2025-02-02T18:38:53.814Z", "revisionPaid": false, "notes": "", "id": "4ffc2279-637d-4c3a-bd1e-af2ab0150aa2", "createdBy": "Tika Koirala", "actualCost": 0, "projectId": "127a5455-5a41-4ef2-8fb3-70456108e0ce", "paid": false, "modifiedBy": "Tika Koirala", "revisionCost": 0, "projectNumber": 632, "datePaid": "2025-03-04", "dateCreated": "2025-02-02T18:38:53.812Z", "revisionNeeded": false, "projectName": "VA - Gym Addition Site Plan", "totalCost": 0, "salesMan": "", "datePaid2": null, "assignee": "Arnel", "projectStatus": "Pending Start" }
+  let expense = { projectName: 'Custom Plan Design Option - 02',
+  estimatedBudget: '',
+  notes: '',
+  paid: true,
+  readyToBePaid: false,
+  modifiedBy: 'Prateeksha',
+  billingItems: [],
+  assignee: 'Prateeksha',
+  dateCreated: '2026-04-13T16:14:30.566Z',
+  revisionsPaid: false,
+  createdBy: 'Prateeksha',
+  disabledEditing: false,
+  dateModified: '2026-04-15T15:17:33.888Z',
+  datePaid2: '',
+  salesMan: '',
+  overallProjectStatus: '',
+  revisionCost: '',
+  actualCost: '129.42',
+  datePaid: '2026-03-31',
+  revisionNeeded: false,
+  isManual: false,
+  totalCost: '',
+  projectNumber: '26.099.5',
+  id: '0fc5990e-9448-454c-b46c-c05971a96eab',
+  _rowIndex: 212,
+  expenseId: '' }
 
   let userSh = _getSheetById_(350989579)
-  let user = _getItemsFromSheet_(userSh, row => row.email == 'erparthas@gmail.com')[0]
+  let user = _getItemsFromSheet_(userSh, row => row.email == 'ceedcivil@gmail.com')[0]
 
   _createFBExpense_(expense, user)
 }
@@ -341,100 +366,120 @@ function testFbProject() {
 
   _createFBProject_(project)
 }
-function testCreateProject(){
-  let jsonProject = { remainingBalance: 2450,
-  ratePerHour: 225,
-  date: '2025-11-12',
-  showDocumentLink: true,
-  deliverableFromClient: 'Photos, sketch, layout, all material and sizing.',
-  clientPhone: '561-436-8062',
-  civilFolderNeeded: false,
-  projectDesc: 'Standard 40\' container with standard detailing. This site requires a site plan with data from septic and house location with all setbacks and measurements from setbacks.',
-  siteState: 'Florida',
-  clientCity: 'Fernandina Beach',
-  retainerRemaining: '',
-  sameAsClient: false,
-  clientName: 'Lisa Huffman',
-  mepTaskedTo: [],
-  retainerDeposit: 2500,
-  sendClientEmail: true,
-  clientEmail: 'Bsbhuffman@gmail.com',
-  fbProjectId: '',
-  clientAddress: '',
-  draftingTaskedTo: [ 'Prateeksha' ],
-  clientState: 'Florida',
-  siteAddress: '',
-  documentUrl: 'https://docs.google.com/open?id=1lkS8LquP_VL26AjbjxuNVxI4S6LW0x-jPMS2YsN3jWo',
-  drafterFolderNeeded: true,
-  siteStreet: '86187 Williams Ave ',
-  draftingNeeded: true,
-  projectType: 'Container home',
-  gap: -350,
-  clientCompany: '',
-  clientZip: '32034',
-  siteCity: 'Yulee ',
-  enggFolderNeeded: true,
-  fbInvoiceId: '0002218',
-  civilTaskedTo: [],
-  totalCost: 5300,
-  scopes: 
-   [ { selected: true,
-       detail: 'Typical container layout/floor plan detail, interior section views, exterior wall detail (elevations view), window/door callouts.',
-       rate: 1000,
-       _rowIndex: 17,
-       description: 'Container Architectural Drafting' },
-     { description: 'Container Structural Drafting',
-       selected: true,
-       rate: 1550,
-       detail: 'Structural details for container building plans. S-pages drafted as needed. Foundation, section view and details. Design criteria and connection details.',
-       _rowIndex: 16 },
-     { _rowIndex: 15,
-       rate: 1100,
-       description: 'Calculations Report',
-       detail: 'Calculations report for project scope.',
-       selected: true },
-     { selected: true,
-       _rowIndex: 18,
-       detail: 'Basic MEP layout with Mini Split detail, outlet, lights, smoke detector, interior plumbing layout only',
-       description: 'Container Basic MEP layout Only',
-       rate: 500 },
-     { description: 'Site/ Grading/ Conservation Plan',
-       _rowIndex: 21,
-       detail: 'Design plan showing proposed site improvements, provided well and septic overlay.',
-       rate: 250,
-       selected: true },
-     { selected: true,
-       _rowIndex: 9,
-       detail: 'Scope of work, reviewed, stamped, and sealed by state licensed P.E. FL',
-       description: 'Engineering Review, Stamp and Seal P.E.',
-       rate: 0 },
-     { _rowIndex: 28,
-       rate: 550,
-       description: 'Plan digital Submission',
-       selected: true,
-       detail: 'Plan submission digitally to the city.' },
-     { _rowIndex: 29,
-       description: 'NOTE',
-       selected: true,
-       rate: 350,
-       detail: 'Resubmission of site plan for additional comments after first round.' },
-     { selected: true,
-       detail: 'Additional city comments may incur a fee, depending on the city\'s requests for plans. Price is based on their request.',
-       description: 'NOTE',
-       rate: 0,
-       _rowIndex: 29 } ],
-  siteZip: '32097',
-  engineerNeeded: true,
-  favClient: '',
-  mepFolderNeeded: false,
-  clientStreet: '95056 Kestrel Ct',
-  isUpworkJob: false,
-  deliveryDuration: '3-4 weeks',
-  projectName: 'FL - Container W/ Site plan',
-  engineeringTaskedTo: [ 'VSC - ENG' ],
-  salesMan: 'Ryan - Partial',
-  fbClientId: 288923,
-  projectNumber: 804 }
+function testCreateProject() {
+  let jsonProject = {
+    remainingBalance: 2450,
+    ratePerHour: 225,
+    date: '2025-11-12',
+    showDocumentLink: true,
+    deliverableFromClient: 'Photos, sketch, layout, all material and sizing.',
+    clientPhone: '561-436-8062',
+    civilFolderNeeded: false,
+    projectDesc: 'Standard 40\' container with standard detailing. This site requires a site plan with data from septic and house location with all setbacks and measurements from setbacks.',
+    siteState: 'Florida',
+    clientCity: 'Fernandina Beach',
+    retainerRemaining: '',
+    sameAsClient: false,
+    clientName: 'Lisa Huffman',
+    mepTaskedTo: [],
+    retainerDeposit: 2500,
+    sendClientEmail: true,
+    clientEmail: 'Bsbhuffman@gmail.com',
+    fbProjectId: '',
+    clientAddress: '',
+    draftingTaskedTo: ['Prateeksha'],
+    clientState: 'Florida',
+    siteAddress: '',
+    documentUrl: 'https://docs.google.com/open?id=1lkS8LquP_VL26AjbjxuNVxI4S6LW0x-jPMS2YsN3jWo',
+    drafterFolderNeeded: true,
+    siteStreet: '86187 Williams Ave ',
+    draftingNeeded: true,
+    projectType: 'Container home',
+    gap: -350,
+    clientCompany: '',
+    clientZip: '32034',
+    siteCity: 'Yulee ',
+    enggFolderNeeded: true,
+    fbInvoiceId: '0002218',
+    civilTaskedTo: [],
+    totalCost: 5300,
+    scopes:
+      [{
+        selected: true,
+        detail: 'Typical container layout/floor plan detail, interior section views, exterior wall detail (elevations view), window/door callouts.',
+        rate: 1000,
+        _rowIndex: 17,
+        description: 'Container Architectural Drafting'
+      },
+      {
+        description: 'Container Structural Drafting',
+        selected: true,
+        rate: 1550,
+        detail: 'Structural details for container building plans. S-pages drafted as needed. Foundation, section view and details. Design criteria and connection details.',
+        _rowIndex: 16
+      },
+      {
+        _rowIndex: 15,
+        rate: 1100,
+        description: 'Calculations Report',
+        detail: 'Calculations report for project scope.',
+        selected: true
+      },
+      {
+        selected: true,
+        _rowIndex: 18,
+        detail: 'Basic MEP layout with Mini Split detail, outlet, lights, smoke detector, interior plumbing layout only',
+        description: 'Container Basic MEP layout Only',
+        rate: 500
+      },
+      {
+        description: 'Site/ Grading/ Conservation Plan',
+        _rowIndex: 21,
+        detail: 'Design plan showing proposed site improvements, provided well and septic overlay.',
+        rate: 250,
+        selected: true
+      },
+      {
+        selected: true,
+        _rowIndex: 9,
+        detail: 'Scope of work, reviewed, stamped, and sealed by state licensed P.E. FL',
+        description: 'Engineering Review, Stamp and Seal P.E.',
+        rate: 0
+      },
+      {
+        _rowIndex: 28,
+        rate: 550,
+        description: 'Plan digital Submission',
+        selected: true,
+        detail: 'Plan submission digitally to the city.'
+      },
+      {
+        _rowIndex: 29,
+        description: 'NOTE',
+        selected: true,
+        rate: 350,
+        detail: 'Resubmission of site plan for additional comments after first round.'
+      },
+      {
+        selected: true,
+        detail: 'Additional city comments may incur a fee, depending on the city\'s requests for plans. Price is based on their request.',
+        description: 'NOTE',
+        rate: 0,
+        _rowIndex: 29
+      }],
+    siteZip: '32097',
+    engineerNeeded: true,
+    favClient: '',
+    mepFolderNeeded: false,
+    clientStreet: '95056 Kestrel Ct',
+    isUpworkJob: false,
+    deliveryDuration: '3-4 weeks',
+    projectName: 'FL - Container W/ Site plan',
+    engineeringTaskedTo: ['VSC - ENG'],
+    salesMan: 'Ryan - Partial',
+    fbClientId: 288923,
+    projectNumber: 804
+  }
   _createFBProject_(jsonProject)
 }
 function testCreateUser() {

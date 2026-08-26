@@ -36,13 +36,16 @@ function _getFBClient_(data) {
 
 function _createFBClient_(data) {
   let { clientName, clientEmail, clientPhone, clientCompany, clientStreet, clientCity, clientState, clientZip } = data
-  let namesplit = clientName.split(" ");
-  let lastName, firstName
-  if (namesplit.length > 1) {
-    lastName = namesplit[namesplit.length - 1];
-    firstName = clientName.replace(" " + lastName, "");
+  const parts = clientName.trim().split(/\s+/);
+
+  let firstName = "";
+  let lastName = "";
+
+  if (parts.length === 1) {
+    firstName = parts[0];
   } else {
-    firstName = clientName
+    lastName = parts.pop();
+    firstName = parts.join(" ");
   }
 
   let jsonClient = {
